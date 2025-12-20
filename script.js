@@ -26,18 +26,25 @@ const player = {
     frameTimer: 0, frameInterval: 6
 };
 
-// --- INIMIGOS ---
+// --- INIMIGOS (Configurações Individuais) ---
 let enemies = [];
 function initEnemies() {
     enemies = [
-        { type: 'Green_Slime', x: 600, y: 320, hp: 1, speed: 1.2, range: 150, damage: 1 },
-        { type: 'Red_Slime', x: 1500, y: 320, hp: 1, speed: 2.5, range: 450, damage: 1 },
-        { type: 'Blue_Slime', x: 2500, y: 320, hp: 1, speed: 1.8, range: 200, damage: 1 },
+        { 
+            type: 'Green_Slime', x: 600, y: 320, hp: 1, speed: 1.2, range: 150, damage: 1,
+            width: 80, height: 80, walkFrames: 8, attackFrames: 4, deadFrames: 3, hurtFrames: 6, jumpFrames: 8, frameInterval: 10
+        },
+        { 
+            type: 'Red_Slime', x: 1500, y: 320, hp: 2, speed: 2.5, range: 450, damage: 1,
+            width: 80, height: 80, walkFrames: 8, attackFrames: 4, deadFrames: 3, hurtFrames: 6, jumpFrames: 8, frameInterval: 10
+        },
+        { 
+            type: 'Blue_Slime', x: 2500, y: 320, hp: 2, speed: 1.8, range: 200, damage: 1,
+            width: 80, height: 80, walkFrames: 8, attackFrames: 4, deadFrames: 3, hurtFrames: 6, jumpFrames: 8, frameInterval: 10
+        },
         { 
             type: 'Enchantress', x: 6500, y: 250, hp: 10, speed: 2, range: 400, damage: 1, 
-            width: 100, height: 100,
-            walkFrames: 8, attackFrames: 6, deadFrames: 5, hurtFrames: 2, jumpFrames: 8,
-            frameInterval: 10
+            width: 100, height: 100, walkFrames: 8, attackFrames: 6, deadFrames: 5, hurtFrames: 2, jumpFrames: 8, frameInterval: 10
         }
     ];
 
@@ -48,13 +55,8 @@ function initEnemies() {
         en.imgHurt = new Image(); en.imgHurt.src = `assets/${en.type}/Hurt.png`;
         en.imgJump = new Image(); en.imgJump.src = `assets/${en.type}/Jump.png`;
 
-        if(en.type.includes('Slime')) {
-            en.width = 80; en.height = 80;
-            en.walkFrames = 8; en.attackFrames = 4; en.deadFrames = 3; en.hurtFrames = 6; en.jumpFrames = 8;
-            en.frameInterval = 10;
-        }
         en.currentFrame = 0; en.frameTimer = 0; en.state = 'patrol'; en.facing = 'left';
-        en.velX = 0; en.velY = 0; en.onGround = false; en.startX = en.x;
+        en.velX = 0; en.velY = 0; en.onGround = false;
     });
 }
 
@@ -117,10 +119,7 @@ function checkPlayerHit() {
         if(dist < 110 && Math.abs(player.y - en.y) < 70) { 
             if((player.facing === 'right' && eCenterX > pCenterX) || (player.facing === 'left' && eCenterX < pCenterX)) {
                 en.hp--;
-                if(en.hp <= 0) { 
-                    en.state = 'dead'; en.currentFrame = 0; 
-                    if(en.type === 'Enchantress') gameState = 'victory'; 
-                }
+                if(en.hp <= 0) { en.state = 'dead'; en.currentFrame = 0; }
                 else { en.state = 'hurt'; en.currentFrame = 0; en.velX = (player.x < en.x) ? 8 : -8; }
             }
         }
@@ -168,7 +167,7 @@ function update() {
     cameraY += (targetY - cameraY) * 0.1;
     cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width/zoom));
 
-    // INIMIGOS LOOP
+    // LOOP DE INIMIGOS
     enemies.forEach((en, i) => {
         en.velY += gravity; en.y += en.velY; en.x += en.velX; en.velX *= 0.9;
         
@@ -181,6 +180,7 @@ function update() {
         });
 
         let dist = Math.abs((player.x + player.width/2) - (en.x + en.width/2));
+        
         if (en.state !== 'attacking' && en.state !== 'hurt' && en.state !== 'dead') {
             if (dist < en.range) {
                 if (player.x < en.x) { en.x -= en.speed; en.facing = 'left'; } 
@@ -189,14 +189,18 @@ function update() {
             if(dist < 75) { en.state = 'attacking'; en.currentFrame = 0; }
         }
 
-        // Animação Inimigos
         en.frameTimer++;
         if(en.frameTimer > en.frameInterval) {
             if (en.state === 'dead') {
                 en.currentFrame++;
                 if (en.currentFrame >= en.deadFrames) {
-                    if (en.type === 'Enchantress') en.currentFrame = en.deadFrames - 1;
-                    else { enemies.splice(i, 1); return; }
+                    if (en.type === 'Enchantress') {
+                        gameState = 'victory';
+                        en.currentFrame = en.deadFrames - 1;
+                    } else {
+                        enemies.splice(i, 1); 
+                        return;
+                    }
                 }
             } else if (en.state === 'hurt') {
                 en.currentFrame++;
