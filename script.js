@@ -20,8 +20,8 @@ const player = {
     facing: 'right', onGround: false, state: 'normal',
     hp: 3, maxHp: 3, invincible: false, invincibilityTimer: 0,
     imgWalk: new Image(), imgDead: new Image(), imgJump: new Image(), imgHurt: new Image(),
-    attacks: [ { img: new Image(), frames: 6 }, { img: new Image(), frames: 6 }, { img: new Image(), frames: 6 } ],
-    currentAttackIndex: 0,
+    imgAttack: new Image(), 
+    attackFrames: 6, // Valor padrão que será sobrescrito na escolha
     currentFrame: 0, walkFrames: 8, jumpFrames: 8, deadFrames: 3, hurtFrames: 3,
     frameTimer: 0, frameInterval: 6
 };
@@ -70,18 +70,16 @@ window.escolherPersonagem = function(genero) {
     player.imgJump.src = `assets/${folder}/Jump.png`;
     player.imgDead.src = `assets/${folder}/Dead.png`;
     player.imgHurt.src = `assets/${folder}/Hurt.png`;
+    player.imgAttack.src = `assets/${folder}/Attack_1.png`;
 
+    // Correção dos frames específicos
     if (genero === 'menina') {
-        player.attacks[0].frames = 5; player.attacks[1].frames = 2; player.attacks[2].frames = 5;
+        player.attackFrames = 5; 
         player.walkFrames = 8; player.jumpFrames = 6; player.deadFrames = 4; player.hurtFrames = 3;
     } else {
-        player.attacks[0].frames = 6; player.attacks[1].frames = 3; player.attacks[2].frames = 4;
+        player.attackFrames = 6;
         player.walkFrames = 8; player.jumpFrames = 8; player.deadFrames = 3; player.hurtFrames = 3;
     }
-
-    player.attacks[0].img.src = `assets/${folder}/Attack_1.png`;
-    player.attacks[1].img.src = `assets/${folder}/Attack_2.png`;
-    player.attacks[2].img.src = `assets/${folder}/Attack_3.png`;
 
     gameState = 'playing';
     initEnemies();
@@ -103,7 +101,6 @@ window.pular = function() {
 
 window.atacar = function() {
     if (gameState !== 'playing' || player.state !== 'normal') return;
-    player.currentAttackIndex = Math.floor(Math.random() * 3);
     player.state = 'attacking'; player.currentFrame = 0; player.frameTimer = 0;
     checkPlayerHit();
 };
@@ -214,12 +211,14 @@ function update() {
     if (player.frameTimer > player.frameInterval) {
         if (player.state === 'attacking') {
             player.currentFrame++;
-            if (player.currentFrame >= player.attacks[player.currentAttackIndex].frames) { 
+            if (player.currentFrame >= player.attackFrames) { 
                 player.state = 'normal'; player.currentFrame = 0; 
             }
         } else if (player.state === 'hurt') {
             player.currentFrame++;
             if (player.currentFrame >= player.hurtFrames) { player.state = 'normal'; player.currentFrame = 0; }
+        } else if (player.state === 'dead') {
+             player.currentFrame = Math.min(player.currentFrame + 1, player.deadFrames - 1);
         } else {
             let maxF = player.onGround ? (Math.abs(player.velX) > 0.1 ? player.walkFrames : 1) : player.jumpFrames;
             player.currentFrame = (player.currentFrame + 1) % maxF;
@@ -247,11 +246,15 @@ function draw() {
 
         if (isP) {
             if (obj.state === 'attacking') {
-                img = obj.attacks[obj.currentAttackIndex].img;
-                frames = obj.attacks[obj.currentAttackIndex].frames;
+                img = obj.imgAttack;
+                frames = obj.attackFrames;
+            } else if (obj.state === 'dead') {
+                img = obj.imgDead; frames = obj.deadFrames;
+            } else if (obj.state === 'hurt') {
+                img = obj.imgHurt; frames = obj.hurtFrames;
             } else {
-                img = (obj.state === 'hurt' ? obj.imgHurt : (obj.onGround ? obj.imgWalk : obj.imgJump));
-                frames = (obj.state === 'hurt' ? obj.hurtFrames : (obj.onGround ? obj.walkFrames : obj.jumpFrames));
+                img = (obj.onGround ? obj.imgWalk : obj.imgJump);
+                frames = (obj.onGround ? obj.walkFrames : obj.jumpFrames);
             }
         } else {
             img = (obj.state === 'attacking' ? obj.imgAttack : (obj.state === 'dead' ? obj.imgDead : (obj.state === 'hurt' ? obj.imgHurt : obj.imgWalk)));
