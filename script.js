@@ -67,11 +67,11 @@ let keys = { left: false, right: false };
 window.escolherPersonagem = function(genero) {
     const folder = (genero === 'menina') ? 'Knight' : 'Swordsman';
     if (genero === 'menina') {
-        player.walkFrames = 8; player.jumpFrames = 8; player.deadFrames = 4; player.hurtFrames = 2;
-        player.attacks[0].frames = 4; player.attacks[1].frames = 5; player.attacks[2].frames = 4;
+        player.walkFrames = 8; player.jumpFrames = 6; player.deadFrames = 4; player.hurtFrames = 3;
+        player.attacks[0].frames = 5; player.attacks[1].frames = 2; player.attacks[2].frames = 5;
     } else {
         player.walkFrames = 8; player.jumpFrames = 8; player.deadFrames = 3; player.hurtFrames = 3;
-        player.attacks[0].frames = 6; player.attacks[1].frames = 6; player.attacks[2].frames = 6;
+        player.attacks[0].frames = 6; player.attacks[1].frames = 3; player.attacks[2].frames = 4;
     }
     player.imgWalk.src = `assets/${folder}/Walk.png`;
     player.imgJump.src = `assets/${folder}/Jump.png`;
@@ -259,3 +259,4 @@ function draw() {
 
 function gameLoop() { update(); draw(); requestAnimationFrame(gameLoop); }
 gameLoop();
+
