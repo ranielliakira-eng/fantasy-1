@@ -1,0 +1,68 @@
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        width: 100vw;
+        overflow: hidden;
+        position: fixed; /* Evita que a tela suba/desça ao jogar */
+    }
+
+    #game-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    canvas {
+        /* Faz o jogo ocupar o máximo da tela sem distorcer */
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain; 
+        background-color: #87CEEB;
+        image-rendering: pixelated; /* Deixa os desenhos nítidos */
+    }
+
+    /* Ajuste dos botões para ficarem fixos sobre o jogo */
+    .ui-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 10;
+    }
+
+    .controls {
+        position: absolute;
+        bottom: 10%; /* Sobe um pouco os botões para não bater na borda */
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 5%;
+        box-sizing: border-box;
+    }
+
+    .btn-game {
+        pointer-events: auto;
+        width: 65px;
+        height: 65px;
+        background: rgba(255, 255, 255, 0.4);
+        border: 2px solid #fff;
+        border-radius: 50%;
+        color: white;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-tap-highlight-color: transparent;
+    }
+</style>
