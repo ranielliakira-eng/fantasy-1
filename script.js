@@ -64,14 +64,36 @@ const platforms = [
 let keys = { left: false, right: false };
 
 window.escolherPersonagem = function(genero) {
-    const folder = (genero === 'menina') ? 'Knight' : 'Swordsman';
-    player.imgWalk.src = `assets/${folder}/Walk.png`;
-    player.imgJump.src = `assets/${folder}/Jump.png`;
-    player.imgDead.src = `assets/${folder}/Dead.png`;
-    player.imgHurt.src = `assets/${folder}/Hurt.png`;
-    player.attacks[0].img.src = `assets/${folder}/Attack_1.png`;
-    player.attacks[1].img.src = `assets/${folder}/Attack_2.png`;
-    player.attacks[2].img.src = `assets/${folder}/Attack_3.png`;
+    if (genero === 'menina') {
+        const folder = 'Knight';
+        player.imgWalk.src = `assets/${folder}/Walk.png`;
+        player.imgJump.src = `assets/${folder}/Jump.png`;
+        player.imgDead.src = `assets/${folder}/Dead.png`;
+        player.imgHurt.src = `assets/${folder}/Hurt.png`;
+        player.attacks[0].img.src = `assets/${folder}/Attack_1.png`;
+        player.attacks[1].img.src = `assets/${folder}/Attack_2.png`;
+        player.attacks[2].img.src = `assets/${folder}/Attack_3.png`;
+
+        player.walkFrames = 10;
+        player.jumpFrames = 10;
+        player.attackFrames = 8;
+        player.deadFrames = 5;
+    } else {
+        const folder = 'Swordsman';
+        player.imgWalk.src = `assets/${folder}/Walk.png`;
+        player.imgJump.src = `assets/${folder}/Jump.png`;
+        player.imgDead.src = `assets/${folder}/Dead.png`;
+        player.imgHurt.src = `assets/${folder}/Hurt.png`;
+        player.attacks[0].img.src = `assets/${folder}/Attack_1.png`;
+        player.attacks[1].img.src = `assets/${folder}/Attack_2.png`;
+        player.attacks[2].img.src = `assets/${folder}/Attack_3.png`;
+
+        player.walkFrames = 8;    
+        player.jumpFrames = 8;
+        player.attackFrames = 6;
+        player.deadFrames = 3;
+    }
+
     gameState = 'playing';
     initEnemies();
     bgMusic.play().catch(() => {});
@@ -294,4 +316,5 @@ window.addEventListener('keyup', (e) => {
     if (key === 'a' || e.key === 'ArrowLeft') window.mover('left', false);
     if (key === 'd' || e.key === 'ArrowRight') window.mover('right', false);
 });
+
 
