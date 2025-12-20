@@ -30,7 +30,7 @@
         .selection-menu {
             position: absolute;
             inset: 0;
-            z-index: 200;
+            z-index: 200; /* Fica acima de tudo */
             display: flex; flex-direction: column;
             justify-content: center; align-items: center;
             gap: 20px; background: rgba(0,0,0,0.8);
@@ -39,10 +39,11 @@
         .selection-menu h1 { color: gold; text-shadow: 2px 2px #000; }
 
         .selection-menu button {
-            width: 200px; height: 60px;
+            width: 250px; height: 60px;
             font-size: 18px; font-weight: bold;
             cursor: pointer; border-radius: 12px;
-            border: none; background: #fff;
+            border: 2px solid gold; background: #222;
+            color: white;
             transition: transform 0.2s;
         }
 
@@ -54,12 +55,13 @@
             bottom: 20px; width: 100%;
             display: flex; justify-content: space-between;
             padding: 0 40px; box-sizing: border-box;
-            z-index: 100; pointer-events: none;
+            z-index: 100; 
+            pointer-events: none; /* Deixa o clique passar para o fundo */
         }
 
         .btn-group {
             display: flex; gap: 20px;
-            pointer-events: auto;
+            pointer-events: auto; /* Reativa o clique apenas nos botões */
         }
 
         .btn {
@@ -78,7 +80,7 @@
 <body>
 
 <div id="game-container">
-    <div class="selection-menu">
+    <div id="selection-menu" class="selection-menu">
         <h1>FANTASY 2D</h1>
         <button onclick="window.escolherPersonagem('menina')">GUERREIRA (KNIGHT)</button>
         <button onclick="window.escolherPersonagem('menino')">ESPADACHIM (SWORDSMAN)</button>
@@ -86,7 +88,7 @@
 
     <canvas id="gameCanvas" width="800" height="450"></canvas>
 
-    <div class="controls">
+    <div id="mobile-controls" class="controls" style="display: none;">
         <div class="btn-group">
             <button class="btn" 
                 onmousedown="window.mover('left', true)" onmouseup="window.mover('left', false)"
@@ -107,7 +109,7 @@
             </button>
             <button class="btn" 
                 onmousedown="window.atacar()" ontouchstart="window.atacar()" 
-                style="background: rgba(255, 0, 0, 0.3);">
+                style="border-color: red; background: rgba(255, 0, 0, 0.2);">
                 ATACAR
             </button>
         </div>
