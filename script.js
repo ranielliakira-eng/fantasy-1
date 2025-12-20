@@ -4,8 +4,8 @@ canvas.width = 800; canvas.height = 450;
 
 // --- CONFIGURAÇÕES GLOBAIS ---
 const gravity = 0.8;
-const zoom = 1.6;
-const mapWidth = 7000;
+const zoom = 1.6; 
+const mapWidth = 7000; 
 let cameraX = 0, cameraY = 0;
 let gameState = 'menu'; // menu, playing, dead, victory
 
@@ -64,8 +64,8 @@ const platforms = [
 let keys = { left: false, right: false };
 
 // --- FUNÇÕES DE CONTROLE (WINDOW) ---
-window.escolherPersonagem = function (genero) {
-    const folder = genero === 'menina' ? 'Knight' : 'Swordsman';
+window.escolherPersonagem = function(genero) {
+    const folder = (genero === 'menina') ? 'Knight' : 'Swordsman';
     if (genero === 'menina') {
         player.walkFrames = 8; player.jumpFrames = 8; player.deadFrames = 4; player.hurtFrames = 2;
         player.attacks[0].frames = 4; player.attacks[1].frames = 5; player.attacks[2].frames = 4;
@@ -87,17 +87,17 @@ window.escolherPersonagem = function (genero) {
     if (menu) menu.style.display = 'none';
 };
 
-window.mover = function (dir, estado) {
+window.mover = function(dir, estado) {
     if (gameState !== 'playing' || player.state !== 'normal') return;
     if (dir === 'left') { keys.left = estado; if (estado) keys.right = false; player.facing = 'left'; }
     if (dir === 'right') { keys.right = estado; if (estado) keys.left = false; player.facing = 'right'; }
 };
 
-window.pular = function () {
+window.pular = function() {
     if (gameState === 'playing' && player.onGround && player.state === 'normal') player.velY = player.jumpForce;
 };
 
-window.atacar = function () {
+window.atacar = function() {
     if (gameState === 'dead' || gameState === 'victory') { restartGame(); return; }
     if (gameState !== 'playing' || player.state !== 'normal') return;
     player.currentAttackIndex = Math.floor(Math.random() * 3);
@@ -162,14 +162,12 @@ function update() {
         }
     });
 
-    // Inimigos com personalidades
     enemies.forEach(en => {
         if(en.state === 'dead') {
             en.frameTimer++; if(en.frameTimer > en.frameInterval) { en.currentFrame++; en.frameTimer = 0; }
             return;
         }
         en.velY += gravity; en.y += en.velY; en.x += en.velX; en.velX *= 0.9;
-        
         platforms.forEach(p => {
             if (en.x + 30 < p.x + p.w && en.x + 50 > p.x) {
                 if (en.velY >= 0 && en.y + en.height <= p.y + en.velY + 5 && en.y + en.height >= p.y - 10) { en.velY = 0; en.y = p.y - en.height; en.onGround = true;}
@@ -191,8 +189,14 @@ function update() {
         en.frameTimer++; if(en.frameTimer > en.frameInterval) { en.currentFrame = (en.currentFrame + 1) % en.walkFrames; en.frameTimer = 0; }
     });
 
-    cameraX += (((player.x + player.width/2) - (canvas.width/2)/zoom) - cameraX) * 0.1;
+    // --- CÂMERA X e Y ---
+    let targetX = (player.x + player.width / 2) - (canvas.width / 2) / zoom;
+    let targetY = (player.y + player.height / 2) - (canvas.height / 2) / zoom;
+    cameraX += (targetX - cameraX) * 0.1;
+    cameraY += (targetY - cameraY) * 0.1;
+
     if (cameraX < 0) cameraX = 0;
+    if (cameraX > mapWidth - canvas.width / zoom) cameraX = mapWidth - canvas.width / zoom;
 
     player.frameTimer++;
     if (player.frameTimer > player.frameInterval) {
@@ -211,9 +215,11 @@ function draw() {
 
     ctx.save();
     ctx.scale(zoom, zoom);
-    ctx.translate(-Math.floor(cameraX), 0);
+    ctx.translate(-Math.floor(cameraX), -Math.floor(cameraY));
 
-    ctx.fillStyle = "#87CEEB"; ctx.fillRect(cameraX, 0, canvas.width / zoom, canvas.height / zoom);
+    // Fundo
+    ctx.fillStyle = "#87CEEB"; 
+    ctx.fillRect(cameraX, cameraY, canvas.width / zoom, canvas.height / zoom);
 
     platforms.forEach(p => { ctx.fillStyle = "#4e342e"; ctx.fillRect(p.x, p.y, p.w, p.h); });
 
@@ -235,17 +241,19 @@ function draw() {
             ctx.restore();
         }
     });
-
     ctx.restore();
 
-    // UI
+    // UI fixa
     if(gameState === 'playing') {
-        ctx.fillStyle = "red"; ctx.fillRect(20, 20, (player.hp/player.maxHp)*150, 20);
+        ctx.fillStyle = "black"; ctx.fillRect(20, 20, 154, 24);
+        ctx.fillStyle = "red"; ctx.fillRect(22, 22, (player.hp/player.maxHp)*150, 20);
     }
     if(gameState === 'dead' || gameState === 'victory') {
-        ctx.fillStyle = "rgba(0,0,0,0.7)"; ctx.fillRect(0,0,canvas.width, canvas.height);
-        ctx.fillStyle = "white"; ctx.textAlign = "center"; ctx.font = "30px Arial";
-        ctx.fillText(gameState === 'victory' ? "PARABÉNS! VITÓRIA!" : "GAME OVER", canvas.width/2, canvas.height/2);
+        ctx.fillStyle = "rgba(0,0,0,0.8)"; ctx.fillRect(0,0,canvas.width, canvas.height);
+        ctx.fillStyle = gameState === 'victory' ? "gold" : "white";
+        ctx.textAlign = "center"; ctx.font = "bold 34px Arial";
+        ctx.fillText(gameState === 'victory' ? "PARABÉNS! VITÓRIA!" : "VOCÊ MORREU!", canvas.width/2, canvas.height/2);
+        ctx.font = "18px Arial"; ctx.fillText("Toque em ATACAR para reiniciar", canvas.width/2, canvas.height/2 + 50);
     }
 }
 
