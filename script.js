@@ -88,7 +88,7 @@ window.escolherPersonagem = function(genero) {
 
     gameState = 'playing';
     initEnemies();
-    bgMusic.play().catch(e => console.log("Som ativado pelo clique."));
+    bgMusic.play().catch(() => {});
     const menu = document.querySelector('.selection-menu');
     if (menu) menu.style.display = 'none';
 };
@@ -100,7 +100,7 @@ window.mover = function(dir, estado) {
 };
 
 window.pular = function() {
-    if (gameState === 'playing' && player.onGround && player.state === 'normal') {
+    if (gameState === 'playing' && player.onGround && (player.state === 'normal' || player.state === 'hurt')) {
         player.velY = player.jumpForce;
     }
 };
@@ -131,16 +131,11 @@ function checkPlayerHit() {
 function takeDamage() {
     if(!player.invincible && player.state !== 'dead' && gameState === 'playing') {
         player.hp--;
-        if(player.hp <= 0) { 
-            player.state = 'dead'; gameState = 'dead'; bgMusic.pause();
-        } else { 
-            player.invincible = true; 
-            player.invincibilityTimer = 60; 
-            player.state = 'hurt'; 
-            player.currentFrame = 0;
-            // Knockback: empurra o player para o lado oposto que ele está olhando
-            player.velY = -5;
-            player.velX = (player.facing === 'right') ? -8 : 8;
+        if(player.hp <= 0) { player.state = 'dead'; gameState = 'dead'; bgMusic.pause(); }
+        else { 
+            player.invincible = true; player.invincibilityTimer = 60; 
+            player.state = 'hurt'; player.currentFrame = 0;
+            player.velY = -8; player.velX = (player.facing === 'right') ? -10 : 10;
         }
     }
 }
@@ -150,7 +145,6 @@ function update() {
 
     if(player.invincible) { player.invincibilityTimer--; if(player.invincibilityTimer <= 0) player.invincible = false; }
 
-    // Movimentação
     if (player.state === 'normal' || player.state === 'hurt') {
         if (keys.left) player.velX = -player.speed;
         else if (keys.right) player.velX = player.speed;
@@ -160,7 +154,6 @@ function update() {
     player.velY += gravity; player.x += player.velX; player.y += player.velY;
     if(player.x < 0) player.x = 0;
 
-    // Colisão Plataforma
     player.onGround = false;
     platforms.forEach(p => {
         if (player.x + 40 < p.x + p.w && player.x + 60 > p.x) {
@@ -170,7 +163,6 @@ function update() {
         }
     });
 
-    // Lógica Inimigos
     enemies.forEach(en => {
         if(en.state === 'dead') {
             en.frameTimer++; if(en.frameTimer > en.frameInterval) { en.currentFrame++; en.frameTimer = 0; }
@@ -193,12 +185,10 @@ function update() {
             en.jumpTimer++; if (en.jumpTimer > 70) { en.velY = -12; en.velX = (en.facing === 'left') ? -5 : 5; en.jumpTimer = 0; en.onGround = false; }
             if(en.x < en.startX - en.range) en.facing = 'right'; if(en.x > en.startX + en.range) en.facing = 'left';
         }
-
         if(d < 50 && Math.abs(player.y - en.y) < 30) takeDamage();
         en.frameTimer++; if(en.frameTimer > en.frameInterval) { en.currentFrame = (en.currentFrame + 1) % en.walkFrames; en.frameTimer = 0; }
     });
 
-    // Câmera
     let targetX = (player.x + player.width / 2) - (canvas.width / 2) / zoom;
     let targetY = (player.y + player.height / 2) - (canvas.height / 2) / zoom;
     cameraX += (targetX - cameraX) * 0.1;
@@ -206,7 +196,6 @@ function update() {
     if (cameraX < 0) cameraX = 0;
     if (cameraX > mapWidth - canvas.width / zoom) cameraX = mapWidth - canvas.width / zoom;
 
-    // Animação do Player
     player.frameTimer++;
     if (player.frameTimer > player.frameInterval) {
         if (player.state === 'attacking') {
@@ -221,7 +210,7 @@ function update() {
         }
         player.frameTimer = 0;
     }
-} // <--- AQUI ESTAVA FALTANDO FECHAR A FUNÇÃO UPDATE!
+}
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -230,10 +219,8 @@ function draw() {
     ctx.save();
     ctx.scale(zoom, zoom);
     ctx.translate(-Math.floor(cameraX), -Math.floor(cameraY));
-
     ctx.fillStyle = "#87CEEB"; 
     ctx.fillRect(cameraX, cameraY, canvas.width / zoom, canvas.height / zoom);
-
     platforms.forEach(p => { ctx.fillStyle = "#4e342e"; ctx.fillRect(p.x, p.y, p.w, p.h); });
 
     enemies.concat(player).forEach(obj => {
@@ -271,7 +258,6 @@ function draw() {
 function gameLoop() { update(); draw(); requestAnimationFrame(gameLoop); }
 gameLoop();
 
-// --- TECLADO ---
 window.addEventListener('keydown', (e) => {
     const key = e.key.toLowerCase();
     if (key === 'a' || e.key === 'ArrowLeft') window.mover('left', true);
