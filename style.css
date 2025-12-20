@@ -65,4 +65,16 @@
         justify-content: center;
         -webkit-tap-highlight-color: transparent;
     }
+.controls {
+    position: absolute;
+    bottom: 20px; 
+    width: 100%;
+    display: flex; 
+    justify-content: space-between;
+    padding: 0 40px; 
+    box-sizing: border-box;
+    z-index: 999; /* Valor bem alto para ficar na frente de tudo */
+    pointer-events: none;
+}
 </style>
+
