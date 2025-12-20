@@ -94,7 +94,10 @@ window.escolherPersonagem = function(genero) {
 };
 
 window.mover = function(dir, estado) {
-    if (gameState !== 'playing' || player.hp <= 0) return;
+    // Agora permitimos registrar o movimento mesmo em 'hurt', 
+    // ele só vai aplicar a velocidade quando o estado voltar a 'normal'
+    if (gameState !== 'playing' || player.state === 'dead') return;
+    
     if (dir === 'left') { 
         keys.left = estado; 
         if (estado) { keys.right = false; player.facing = 'left'; }
@@ -303,5 +306,6 @@ window.addEventListener('keyup', (e) => {
     if (key === 'a' || e.key === 'ArrowLeft') window.mover('left', false);
     if (key === 'd' || e.key === 'ArrowRight') window.mover('right', false);
 });
+
 
 
