@@ -2,19 +2,16 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 canvas.width = 800; canvas.height = 450;
 
-// --- CONFIGURAÇÕES DE ÁUDIO ---
 const bgMusic = new Audio('assets/sound/song.wav');
 bgMusic.loop = true;
 bgMusic.volume = 0.5;
 
-// --- CONFIGURAÇÕES GLOBAIS ---
 const gravity = 0.8;
 const zoom = 1.6; 
 const mapWidth = 7000; 
 let cameraX = 0, cameraY = 0;
 let gameState = 'menu';
 
-// --- JOGADOR ---
 const player = {
     x: 100, y: 100, width: 100, height: 100,
     velX: 0, velY: 0, speed: 5, jumpForce: -15,
@@ -27,16 +24,15 @@ const player = {
     frameTimer: 0, frameInterval: 6
 };
 
-// --- INIMIGOS ---
 let enemies = [];
 function initEnemies() {
     enemies = [
-        { type: 'Green_Slime', x: 600, y: 320, hp: 3, speed: 1.2, range: 150 },
+        { type: 'Green_Slime', x: 600, y: 320, hp: 1, speed: 1.2, range: 150 },
         { type: 'Red_Slime', x: 1500, y: 320, hp: 1, speed: 2.5, range: 450 },
-        { type: 'Blue_Slime', x: 2500, y: 320, hp: 1, speed: 1.8, range: 200, jumpTimer: 0 },
+        { type: 'Blue_Slime', x: 2500, y: 320, hp: 1, speed: 1.8, range: 200, jumpTimer: 1 },
         { 
             type: 'Enchantress', x: 6500, y: 250, hp: 10, speed: 2, range: 400, 
-            width: 120, height: 120, walkFrames: 8, attackFrames: 10, deadFrames: 5, hurtFrames: 3, jumpFrames: 8
+            width: 120, height: 120, walkFrames: 8, attackFrames: 6, deadFrames: 5, hurtFrames: 2, jumpFrames: 8
         }
     ];
 
@@ -57,7 +53,6 @@ function initEnemies() {
     });
 }
 
-// --- PLATAFORMAS ---
 const platforms = [
     { x: 0, y: 400, w: mapWidth, h: 60 },
     { x: 400, y: 300, w: 200, h: 20 },
@@ -68,7 +63,6 @@ const platforms = [
 
 let keys = { left: false, right: false };
 
-// --- FUNÇÕES DE CONTROLE ---
 window.escolherPersonagem = function(genero) {
     const folder = (genero === 'menina') ? 'Knight' : 'Swordsman';
     player.imgWalk.src = `assets/${folder}/Walk.png`;
@@ -98,7 +92,6 @@ window.pular = function() {
 };
 
 window.atacar = function() {
-    if (gameState === 'dead' || gameState === 'victory') { location.reload(); return; }
     if (gameState !== 'playing' || player.state !== 'normal') return;
     player.currentAttackIndex = Math.floor(Math.random() * 3);
     player.state = 'attacking'; player.currentFrame = 0; player.frameTimer = 0;
@@ -107,37 +100,15 @@ window.atacar = function() {
 
 function checkPlayerHit() {
     enemies.forEach(en => {
-        if (en.state === 'dead' || en.state === 'hurt') return;
-
-        // Calcula a distância entre o centro do player e o centro do inimigo
-        let playerCenterX = player.x + player.width / 2;
-        let enemyCenterX = en.x + en.width / 2;
-        let dist = Math.abs(playerCenterX - enemyCenterX);
-        
-        // Verifica se estão na mesma altura aproximada (Y)
-        let verticalDist = Math.abs(player.y - en.y);
-
-        // Aumentamos a distância de acerto para 110 pixels
-        if (dist < 110 && verticalDist < 80) {
-            // Verifica se o player está virado para o lado correto
-            let mirandoCorreto = (player.facing === 'right' && enemyCenterX > playerCenterX) || 
-                                 (player.facing === 'left' && enemyCenterX < playerCenterX);
-
-            if (mirandoCorreto) {
+        if(en.state === 'dead') return;
+        let pCenterX = player.x + player.width/2;
+        let eCenterX = en.x + en.width/2;
+        let dist = Math.abs(pCenterX - eCenterX);
+        if(dist < 110 && Math.abs(player.y - en.y) < 80) {
+            if((player.facing === 'right' && en.x > player.x) || (player.facing === 'left' && en.x < player.x)) {
                 en.hp--;
-                console.log(`Inimigo atingido! HP restante: ${en.hp}`); // Para você ver no console (F12)
-
-                if (en.hp <= 0) {
-                    en.state = 'dead';
-                    en.currentFrame = 0;
-                    if (en.type === 'Enchantress') gameState = 'victory';
-                } else {
-                    en.state = 'hurt';
-                    en.currentFrame = 0;
-                    // Empurra o inimigo para trás ao levar dano (Knockback)
-                    en.velX = (player.facing === 'right') ? 10 : -10;
-                    en.velY = -5; 
-                }
+                if(en.hp <= 0) { en.state = 'dead'; en.currentFrame = 0; if(en.type === 'Enchantress') gameState = 'victory'; }
+                else { en.state = 'hurt'; en.currentFrame = 0; en.velX = (player.x < en.x) ? 8 : -8; }
             }
         }
     });
@@ -146,7 +117,7 @@ function checkPlayerHit() {
 function takeDamage(amount = 1) {
     if(!player.invincible && player.state !== 'dead' && gameState === 'playing') {
         player.hp -= amount;
-        if(player.hp <= 0) { player.hp = 0; player.state = 'dead'; gameState = 'dead'; bgMusic.pause(); }
+        if(player.hp <= 0) { player.hp = 0; player.state = 'dead'; gameState = 'dead'; }
         else { 
             player.invincible = true; player.invincibilityTimer = 60; 
             player.state = 'hurt'; player.currentFrame = 0;
@@ -178,72 +149,63 @@ function update() {
         }
     });
 
-    enemies.forEach(en => {
-        if(en.state === 'dead') {
-            en.frameTimer++; if(en.frameTimer > en.frameInterval) { en.currentFrame++; en.frameTimer = 0; }
-            return;
-        }
-
-        en.velY += gravity; en.y += en.velY; en.x += en.velX; en.velX *= 0.9;
-        platforms.forEach(p => {
-            if (en.x + 30 < p.x + p.w && en.x + 50 > p.x) {
-                if (en.velY >= 0 && en.y + en.height <= p.y + en.velY + 5 && en.y + en.height >= p.y - 10) { 
-                    en.velY = 0; en.y = p.y - en.height; en.onGround = true;
-                }
-            }
-        });
-
-        let d = Math.abs((player.x + player.width/2) - (en.x + en.width/2));
-
-        if (en.state !== 'attacking' && en.state !== 'hurt') {
-            if (en.type === 'Green_Slime') {
-                if(en.facing === 'left') en.x -= en.speed; else en.x += en.speed;
-                if(en.x < en.startX - en.range) en.facing = 'right'; 
-                if(en.x > en.startX + en.range) en.facing = 'left';
-            } else if (en.type === 'Red_Slime' || en.type === 'Enchantress') {
-                if (d < en.range) { 
-                    if (player.x < en.x) { en.x -= en.speed; en.facing = 'left'; } 
-                    else { en.x += en.speed; en.facing = 'right'; } 
-                }
-            } else if (en.type === 'Blue_Slime' && en.onGround) {
-                en.jumpTimer++; if (en.jumpTimer > 70) { 
-                    en.velY = -12; en.velX = (en.facing === 'left') ? -5 : 5; 
-                    en.jumpTimer = 0; en.onGround = false; 
-                }
-            }
-
-            if(d < 65 && Math.abs(player.y - en.y) < 50) {
-                en.state = 'attacking'; en.currentFrame = 0; en.frameTimer = 0;
-            }
-        }
-
-        en.frameTimer++;
-        if(en.frameTimer > en.frameInterval) {
-            if (en.state === 'attacking') {
+    // --- LÓGICA DE INIMIGOS ---
+    for (let i = enemies.length - 1; i >= 0; i--) {
+        let en = enemies[i];
+        
+        if (en.state === 'dead') {
+            en.frameTimer++;
+            if (en.frameTimer > en.frameInterval) {
                 en.currentFrame++;
-                if (en.currentFrame >= en.attackFrames) {
-                    let distF = Math.abs((player.x + player.width/2) - (en.x + en.width/2));
-                    if(distF < 75) {
-                        if (en.type === 'Enchantress') takeDamage(2); else takeDamage(1);
+                en.frameTimer = 0;
+                if (en.currentFrame >= en.deadFrames) {
+                    enemies.splice(i, 1); // REMOVE O SLIME DA LISTA
+                    continue;
+                }
+            }
+        } else {
+            en.velY += gravity; en.y += en.velY; en.x += en.velX; en.velX *= 0.9;
+            platforms.forEach(p => {
+                if (en.x + 30 < p.x + p.w && en.x + 50 > p.x) {
+                    if (en.velY >= 0 && en.y + en.height <= p.y + en.velY + 5 && en.y + en.height >= p.y - 10) { 
+                        en.velY = 0; en.y = p.y - en.height; en.onGround = true;
                     }
-                    en.state = 'patrol'; en.currentFrame = 0;
                 }
-            } else if (en.state === 'hurt') {
-                en.currentFrame++;
-                if (en.currentFrame >= en.hurtFrames) { en.state = 'patrol'; en.currentFrame = 0; }
-            } else {
-                en.currentFrame = (en.currentFrame + 1) % en.walkFrames;
-            }
-            en.frameTimer = 0;
-        }
-    });
+            });
 
-    let targetX = (player.x + player.width / 2) - (canvas.width / 2) / zoom;
-    let targetY = (player.y + player.height / 2) - (canvas.height / 2) / zoom;
-    cameraX += (targetX - cameraX) * 0.1;
-    cameraY += (targetY - cameraY) * 0.1;
+            let d = Math.abs((player.x + player.width/2) - (en.x + en.width/2));
+            if (en.state !== 'attacking' && en.state !== 'hurt') {
+                if (en.type === 'Green_Slime') {
+                    if(en.facing === 'left') en.x -= en.speed; else en.x += en.speed;
+                    if(en.x < en.startX - en.range) en.facing = 'right'; if(en.x > en.startX + en.range) en.facing = 'left';
+                } else if (en.type === 'Red_Slime' || en.type === 'Enchantress') {
+                    if (d < en.range) { if (player.x < en.x) { en.x -= en.speed; en.facing = 'left'; } else { en.x += en.speed; en.facing = 'right'; } }
+                }
+                if(d < 65 && Math.abs(player.y - en.y) < 50) { en.state = 'attacking'; en.currentFrame = 0; }
+            }
+
+            en.frameTimer++;
+            if(en.frameTimer > en.frameInterval) {
+                if (en.state === 'attacking') {
+                    en.currentFrame++;
+                    if (en.currentFrame >= en.attackFrames) {
+                        if(d < 75) { if(en.type === 'Enchantress') takeDamage(2); else takeDamage(1); }
+                        en.state = 'patrol'; en.currentFrame = 0;
+                    }
+                } else if (en.state === 'hurt') {
+                    en.currentFrame++;
+                    if (en.currentFrame >= en.hurtFrames) { en.state = 'patrol'; en.currentFrame = 0; }
+                } else {
+                    en.currentFrame = (en.currentFrame + 1) % en.walkFrames;
+                }
+                en.frameTimer = 0;
+            }
+        }
+    }
+
+    cameraX += ((player.x + player.width/2) - (canvas.width/2)/zoom - cameraX) * 0.1;
     if (cameraX < 0) cameraX = 0;
-    if (cameraX > mapWidth - canvas.width / zoom) cameraX = mapWidth - canvas.width / zoom;
+    if (cameraX > mapWidth - canvas.width/zoom) cameraX = mapWidth - canvas.width/zoom;
 
     player.frameTimer++;
     if (player.frameTimer > player.frameInterval) {
@@ -276,7 +238,7 @@ function draw() {
         let img, frames;
         if (isP) {
             img = (obj.state === 'attacking' ? obj.attacks[obj.currentAttackIndex].img : (obj.state === 'hurt' ? obj.imgHurt : (obj.onGround ? obj.imgWalk : obj.imgJump)));
-            frames = (obj.state === 'attacking' ? obj.attacks[obj.currentAttackIndex].frames : (obj.state === 'hurt' ? obj.hurtFrames : (obj.onGround ? obj.walkFrames : obj.jumpFrames)));
+            frames = (obj.state === 'attacking' ? 6 : (obj.state === 'hurt' ? obj.hurtFrames : (obj.onGround ? obj.walkFrames : obj.jumpFrames)));
         } else {
             img = (obj.state === 'attacking' ? obj.imgAttack : (obj.state === 'dead' ? obj.imgDead : (obj.state === 'hurt' ? obj.imgHurt : obj.imgWalk)));
             frames = (obj.state === 'attacking' ? obj.attackFrames : (obj.state === 'dead' ? obj.deadFrames : (obj.state === 'hurt' ? obj.hurtFrames : obj.walkFrames)));
@@ -287,9 +249,9 @@ function draw() {
             if(isP && obj.invincible && Math.floor(Date.now()/100)%2===0) ctx.globalAlpha = 0.5;
             if(obj.facing === 'left') {
                 ctx.translate(obj.x + obj.width, obj.y); ctx.scale(-1, 1);
-                ctx.drawImage(img, Math.floor(obj.currentFrame % frames) * fw, 0, fw, img.height, 0, 0, obj.width, obj.height);
+                ctx.drawImage(img, (Math.floor(obj.currentFrame) % frames) * fw, 0, fw, img.height, 0, 0, obj.width, obj.height);
             } else {
-                ctx.drawImage(img, Math.floor(obj.currentFrame % frames) * fw, 0, fw, img.height, obj.x, obj.y, obj.width, obj.height);
+                ctx.drawImage(img, (Math.floor(obj.currentFrame) % frames) * fw, 0, fw, img.height, obj.x, obj.y, obj.width, obj.height);
             }
             ctx.restore();
         }
@@ -323,4 +285,3 @@ window.addEventListener('keyup', (e) => {
     if (key === 'a' || e.key === 'ArrowLeft') window.mover('left', false);
     if (key === 'd' || e.key === 'ArrowRight') window.mover('right', false);
 });
-
