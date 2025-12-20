@@ -32,19 +32,19 @@ function initEnemies() {
     enemies = [
         { 
             type: 'Green_Slime', x: 600, y: 320, hp: 1, speed: 1.2, range: 150, damage: 1,
-            width: 80, height: 80, walkFrames: 8, attackFrames: 4, deadFrames: 3, hurtFrames: 6, jumpFrames: 8, frameInterval: 10
+            width: 80, height: 80, walkFrames: 8, attackFrames: 4, deadFrames: 3, hurtFrames: 6, jumpFrames: 8, frameInterval: 5
         },
         { 
-            type: 'Red_Slime', x: 1500, y: 320, hp: 2, speed: 2.5, range: 450, damage: 1,
-            width: 80, height: 80, walkFrames: 8, attackFrames: 4, deadFrames: 3, hurtFrames: 6, jumpFrames: 8, frameInterval: 10
+            type: 'Red_Slime', x: 1500, y: 320, hp: 1, speed: 2.5, range: 450, damage: 1,
+            width: 80, height: 80, walkFrames: 8, attackFrames: 4, deadFrames: 3, hurtFrames: 6, jumpFrames: 8, frameInterval: 5
         },
         { 
-            type: 'Blue_Slime', x: 2500, y: 320, hp: 2, speed: 1.8, range: 200, damage: 1,
-            width: 80, height: 80, walkFrames: 8, attackFrames: 4, deadFrames: 3, hurtFrames: 6, jumpFrames: 8, frameInterval: 10
+            type: 'Blue_Slime', x: 2500, y: 320, hp: 1, speed: 1.8, range: 200, damage: 1,
+            width: 80, height: 80, walkFrames: 8, attackFrames: 4, deadFrames: 3, hurtFrames: 6, jumpFrames: 8, frameInterval: 5
         },
         { 
-            type: 'Enchantress', x: 6500, y: 250, hp: 10, speed: 2, range: 400, damage: 1, 
-            width: 100, height: 100, walkFrames: 8, attackFrames: 6, deadFrames: 5, hurtFrames: 2, jumpFrames: 8, frameInterval: 10
+            type: 'Enchantress', x: 6500, y: 250, hp: 3, speed: 2, range: 400, damage: 1, 
+            width: 100, height: 100, walkFrames: 8, attackFrames: 6, deadFrames: 5, hurtFrames: 2, jumpFrames: 8, frameInterval: 5
         }
     ];
 
@@ -304,3 +304,4 @@ window.addEventListener('keyup', (e) => {
     if (key === 'a' || e.key === 'ArrowLeft') window.mover('left', false);
     if (key === 'd' || e.key === 'ArrowRight') window.mover('right', false);
 });
+
