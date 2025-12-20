@@ -245,14 +245,23 @@ function update() {
         }
     }
 
-    player.frameTimer++;
-    if (player.frameTimer > player.frameInterval) {
+if (player.frameTimer > player.frameInterval) {
         if (player.state === 'attacking') {
             player.currentFrame++;
-            if (player.currentFrame >= player.attackFrames) { player.state = 'normal'; player.currentFrame = 0; }
+            
+            // PEGA O NÚMERO DE FRAMES DO ATAQUE QUE ESTÁ ROLANDO AGORA:
+            let framesDoAtaqueAtual = player.attacks[player.currentAttackIndex].frames;
+            
+            if (player.currentFrame >= framesDoAtaqueAtual) { 
+                player.state = 'normal'; 
+                player.currentFrame = 0; 
+            }
         } else if (player.state === 'hurt') {
             player.currentFrame++;
-            if (player.currentFrame >= player.hurtFrames) { player.state = 'normal'; player.currentFrame = 0; }
+            if (player.currentFrame >= player.hurtFrames) { 
+                player.state = 'normal'; 
+                player.currentFrame = 0; 
+            }
         } else {
             let maxF = player.onGround ? (Math.abs(player.velX) > 0.1 ? player.walkFrames : 1) : player.jumpFrames;
             player.currentFrame = (player.currentFrame + 1) % maxF;
@@ -326,6 +335,7 @@ window.addEventListener('keyup', (e) => {
     if (key === 'a' || e.key === 'ArrowLeft') window.mover('left', false);
     if (key === 'd' || e.key === 'ArrowRight') window.mover('right', false);
 });
+
 
 
 
