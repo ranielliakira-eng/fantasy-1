@@ -93,10 +93,16 @@ window.escolherPersonagem = function(genero) {
     gameState = 'playing';
     initEnemies();
     bgMusic.play().catch(() => {});
-    document.getElementById('selection-menu').style.display = 'none';
-    document.getElementById('mobile-controls').style.display = 'flex';
-};
 
+    // --- AQUI ESTÁ A MÁGICA ---
+    // 1. Esconde o menu de seleção
+    const menu = document.getElementById('selection-menu');
+    if(menu) menu.style.display = 'none';
+
+    // 2. Mostra os botões de controle (ID que colocamos na div controls)
+    const controles = document.getElementById('mobile-controls');
+    if(controles) controles.style.display = 'flex';
+};
 window.mover = function(dir, estado) {
     if (gameState !== 'playing' || player.state === 'dead') return;
     if (dir === 'left') { keys.left = estado; if (estado) { keys.right = false; player.facing = 'left'; } }
@@ -320,3 +326,4 @@ window.addEventListener('keyup', (e) => {
     if (key === 'a' || e.key === 'ArrowLeft') window.mover('left', false);
     if (key === 'd' || e.key === 'ArrowRight') window.mover('right', false);
 });
+
