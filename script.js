@@ -144,9 +144,14 @@ function takeDamage() {
             bgMusic.pause();
         } else { 
             player.invincible = true; 
-            player.invincibilityTimer = 60; 
+            player.invincibilityTimer = 60; // 1 segundo de piscar
             player.state = 'hurt'; 
-            player.currentFrame = 0; 
+            player.currentFrame = 0;
+            
+            // Forçar a saída do estado "hurt" após 300ms se a animação falhar
+            setTimeout(() => {
+                if(player.state === 'hurt') player.state = 'normal';
+            }, 300);
         }
     }
 }
@@ -291,3 +296,4 @@ window.addEventListener('keyup', (e) => {
     if (key === 'a' || e.key === 'ArrowLeft') window.mover('left', false);
     if (key === 'd' || e.key === 'ArrowRight') window.mover('right', false);
 });
+
