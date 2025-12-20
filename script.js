@@ -3,7 +3,7 @@ const ctx = canvas.getContext('2d');
 canvas.width = 800; canvas.height = 450;
 
 // --- CONFIGURAÇÕES GLOBAIS ---
-const bgMusic = new Audio('assets/sound/song.wav');
+const bgMusic = new Audio('assets/sounds/song.wav');
 bgMusic.loop = true;
 bgMusic.volume = 0.5;
 
@@ -289,3 +289,4 @@ window.addEventListener('keyup', (e) => {
     if (key === 'a' || e.key === 'ArrowLeft') window.mover('left', false);
     if (key === 'd' || e.key === 'ArrowRight') window.mover('right', false);
 });
+
