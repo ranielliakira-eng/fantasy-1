@@ -3,13 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Fantasy 2D</title>
+    <title>Fantasy 2D - Corrigido</title>
     <style>
         html, body {
             margin: 0; padding: 0;
             width: 100%; height: 100%;
             overflow: hidden; background: #000;
             font-family: 'Arial', sans-serif;
+            /* Impede toques acidentais de selecionar texto ou dar zoom */
+            touch-action: none; 
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         #game-container {
@@ -24,16 +28,17 @@
             background: #87CEEB;
             image-rendering: pixelated;
             border: 2px solid #333;
+            z-index: 10; /* Canvas na camada base */
         }
 
         /* MENU DE SELEÇÃO */
         .selection-menu {
             position: absolute;
             inset: 0;
-            z-index: 200; /* Fica acima de tudo */
+            z-index: 500; /* Sempre no topo antes de começar */
             display: flex; flex-direction: column;
             justify-content: center; align-items: center;
-            gap: 20px; background: rgba(0,0,0,0.8);
+            gap: 20px; background: rgba(0,0,0,0.9);
         }
 
         .selection-menu h1 { color: gold; text-shadow: 2px 2px #000; }
@@ -47,31 +52,33 @@
             transition: transform 0.2s;
         }
 
-        .selection-menu button:active { transform: scale(0.95); }
-
         /* CONTROLES MOBILE */
         .controls {
             position: absolute;
-            bottom: 20px; width: 100%;
-            display: flex; justify-content: space-between;
-            padding: 0 40px; box-sizing: border-box;
-            z-index: 100; 
-            pointer-events: none; /* Deixa o clique passar para o fundo */
+            bottom: 30px; /* Um pouco mais alto para evitar barras do celular */
+            width: 100%;
+            display: none; /* Começa escondido, JS ativa */
+            justify-content: space-between;
+            padding: 0 40px; 
+            box-sizing: border-box;
+            z-index: 1000; /* Z-INDEX MUITO ALTO para garantir visibilidade */
+            pointer-events: none; 
         }
 
         .btn-group {
             display: flex; gap: 20px;
-            pointer-events: auto; /* Reativa o clique apenas nos botões */
+            pointer-events: auto; 
         }
 
         .btn {
             width: 80px; height: 80px;
             background: rgba(255, 255, 255, 0.2);
-            border: 3px solid rgba(255, 255, 255, 0.5);
+            border: 3px solid rgba(255, 255, 255, 0.6);
             border-radius: 50%;
             color: white; font-size: 14px; font-weight: bold;
             display: flex; align-items: center; justify-content: center;
-            user-select: none; -webkit-tap-highlight-color: transparent;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
         .btn:active { background: rgba(255, 255, 255, 0.5); }
@@ -80,6 +87,7 @@
 <body>
 
 <div id="game-container">
+    <!-- Menu de Seleção -->
     <div id="selection-menu" class="selection-menu">
         <h1>FANTASY 2D</h1>
         <button onclick="window.escolherPersonagem('menina')">GUERREIRA (KNIGHT)</button>
@@ -88,34 +96,27 @@
 
     <canvas id="gameCanvas" width="800" height="450"></canvas>
 
-    <div id="mobile-controls" class="controls" style="display: none;">
+    <!-- Controles com Z-Index corrigido -->
+    <div id="mobile-controls" class="controls">
         <div class="btn-group">
             <button class="btn" 
-                onmousedown="window.mover('left', true)" onmouseup="window.mover('left', false)"
-                ontouchstart="window.mover('left', true)" ontouchend="window.mover('left', false)">
-                ESQ
-            </button>
+                ontouchstart="window.mover('left', true)" 
+                ontouchend="window.mover('left', false)"> ESQ </button>
             <button class="btn" 
-                onmousedown="window.mover('right', true)" onmouseup="window.mover('right', false)"
-                ontouchstart="window.mover('right', true)" ontouchend="window.mover('right', false)">
-                DIR
-            </button>
+                ontouchstart="window.mover('right', true)" 
+                ontouchend="window.mover('right', false)"> DIR </button>
         </div>
 
         <div class="btn-group">
-            <button class="btn" 
-                onmousedown="window.pular()" ontouchstart="window.pular()">
-                PULAR
-            </button>
-            <button class="btn" 
-                onmousedown="window.atacar()" ontouchstart="window.atacar()" 
-                style="border-color: red; background: rgba(255, 0, 0, 0.2);">
-                ATACAR
-            </button>
+            <button class="btn" ontouchstart="window.pular()"> PULAR </button>
+            <button class="btn" ontouchstart="window.atacar()" 
+                style="border-color: #ff4444; background: rgba(255, 0, 0, 0.3);"> ATACAR </button>
         </div>
     </div>
 </div>
 
+<!-- Verifique se o nome do seu arquivo JS é exatamente script.js -->
 <script src="script.js"></script>
+
 </body>
 </html>
