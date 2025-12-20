@@ -26,9 +26,9 @@ const player = {
 let enemies = [];
 function initEnemies() {
     enemies = [
-        { type: 'Blue_Slime', x: 600, y: 320, hp: 1, speed: 1.5, range: 150 },
-        { type: 'Red_Slime', x: 1500, y: 320, hp: 1, speed: 2.5, range: 100 },
-        { type: 'Green_Slime', x: 3000, y: 320, hp: 3, speed: 1.2, range: 200 },
+        { type: 'Green_Slime', x: 600, y: 320, hp: 3, speed: 1.2, range: 150 }, // Normal
+        { type: 'Red_Slime', x: 1500, y: 320, hp: 1, speed: 2.5, range: 450 },  // Persegue
+        { type: 'Blue_Slime', x: 2500, y: 320, hp: 1, speed: 1.8, range: 200, jumpTimer: 0 }, // Pula
         { 
             type: 'Enchantress', x: 6500, y: 250, hp: 10, speed: 2, range: 400, 
             width: 120, height: 120, walkFrames: 8, attackFrames: 10, deadFrames: 5, hurtFrames: 3, jumpFrames: 8
@@ -40,12 +40,15 @@ function initEnemies() {
         en.imgAttack = new Image(); en.imgAttack.src = `assets/${en.type}/Attack_1.png`;
         en.imgDead = new Image(); en.imgDead.src = `assets/${en.type}/Dead.png`;
         en.imgHurt = new Image(); en.imgHurt.src = `assets/${en.type}/Hurt.png`;
-        if(!en.width) { // Padrão para Slimes
+        en.imgJump = new Image(); en.imgJump.src = `assets/${en.type}/Jump.png`;
+
+        if(en.type.includes('Slime')) {
             en.width = 80; en.height = 80;
             en.walkFrames = 8; en.attackFrames = 4; en.deadFrames = 3; en.hurtFrames = 6; en.jumpFrames = 8;
+            en.frameInterval = 10;
         }
-        en.currentFrame = 0; en.frameTimer = 0; en.frameInterval = 10;
-        en.state = 'patrol'; en.facing = 'left'; en.velX = 0; en.velY = 0; en.startX = en.x;
+        en.currentFrame = 0; en.frameTimer = 0; en.state = 'patrol'; en.facing = 'left';
+        en.velX = 0; en.velY = 0; en.onGround = false; en.startX = en.x;
     });
 }
 
@@ -53,13 +56,13 @@ const platforms = [
     { x: 0, y: 400, w: mapWidth, h: 60 },
     { x: 400, y: 300, w: 200, h: 20 },
     { x: 1400, y: 300, w: 300, h: 20 },
-    { x: 2900, y: 300, w: 300, h: 20 },
-    { x: 6400, y: 370, w: 400, h: 30 }
+    { x: 2400, y: 320, w: 400, h: 20 },
+    { x: 6400, y: 370, w: 500, h: 30 }
 ];
 
 let keys = { left: false, right: false };
 
-// --- FUNÇÕES GLOBAIS (WINDOW) ---
+// --- CONTROLES E SELEÇÃO ---
 window.escolherPersonagem = function(genero) {
     let folder = (genero === 'menina') ? 'Knight' : 'Swordsman';
     if (genero === 'menina') {
@@ -102,7 +105,7 @@ window.atacar = function() {
     checkPlayerHit();
 };
 
-// --- LÓGICA INTERNA ---
+// --- LÓGICA DE JOGO ---
 function checkPlayerHit() {
     enemies.forEach(en => {
         if(en.state === 'dead') return;
@@ -122,9 +125,9 @@ function checkPlayerHit() {
 }
 
 function takeDamage() {
-    if(!player.invincible && player.state !== 'dead') {
+    if(!player.invincible && player.state !== 'dead' && gameState === 'playing') {
         player.hp--;
-        if(player.hp <= 0) { player.state = 'dead'; player.currentFrame = 0; gameState = 'dead'; }
+        if(player.hp <= 0) { player.state = 'dead'; gameState = 'dead'; }
         else { player.invincible = true; player.invincibilityTimer = 60; player.state = 'hurt'; player.currentFrame = 0; }
     }
 }
@@ -141,6 +144,8 @@ function update() {
     if(gameState !== 'playing') return;
 
     if(player.invincible) { player.invincibilityTimer--; if(player.invincibilityTimer <= 0) player.invincible = false; }
+    
+    // Movimento Player
     if(player.state === 'normal') {
         if(keys.left) player.velX = -player.speed; else if(keys.right) player.velX = player.speed; else player.velX *= 0.4;
     } else player.velX *= 0.7;
@@ -157,6 +162,7 @@ function update() {
         }
     });
 
+    // Movimento Inimigos
     enemies.forEach(en => {
         if(en.state === 'dead') {
             en.frameTimer++; if(en.frameTimer > en.frameInterval) { en.currentFrame++; en.frameTimer = 0; }
@@ -165,23 +171,41 @@ function update() {
         en.velY += gravity; en.y += en.velY; en.x += en.velX; en.velX *= 0.9;
         platforms.forEach(p => {
             if (en.x + 30 < p.x + p.w && en.x + 50 > p.x) {
-                if (en.velY >= 0 && en.y + en.height <= p.y + en.velY + 5 && en.y + en.height >= p.y - 10) { en.velY = 0; en.y = p.y - en.height; }
+                if (en.velY >= 0 && en.y + en.height <= p.y + en.velY + 5 && en.y + en.height >= p.y - 10) { 
+                    en.velY = 0; en.y = p.y - en.height; en.onGround = true;
+                }
             }
         });
-        // Patrulha básica
-        if(en.state === 'patrol') {
+
+        let distToPlayer = Math.abs((player.x + player.width/2) - (en.x + en.width/2));
+        
+        if (en.type === 'Green_Slime') {
             if(en.facing === 'left') en.x -= en.speed; else en.x += en.speed;
             if(en.x < en.startX - en.range) en.facing = 'right'; if(en.x > en.startX + en.range) en.facing = 'left';
-            let d = Math.abs((player.x + player.width/2) - (en.x + en.width/2));
-            if(d < 50 && Math.abs(player.y - en.y) < 30) takeDamage();
+        } 
+        else if (en.type === 'Red_Slime') {
+            if (distToPlayer < en.range) {
+                if (player.x < en.x) { en.x -= en.speed; en.facing = 'left'; } else { en.x += en.speed; en.facing = 'right'; }
+            }
+        } 
+        else if (en.type === 'Blue_Slime' && en.onGround) {
+            en.jumpTimer++;
+            if (en.jumpTimer > 70) { 
+                en.velY = -12; en.velX = (en.facing === 'left') ? -5 : 5; en.jumpTimer = 0; en.onGround = false;
+            }
+            if(en.x < en.startX - en.range) en.facing = 'right'; if(en.x > en.startX + en.range) en.facing = 'left';
         }
+
+        if(distToPlayer < 50 && Math.abs(player.y - en.y) < 30) takeDamage();
         en.frameTimer++; if(en.frameTimer > en.frameInterval) { en.currentFrame = (en.currentFrame + 1) % en.walkFrames; en.frameTimer = 0; }
     });
 
+    // Câmera
     cameraX += (((player.x + player.width/2) - (canvas.width/2)/zoom) - cameraX) * 0.1;
     cameraY += (((player.y + player.height/2) - (canvas.height/2)/zoom) - cameraY) * 0.1;
     if(cameraX < 0) cameraX = 0; if(cameraX > mapWidth - canvas.width/zoom) cameraX = mapWidth - canvas.width/zoom;
 
+    // Animação Player
     player.frameTimer++;
     if(player.frameTimer >= player.frameInterval) {
         player.frameTimer = 0;
@@ -203,24 +227,32 @@ function draw() {
     ctx.scale(zoom, zoom);
     ctx.translate(-Math.floor(cameraX), -Math.floor(cameraY));
     ctx.fillStyle = "#87CEEB"; ctx.fillRect(cameraX, cameraY, canvas.width/zoom, canvas.height/zoom);
-    platforms.forEach(p => { ctx.fillStyle = "#4e342e"; ctx.fillRect(p.x, p.y, p.w, p.h); });
+    platforms.forEach(p => { 
+        ctx.fillStyle = "#4e342e"; ctx.fillRect(p.x, p.y, p.w, p.h); 
+        ctx.fillStyle = "#2e7d32"; ctx.fillRect(p.x, p.y, p.w, 5); 
+    });
 
     enemies.concat(player).forEach(obj => {
         let isP = obj === player;
-        let img = isP ? (obj.state === 'attacking' ? obj.attacks[obj.currentAttackIndex].img : (obj.onGround ? obj.imgWalk : obj.imgJump)) : (obj.state === 'dead' ? obj.imgDead : obj.state === 'hurt' ? obj.imgHurt : obj.imgWalk);
-        let frames = isP ? (obj.state === 'attacking' ? obj.attackFrames : (obj.onGround ? obj.walkFrames : obj.jumpFrames)) : (obj.state === 'dead' ? obj.deadFrames : obj.state === 'hurt' ? obj.hurtFrames : obj.walkFrames);
+        let img = isP ? (obj.state === 'attacking' ? obj.attacks[obj.currentAttackIndex].img : (obj.onGround ? obj.imgWalk : obj.imgJump)) : (obj.state === 'dead' ? obj.imgDead : (obj.onGround ? obj.imgWalk : obj.imgJump));
+        let frames = isP ? (obj.state === 'attacking' ? obj.attackFrames : (obj.onGround ? obj.walkFrames : obj.jumpFrames)) : (obj.state === 'dead' ? obj.deadFrames : (obj.onGround ? obj.walkFrames : obj.jumpFrames));
+        
         if(img.complete && img.width > 0) {
             let fw = img.width / frames;
             ctx.save();
             if(isP && obj.invincible && Math.floor(Date.now()/100)%2===0) ctx.globalAlpha = 0.5;
-            if(obj.facing === 'left') { ctx.translate(obj.x + obj.width, obj.y); ctx.scale(-1, 1); ctx.drawImage(img, Math.floor(obj.currentFrame % frames) * fw, 0, fw, img.height, 0, 0, obj.width, obj.height); }
-            else { ctx.drawImage(img, Math.floor(obj.currentFrame % frames) * fw, 0, fw, img.height, obj.x, obj.y, obj.width, obj.height); }
+            if(obj.facing === 'left') {
+                ctx.translate(obj.x + obj.width, obj.y); ctx.scale(-1, 1);
+                ctx.drawImage(img, Math.floor(obj.currentFrame % frames) * fw, 0, fw, img.height, 0, 0, obj.width, obj.height);
+            } else {
+                ctx.drawImage(img, Math.floor(obj.currentFrame % frames) * fw, 0, fw, img.height, obj.x, obj.y, obj.width, obj.height);
+            }
             ctx.restore();
         }
     });
     ctx.restore();
 
-    // UI e Telas
+    // UI
     const centerX = (canvas.width / 2) - 52;
     ctx.fillStyle = "black"; ctx.fillRect(centerX, 20, 104, 14);
     ctx.fillStyle = "red"; ctx.fillRect(centerX + 2, 22, Math.max(0, (player.hp/player.maxHp)*100), 10);
@@ -229,8 +261,7 @@ function draw() {
         ctx.fillStyle = "rgba(0,0,0,0.85)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = gameState === 'victory' ? "gold" : "white";
         ctx.textAlign = "center"; ctx.font = "bold 30px Arial";
-        let txt = gameState === 'victory' ? "PARABÉNS! ENCHANTRESS DERROTADA!" : "VOCÊ MORREU!";
-        ctx.fillText(txt, canvas.width/2, canvas.height/2);
+        ctx.fillText(gameState === 'victory' ? "PARABÉNS! VITÓRIA!" : "GAME OVER", canvas.width/2, canvas.height/2);
         ctx.font = "18px Arial"; ctx.fillText("Toque em ATACAR para reiniciar", canvas.width/2, canvas.height/2 + 50);
     }
 }
