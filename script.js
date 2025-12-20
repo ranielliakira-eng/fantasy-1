@@ -122,11 +122,13 @@ function checkPlayerHit() {
     });
 }
 
-function takeDamage() {
+function takeDamage(amount = 1) {
     if(!player.invincible && player.state !== 'dead' && gameState === 'playing') {
-        player.hp--;
-        if(player.hp <= 0) { player.state = 'dead'; gameState = 'dead'; bgMusic.pause(); }
-        else { 
+        player.hp -= amount; // Subtrai a quantidade especificada
+        if(player.hp <= 0) { 
+            player.hp = 0;
+            player.state = 'dead'; gameState = 'dead'; bgMusic.pause(); 
+        } else { 
             player.invincible = true; player.invincibilityTimer = 60; 
             player.state = 'hurt'; player.currentFrame = 0;
             player.velY = -7; player.velX = (player.facing === 'right') ? -8 : 8;
@@ -159,16 +161,87 @@ function update() {
 
     enemies.forEach(en => {
         if(en.state === 'dead') {
-            en.frameTimer++; if(en.frameTimer > en.frameInterval) { en.currentFrame++; en.frameTimer = 0; }
+            en.frameTimer++; 
+            if(en.frameTimer > en.frameInterval) { en.currentFrame++; en.frameTimer = 0; }
             return;
         }
+
+        // Física básica do inimigo
         en.velY += gravity; en.y += en.velY; en.x += en.velX; en.velX *= 0.9;
         
         platforms.forEach(p => {
             if (en.x + 30 < p.x + p.w && en.x + 50 > p.x) {
-                if (en.velY >= 0 && en.y + en.height <= p.y + en.velY + 5 && en.y + en.height >= p.y - 10) { en.velY = 0; en.y = p.y - en.height; en.onGround = true;}
+                if (en.velY >= 0 && en.y + en.height <= p.y + en.velY + 5 && en.y + en.height >= p.y - 10) { 
+                    en.velY = 0; en.y = p.y - en.height; en.onGround = true;
+                }
             }
         });
+
+        let d = Math.abs((player.x + player.width/2) - (en.x + en.width/2));
+
+        // 1. IA de Movimento (Só se não estiver atacando ou levando dano)
+        if (en.state !== 'attacking' && en.state !== 'hurt') {
+            if (en.type === 'Green_Slime') {
+                if(en.facing === 'left') en.x -= en.speed; else en.x += en.speed;
+                if(en.x < en.startX - en.range) en.facing = 'right'; 
+                if(en.x > en.startX + en.range) en.facing = 'left';
+            } else if (en.type === 'Red_Slime') {
+                if (d < en.range) { 
+                    if (player.x < en.x) { en.x -= en.speed; en.facing = 'left'; } 
+                    else { en.x += en.speed; en.facing = 'right'; } 
+                }
+            } else if (en.type === 'Blue_Slime' && en.onGround) {
+                en.jumpTimer++; 
+                if (en.jumpTimer > 70) { 
+                    en.velY = -12; en.velX = (en.facing === 'left') ? -5 : 5; 
+                    en.jumpTimer = 0; en.onGround = false; 
+                }
+            } else if (en.type === 'Enchantress') {
+                // Boss se move na sua direção
+                if (d < en.range) {
+                    if (player.x < en.x) { en.x -= en.speed; en.facing = 'left'; }
+                    else { en.x += en.speed; en.facing = 'right'; }
+                }
+            }
+
+            // GATILHO DE ATAQUE: Se encostar no player, começa a animação
+            if(d < 60 && Math.abs(player.y - en.y) < 40) {
+                en.state = 'attacking';
+                en.currentFrame = 0;
+                en.frameTimer = 0;
+            }
+        }
+
+        // 2. LÓGICA DE ANIMAÇÃO E DANO (Aqui é onde a mágica acontece)
+        en.frameTimer++;
+        if(en.frameTimer > en.frameInterval) {
+            if (en.state === 'attacking') {
+                en.currentFrame++;
+                // Quando a animação de ataque termina:
+                if (en.currentFrame >= en.attackFrames) {
+                    // Verifica se você ainda está perto para levar o golpe
+                    let distFinal = Math.abs((player.x + player.width/2) - (en.x + en.width/2));
+                    if(distFinal < 70) {
+                        // DANO PERSONALIZADO AQUI
+                        if (en.type === 'Enchantress') {
+                            takeDamage(2); // Boss tira 2
+                        } else {
+                            takeDamage(1); // Slimes tiram 1
+                        }
+                    }
+                    en.state = 'patrol'; // Volta a patrulhar
+                    en.currentFrame = 0;
+                }
+            } else if (en.state === 'hurt') {
+                en.currentFrame++;
+                if (en.currentFrame >= en.hurtFrames) { en.state = 'patrol'; en.currentFrame = 0; }
+            } else {
+                // Animação normal de andar
+                en.currentFrame = (en.currentFrame + 1) % en.walkFrames;
+            }
+            en.frameTimer = 0;
+        }
+    });
 
         let d = Math.abs((player.x + player.width/2) - (en.x + en.width/2));
 
@@ -299,3 +372,4 @@ window.addEventListener('keyup', (e) => {
     if (key === 'a' || e.key === 'ArrowLeft') window.mover('left', false);
     if (key === 'd' || e.key === 'ArrowRight') window.mover('right', false);
 });
+
