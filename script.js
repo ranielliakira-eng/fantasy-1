@@ -216,22 +216,29 @@ function update() {
     if (cameraX > mapWidth - canvas.width / zoom) cameraX = mapWidth - canvas.width / zoom;
 
     // Animação do Player
+// Animação do Player
     player.frameTimer++;
     if (player.frameTimer > player.frameInterval) {
         if (player.state === 'attacking') {
             player.currentFrame++; 
-            if (player.currentFrame >= player.attackFrames) { player.state = 'normal'; player.currentFrame = 0; }
+            if (player.currentFrame >= player.attackFrames) { 
+                player.state = 'normal'; 
+                player.currentFrame = 0; 
+            }
         } else if (player.state === 'hurt') {
             player.currentFrame++;
-            if (player.currentFrame >= player.hurtFrames) { player.state = 'normal'; player.currentFrame = 0; }
+            // Se acabar os frames de dor, volta a andar
+            if (player.currentFrame >= player.hurtFrames) { 
+                player.state = 'normal'; 
+                player.currentFrame = 0; 
+            }
         } else {
+            // Se não estiver atacando nem levando dano, anima andar ou pular
             let maxF = player.onGround ? (Math.abs(player.velX) > 0.1 ? player.walkFrames : 1) : player.jumpFrames;
             player.currentFrame = (player.currentFrame + 1) % maxF;
         }
         player.frameTimer = 0;
     }
-}
-
 // --- DRAW ---
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -296,4 +303,5 @@ window.addEventListener('keyup', (e) => {
     if (key === 'a' || e.key === 'ArrowLeft') window.mover('left', false);
     if (key === 'd' || e.key === 'ArrowRight') window.mover('right', false);
 });
+
 
