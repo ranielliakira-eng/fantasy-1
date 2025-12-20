@@ -135,7 +135,9 @@ function takeDamage() {
         else { 
             player.invincible = true; player.invincibilityTimer = 60; 
             player.state = 'hurt'; player.currentFrame = 0;
-            player.velY = -8; player.velX = (player.facing === 'right') ? -10 : 10;
+            // Efeito de Knockback (pulo para trás ao levar dano)
+            player.velY = -8; 
+            player.velX = (player.facing === 'right') ? -10 : 10;
         }
     }
 }
@@ -145,6 +147,7 @@ function update() {
 
     if(player.invincible) { player.invincibilityTimer--; if(player.invincibilityTimer <= 0) player.invincible = false; }
 
+    // Movimentação do Jogador
     if (player.state === 'normal' || player.state === 'hurt') {
         if (keys.left) player.velX = -player.speed;
         else if (keys.right) player.velX = player.speed;
@@ -154,6 +157,7 @@ function update() {
     player.velY += gravity; player.x += player.velX; player.y += player.velY;
     if(player.x < 0) player.x = 0;
 
+    // Colisão com plataformas
     player.onGround = false;
     platforms.forEach(p => {
         if (player.x + 40 < p.x + p.w && player.x + 60 > p.x) {
@@ -163,6 +167,7 @@ function update() {
         }
     });
 
+    // Lógica dos Inimigos
     enemies.forEach(en => {
         if(en.state === 'dead') {
             en.frameTimer++; if(en.frameTimer > en.frameInterval) { en.currentFrame++; en.frameTimer = 0; }
@@ -185,10 +190,12 @@ function update() {
             en.jumpTimer++; if (en.jumpTimer > 70) { en.velY = -12; en.velX = (en.facing === 'left') ? -5 : 5; en.jumpTimer = 0; en.onGround = false; }
             if(en.x < en.startX - en.range) en.facing = 'right'; if(en.x > en.startX + en.range) en.facing = 'left';
         }
+
         if(d < 50 && Math.abs(player.y - en.y) < 30) takeDamage();
         en.frameTimer++; if(en.frameTimer > en.frameInterval) { en.currentFrame = (en.currentFrame + 1) % en.walkFrames; en.frameTimer = 0; }
     });
 
+    // Câmera dinâmica
     let targetX = (player.x + player.width / 2) - (canvas.width / 2) / zoom;
     let targetY = (player.y + player.height / 2) - (canvas.height / 2) / zoom;
     cameraX += (targetX - cameraX) * 0.1;
@@ -196,6 +203,7 @@ function update() {
     if (cameraX < 0) cameraX = 0;
     if (cameraX > mapWidth - canvas.width / zoom) cameraX = mapWidth - canvas.width / zoom;
 
+    // Animação do Player
     player.frameTimer++;
     if (player.frameTimer > player.frameInterval) {
         if (player.state === 'attacking') {
@@ -210,7 +218,7 @@ function update() {
         }
         player.frameTimer = 0;
     }
-}
+} // <--- Aqui fecha a função update() corretamente
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -258,6 +266,7 @@ function draw() {
 function gameLoop() { update(); draw(); requestAnimationFrame(gameLoop); }
 gameLoop();
 
+// --- CONTROLES DE TECLADO ---
 window.addEventListener('keydown', (e) => {
     const key = e.key.toLowerCase();
     if (key === 'a' || e.key === 'ArrowLeft') window.mover('left', true);
