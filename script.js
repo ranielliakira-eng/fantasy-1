@@ -286,12 +286,15 @@ function draw() {
     enemies.concat(player).forEach(obj => {
         let isP = obj === player;
         let img, frames;
-        if (isP) {
-            img = (obj.state === 'attacking' ? obj.attacks[obj.currentAttackIndex].img : (obj.state === 'hurt' ? obj.imgHurt : (obj.onGround ? obj.imgWalk : obj.imgJump)));
-            frames = (obj.state === 'attacking' ? 6 : (obj.state === 'hurt' ? obj.hurtFrames : (obj.onGround ? obj.walkFrames : obj.jumpFrames)));
-        } else {
-            img = (obj.state === 'attacking' ? obj.imgAttack : (obj.state === 'dead' ? obj.imgDead : (obj.state === 'hurt' ? obj.imgHurt : obj.imgWalk)));
-            frames = (obj.state === 'attacking' ? obj.attackFrames : (obj.state === 'dead' ? obj.deadFrames : (obj.state === 'hurt' ? obj.hurtFrames : obj.walkFrames)));
+if (isP) {
+            if (obj.state === 'attacking') {
+                // Aqui está o segredo: pegamos a imagem E os frames do ataque sorteado
+                img = obj.attacks[obj.currentAttackIndex].img;
+                frames = obj.attacks[obj.currentAttackIndex].frames; 
+            } else {
+                img = (obj.state === 'hurt' ? obj.imgHurt : (obj.onGround ? obj.imgWalk : obj.imgJump));
+                frames = (obj.state === 'hurt' ? obj.hurtFrames : (obj.onGround ? obj.walkFrames : obj.jumpFrames));
+            }
         }
         if (img && img.complete && img.width > 0) {
             const fw = img.width / frames;
@@ -335,6 +338,7 @@ window.addEventListener('keyup', (e) => {
     if (key === 'a' || e.key === 'ArrowLeft') window.mover('left', false);
     if (key === 'd' || e.key === 'ArrowRight') window.mover('right', false);
 });
+
 
 
 
