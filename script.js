@@ -2,6 +2,7 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 canvas.width = 800; canvas.height = 450;
 
+// --- CONFIGURAÇÕES GLOBAIS ---
 const bgMusic = new Audio('assets/sound/song.wav');
 bgMusic.loop = true;
 bgMusic.volume = 0.5;
@@ -12,6 +13,7 @@ const mapWidth = 7000;
 let cameraX = 0, cameraY = 0;
 let gameState = 'menu';
 
+// --- JOGADOR (Voltou para 100x100) ---
 const player = {
     x: 100, y: 100, width: 100, height: 100,
     velX: 0, velY: 0, speed: 5, jumpForce: -15,
@@ -24,15 +26,17 @@ const player = {
     frameTimer: 0, frameInterval: 6
 };
 
+// --- INIMIGOS ---
 let enemies = [];
 function initEnemies() {
     enemies = [
-        { type: 'Green_Slime', x: 600, y: 320, walkFrames: 8, attackFrames: 4, deadFrames: 3, hurtFrames: 6, jumpFrames: 13,  hp: 1, speed: 1.2, range: 150, damage: 1 },
-        { type: 'Red_Slime', x: 1500, y: 320, walkFrames: 8, attackFrames: 4, deadFrames: 3, hurtFrames: 6, jumpFrames: 13,  hp: 1, speed: 2.5, range: 450, damage: 1 },
-        { type: 'Blue_Slime', x: 2500, y: 320, walkFrames: 8, attackFrames: 4, deadFrames: 3, hurtFrames: 6, jumpFrames: 13,  hp: 1, speed: 1.8, range: 200, jumpTimer: 1, damage: 1 },
+        { type: 'Green_Slime', x: 600, y: 320, hp: 3, speed: 1.2, range: 150, damage: 1 },
+        { type: 'Red_Slime', x: 1500, y: 320, hp: 1, speed: 2.5, range: 450, damage: 1 },
+        { type: 'Blue_Slime', x: 2500, y: 320, hp: 1, speed: 1.8, range: 200, damage: 1, jumpTimer: 0 },
         { 
-            type: 'Enchantress', x: 6500, y: 250, hp: 10, speed: 2, range: 400, 
-            width: 100, height: 100, walkFrames: 8, attackFrames: 6, deadFrames: 5, hurtFrames: 2, jumpFrames: 8, damage: 1
+            type: 'Enchantress', x: 6500, y: 250, hp: 10, speed: 2, range: 400, damage: 2, 
+            width: 100, height: 100, // Enchantress agora 100x100
+            walkFrames: 8, attackFrames: 10, deadFrames: 5, hurtFrames: 3, jumpFrames: 8
         }
     ];
 
@@ -72,7 +76,6 @@ window.escolherPersonagem = function(genero) {
     player.attacks[0].img.src = `assets/${folder}/Attack_1.png`;
     player.attacks[1].img.src = `assets/${folder}/Attack_2.png`;
     player.attacks[2].img.src = `assets/${folder}/Attack_3.png`;
-
     gameState = 'playing';
     initEnemies();
     bgMusic.play().catch(() => {});
@@ -100,12 +103,13 @@ window.atacar = function() {
 
 function checkPlayerHit() {
     enemies.forEach(en => {
-        if(en.state === 'dead') return;
+        if(en.state === 'dead' || en.state === 'hurt') return;
         let pCenterX = player.x + player.width/2;
         let eCenterX = en.x + en.width/2;
         let dist = Math.abs(pCenterX - eCenterX);
-        if(dist < 110 && Math.abs(player.y - en.y) < 80) {
-            if((player.facing === 'right' && en.x > player.x) || (player.facing === 'left' && en.x < player.x)) {
+        // Distância ajustada para personagens de 100px
+        if(dist < 110 && Math.abs(player.y - en.y) < 70) { 
+            if((player.facing === 'right' && eCenterX > pCenterX) || (player.facing === 'left' && eCenterX < pCenterX)) {
                 en.hp--;
                 if(en.hp <= 0) { en.state = 'dead'; en.currentFrame = 0; if(en.type === 'Enchantress') gameState = 'victory'; }
                 else { en.state = 'hurt'; en.currentFrame = 0; en.velX = (player.x < en.x) ? 8 : -8; }
@@ -142,6 +146,7 @@ function update() {
 
     player.onGround = false;
     platforms.forEach(p => {
+        // Colisão ajustada para pés de personagem 100px
         if (player.x + 40 < p.x + p.w && player.x + 60 > p.x) {
             if (player.velY >= 0 && player.y + player.height <= p.y + player.velY + 5 && player.y + player.height >= p.y - 10) {
                 player.velY = 0; player.y = p.y - player.height; player.onGround = true;
@@ -149,64 +154,63 @@ function update() {
         }
     });
 
+    // --- CÂMERA DINÂMICA (X e Y) ---
+    let centroX = (canvas.width / 2) / zoom;
+    let centroY = (canvas.height / 2) / zoom;
+    let targetX = (player.x + player.width / 2) - centroX;
+    let targetY = (player.y + player.height / 2) - centroY;
+    
+    cameraX += (targetX - cameraX) * 0.1;
+    cameraY += (targetY - cameraY) * 0.1;
+    if (cameraX < 0) cameraX = 0;
+    if (cameraX > mapWidth - canvas.width / zoom) cameraX = mapWidth - canvas.width / zoom;
+
     // --- LÓGICA DE INIMIGOS ---
     for (let i = enemies.length - 1; i >= 0; i--) {
         let en = enemies[i];
-        
         if (en.state === 'dead') {
             en.frameTimer++;
             if (en.frameTimer > en.frameInterval) {
-                en.currentFrame++;
-                en.frameTimer = 0;
-                if (en.currentFrame >= en.deadFrames) {
-                    enemies.splice(i, 1); // REMOVE O SLIME DA LISTA
-                    continue;
-                }
+                en.currentFrame++; en.frameTimer = 0;
+                if (en.currentFrame >= en.deadFrames) enemies.splice(i, 1);
             }
-        } else {
-            en.velY += gravity; en.y += en.velY; en.x += en.velX; en.velX *= 0.9;
-            platforms.forEach(p => {
-                if (en.x + 30 < p.x + p.w && en.x + 50 > p.x) {
-                    if (en.velY >= 0 && en.y + en.height <= p.y + en.velY + 5 && en.y + en.height >= p.y - 10) { 
-                        en.velY = 0; en.y = p.y - en.height; en.onGround = true;
-                    }
-                }
-            });
-
-            let d = Math.abs((player.x + player.width/2) - (en.x + en.width/2));
-            if (en.state !== 'attacking' && en.state !== 'hurt') {
-                if (en.type === 'Green_Slime') {
-                    if(en.facing === 'left') en.x -= en.speed; else en.x += en.speed;
-                    if(en.x < en.startX - en.range) en.facing = 'right'; if(en.x > en.startX + en.range) en.facing = 'left';
-                } else if (en.type === 'Red_Slime' || en.type === 'Enchantress') {
-                    if (d < en.range) { if (player.x < en.x) { en.x -= en.speed; en.facing = 'left'; } else { en.x += en.speed; en.facing = 'right'; } }
-                }
-                if(d < 65 && Math.abs(player.y - en.y) < 50) { en.state = 'attacking'; en.currentFrame = 0; }
-            }
-
-            en.frameTimer++;
-            if(en.frameTimer > en.frameInterval) {
-               if (en.state === 'attacking') {
-    en.currentFrame++;
-    if (en.currentFrame >= en.attackFrames) {
-        // Calcula a distância atual para ver se o golpe pegou
-        let d = Math.abs((player.x + player.width/2) - (en.x + en.width/2));
-        
-        // Se estiver perto (ajustado para o player de 120px)
-        if(d < 95) { 
-            // Ele vai ler o "damage" que você colocou lá no topo
-            takeDamage(en.damage); 
+            continue;
         }
         
-        en.state = 'patrol'; 
-        en.currentFrame = 0;
-    }
-}
-    }
+        en.velY += gravity; en.y += en.velY; en.x += en.velX; en.velX *= 0.9;
+        platforms.forEach(p => {
+            if (en.x + 30 < p.x + p.w && en.x + 50 > p.x) {
+                if (en.velY >= 0 && en.y + en.height <= p.y + en.velY + 5 && en.y + en.height >= p.y - 10) { 
+                    en.velY = 0; en.y = p.y - en.height; en.onGround = true;
+                }
+            }
+        });
 
-    cameraX += ((player.x + player.width/2) - (canvas.width/2)/zoom - cameraX) * 0.1;
-    if (cameraX < 0) cameraX = 0;
-    if (cameraX > mapWidth - canvas.width/zoom) cameraX = mapWidth - canvas.width/zoom;
+        let dist = Math.abs((player.x + player.width/2) - (en.x + en.width/2));
+        if (en.state !== 'attacking' && en.state !== 'hurt') {
+            if (en.type === 'Green_Slime') {
+                if(en.facing === 'left') en.x -= en.speed; else en.x += en.speed;
+                if(en.x < en.startX - en.range) en.facing = 'right'; if(en.x > en.startX + en.range) en.facing = 'left';
+            } else if (en.type === 'Red_Slime' || en.type === 'Enchantress') {
+                if (dist < en.range) { if (player.x < en.x) { en.x -= en.speed; en.facing = 'left'; } else { en.x += en.speed; en.facing = 'right'; } }
+            }
+            if(dist < 75 && Math.abs(player.y - en.y) < 50) { en.state = 'attacking'; en.currentFrame = 0; }
+        }
+
+        en.frameTimer++;
+        if(en.frameTimer > en.frameInterval) {
+            if (en.state === 'attacking') {
+                en.currentFrame++;
+                if (en.currentFrame >= en.attackFrames) {
+                    if(dist < 80) takeDamage(en.damage);
+                    en.state = 'patrol'; en.currentFrame = 0;
+                }
+            } else if (en.state === 'hurt') {
+                en.currentFrame++; if (en.currentFrame >= en.hurtFrames) { en.state = 'patrol'; en.currentFrame = 0; }
+            } else { en.currentFrame = (en.currentFrame + 1) % en.walkFrames; }
+            en.frameTimer = 0;
+        }
+    }
 
     player.frameTimer++;
     if (player.frameTimer > player.frameInterval) {
@@ -227,7 +231,6 @@ function update() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (gameState === 'menu') return;
-
     ctx.save();
     ctx.scale(zoom, zoom);
     ctx.translate(-Math.floor(cameraX), -Math.floor(cameraY));
@@ -286,6 +289,3 @@ window.addEventListener('keyup', (e) => {
     if (key === 'a' || e.key === 'ArrowLeft') window.mover('left', false);
     if (key === 'd' || e.key === 'ArrowRight') window.mover('right', false);
 });
-
-
-
