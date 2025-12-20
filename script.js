@@ -2,12 +2,17 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 canvas.width = 800; canvas.height = 450;
 
+// --- ÁUDIO ---
+const bgMusic = new Audio('assets/sound/song.wav');
+bgMusic.loop = true;
+bgMusic.volume = 0.5;
+
 // --- CONFIGURAÇÕES GLOBAIS ---
 const gravity = 0.8;
 const zoom = 1.6; 
 const mapWidth = 7000; 
 let cameraX = 0, cameraY = 0;
-let gameState = 'menu'; // menu, playing, dead, victory
+let gameState = 'menu';
 
 // --- JOGADOR ---
 const player = {
@@ -63,15 +68,15 @@ const platforms = [
 
 let keys = { left: false, right: false };
 
-// --- FUNÇÕES DE CONTROLE (WINDOW) ---
+// --- FUNÇÕES DE CONTROLE ---
 window.escolherPersonagem = function(genero) {
     const folder = (genero === 'menina') ? 'Knight' : 'Swordsman';
     if (genero === 'menina') {
-        player.walkFrames = 8; player.jumpFrames = 6; player.deadFrames = 4; player.hurtFrames = 3;
-        player.attacks[0].frames = 5; player.attacks[1].frames = 2; player.attacks[2].frames = 5;
+        player.walkFrames = 8; player.jumpFrames = 8; player.deadFrames = 4; player.hurtFrames = 2;
+        player.attacks[0].frames = 4; player.attacks[1].frames = 5; player.attacks[2].frames = 4;
     } else {
         player.walkFrames = 8; player.jumpFrames = 8; player.deadFrames = 3; player.hurtFrames = 3;
-        player.attacks[0].frames = 6; player.attacks[1].frames = 3; player.attacks[2].frames = 4;
+        player.attacks[0].frames = 6; player.attacks[1].frames = 6; player.attacks[2].frames = 6;
     }
     player.imgWalk.src = `assets/${folder}/Walk.png`;
     player.imgJump.src = `assets/${folder}/Jump.png`;
@@ -83,22 +88,31 @@ window.escolherPersonagem = function(genero) {
 
     gameState = 'playing';
     initEnemies();
+    bgMusic.play().catch(e => console.log("Áudio aguardando interação."));
     const menu = document.querySelector('.selection-menu');
     if (menu) menu.style.display = 'none';
 };
 
 window.mover = function(dir, estado) {
-    if (gameState !== 'playing' || player.state !== 'normal') return;
-    if (dir === 'left') { keys.left = estado; if (estado) keys.right = false; player.facing = 'left'; }
-    if (dir === 'right') { keys.right = estado; if (estado) keys.left = false; player.facing = 'right'; }
+    if (gameState !== 'playing' || player.hp <= 0) return;
+    if (dir === 'left') { 
+        keys.left = estado; 
+        if (estado) { keys.right = false; player.facing = 'left'; }
+    }
+    if (dir === 'right') { 
+        keys.right = estado; 
+        if (estado) { keys.left = false; player.facing = 'right'; }
+    }
 };
 
 window.pular = function() {
-    if (gameState === 'playing' && player.onGround && player.state === 'normal') player.velY = player.jumpForce;
+    if (gameState === 'playing' && player.onGround && player.state === 'normal') {
+        player.velY = player.jumpForce;
+    }
 };
 
 window.atacar = function() {
-    if (gameState === 'dead' || gameState === 'victory') { restartGame(); return; }
+    if (gameState === 'dead' || gameState === 'victory') { location.reload(); return; }
     if (gameState !== 'playing' || player.state !== 'normal') return;
     player.currentAttackIndex = Math.floor(Math.random() * 3);
     player.attackFrames = player.attacks[player.currentAttackIndex].frames;
@@ -125,17 +139,16 @@ function checkPlayerHit() {
 function takeDamage() {
     if(!player.invincible && player.state !== 'dead' && gameState === 'playing') {
         player.hp--;
-        if(player.hp <= 0) { player.state = 'dead'; gameState = 'dead'; }
-        else { player.invincible = true; player.invincibilityTimer = 60; player.state = 'hurt'; player.currentFrame = 0; }
+        if(player.hp <= 0) { 
+            player.state = 'dead'; gameState = 'dead'; 
+            bgMusic.pause();
+        } else { 
+            player.invincible = true; 
+            player.invincibilityTimer = 60; 
+            player.state = 'hurt'; 
+            player.currentFrame = 0; 
+        }
     }
-}
-
-function restartGame() {
-    player.x = 100; player.y = 100; player.hp = 3; player.state = 'normal';
-    player.velX = 0; player.velY = 0; keys.left = false; keys.right = false;
-    cameraX = 0; cameraY = 0;
-    initEnemies();
-    gameState = 'playing';
 }
 
 // --- UPDATE ---
@@ -144,7 +157,7 @@ function update() {
 
     if(player.invincible) { player.invincibilityTimer--; if(player.invincibilityTimer <= 0) player.invincible = false; }
 
-    if (player.state === 'normal') {
+    if (player.state === 'normal' || player.state === 'hurt') {
         if (keys.left) player.velX = -player.speed;
         else if (keys.right) player.velX = player.speed;
         else player.velX *= 0.4;
@@ -189,21 +202,27 @@ function update() {
         en.frameTimer++; if(en.frameTimer > en.frameInterval) { en.currentFrame = (en.currentFrame + 1) % en.walkFrames; en.frameTimer = 0; }
     });
 
-    // --- CÂMERA X e Y ---
+    // Câmera dinâmica
     let targetX = (player.x + player.width / 2) - (canvas.width / 2) / zoom;
     let targetY = (player.y + player.height / 2) - (canvas.height / 2) / zoom;
     cameraX += (targetX - cameraX) * 0.1;
     cameraY += (targetY - cameraY) * 0.1;
-
     if (cameraX < 0) cameraX = 0;
     if (cameraX > mapWidth - canvas.width / zoom) cameraX = mapWidth - canvas.width / zoom;
 
+    // Animação do Player
     player.frameTimer++;
     if (player.frameTimer > player.frameInterval) {
-        let maxF = (player.state === 'attacking') ? player.attackFrames : (player.onGround ? (Math.abs(player.velX) > 0.1 ? player.walkFrames : 1) : player.jumpFrames);
         if (player.state === 'attacking') {
-            player.currentFrame++; if (player.currentFrame >= player.attackFrames) { player.state = 'normal'; player.currentFrame = 0; }
-        } else { player.currentFrame = (player.currentFrame + 1) % maxF; }
+            player.currentFrame++; 
+            if (player.currentFrame >= player.attackFrames) { player.state = 'normal'; player.currentFrame = 0; }
+        } else if (player.state === 'hurt') {
+            player.currentFrame++;
+            if (player.currentFrame >= player.hurtFrames) { player.state = 'normal'; player.currentFrame = 0; }
+        } else {
+            let maxF = player.onGround ? (Math.abs(player.velX) > 0.1 ? player.walkFrames : 1) : player.jumpFrames;
+            player.currentFrame = (player.currentFrame + 1) % maxF;
+        }
         player.frameTimer = 0;
     }
 }
@@ -217,7 +236,6 @@ function draw() {
     ctx.scale(zoom, zoom);
     ctx.translate(-Math.floor(cameraX), -Math.floor(cameraY));
 
-    // Fundo
     ctx.fillStyle = "#87CEEB"; 
     ctx.fillRect(cameraX, cameraY, canvas.width / zoom, canvas.height / zoom);
 
@@ -225,8 +243,8 @@ function draw() {
 
     enemies.concat(player).forEach(obj => {
         let isP = obj === player;
-        let img = isP ? (obj.state === 'attacking' ? obj.attacks[obj.currentAttackIndex].img : (obj.onGround ? obj.imgWalk : obj.imgJump)) : (obj.state === 'dead' ? obj.imgDead : obj.imgWalk);
-        let frames = isP ? (obj.state === 'attacking' ? obj.attackFrames : (obj.onGround ? obj.walkFrames : obj.jumpFrames)) : (obj.state === 'dead' ? obj.deadFrames : obj.walkFrames);
+        let img = isP ? (obj.state === 'attacking' ? obj.attacks[obj.currentAttackIndex].img : (obj.state === 'hurt' ? obj.imgHurt : (obj.onGround ? obj.imgWalk : obj.imgJump))) : (obj.state === 'dead' ? obj.imgDead : obj.imgWalk);
+        let frames = isP ? (obj.state === 'attacking' ? obj.attackFrames : (obj.state === 'hurt' ? obj.hurtFrames : (obj.onGround ? obj.walkFrames : obj.jumpFrames))) : (obj.state === 'dead' ? obj.deadFrames : obj.walkFrames);
         
         if (img.complete && img.width > 0) {
             const fw = img.width / frames;
@@ -243,7 +261,6 @@ function draw() {
     });
     ctx.restore();
 
-    // UI fixa
     if(gameState === 'playing') {
         ctx.fillStyle = "black"; ctx.fillRect(20, 20, 154, 24);
         ctx.fillStyle = "red"; ctx.fillRect(22, 22, (player.hp/player.maxHp)*150, 20);
@@ -252,39 +269,25 @@ function draw() {
         ctx.fillStyle = "rgba(0,0,0,0.8)"; ctx.fillRect(0,0,canvas.width, canvas.height);
         ctx.fillStyle = gameState === 'victory' ? "gold" : "white";
         ctx.textAlign = "center"; ctx.font = "bold 34px Arial";
-        ctx.fillText(gameState === 'victory' ? "PARABÉNS! VITÓRIA!" : "VOCÊ MORREU!", canvas.width/2, canvas.height/2);
-        ctx.font = "18px Arial"; ctx.fillText("Toque em ATACAR para reiniciar", canvas.width/2, canvas.height/2 + 50);
+        ctx.fillText(gameState === 'victory' ? "VITÓRIA!" : "GAME OVER", canvas.width/2, canvas.height/2);
+        ctx.font = "18px Arial"; ctx.fillText("Toque em ATACAR ou Pressione J para reiniciar", canvas.width/2, canvas.height/2 + 50);
     }
 }
 
 function gameLoop() { update(); draw(); requestAnimationFrame(gameLoop); }
 gameLoop();
 
-// --- CONTROLES DE TECLADO (PC) ---
+// --- CONTROLES DE TECLADO ---
 window.addEventListener('keydown', (e) => {
-    const key = e.key.toLowerCase(); // Converte para minúsculo para aceitar A ou a
-
-    if (key === 'a' || e.key === 'ArrowLeft') {
-        window.mover('left', true);
-    }
-    if (key === 'd' || e.key === 'ArrowRight') {
-        window.mover('right', true);
-    }
-    if (key === 'w' || key === ' ' || key === 'k') { // W, Espaço ou K para Pular
-        window.pular();
-    }
-    if (key === 'j' || key === 'f') { // J ou F para Atacar
-        window.atacar();
-    }
+    const key = e.key.toLowerCase();
+    if (key === 'a' || e.key === 'ArrowLeft') window.mover('left', true);
+    if (key === 'd' || e.key === 'ArrowRight') window.mover('right', true);
+    if (key === 'w' || key === ' ' || key === 'k') window.pular();
+    if (key === 'j' || key === 'f') window.atacar();
 });
 
 window.addEventListener('keyup', (e) => {
     const key = e.key.toLowerCase();
-
-    if (key === 'a' || e.key === 'ArrowLeft') {
-        window.mover('left', false);
-    }
-    if (key === 'd' || e.key === 'ArrowRight') {
-        window.mover('right', false);
-    }
+    if (key === 'a' || e.key === 'ArrowLeft') window.mover('left', false);
+    if (key === 'd' || e.key === 'ArrowRight') window.mover('right', false);
 });
