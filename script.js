@@ -3,7 +3,7 @@ const ctx = canvas.getContext('2d');
 canvas.width = 800; canvas.height = 450;
 
 // --- CONFIGURAÇÕES GLOBAIS ---
-const bgMusic = new Audio('assets/sounds/song.wav');
+const bgMusic = new Audio('assets/sounds/song.wav'); // Corrigido para "sounds"
 bgMusic.loop = true;
 bgMusic.volume = 0.5;
 
@@ -13,7 +13,7 @@ const mapWidth = 7000;
 let cameraX = 0, cameraY = 0;
 let gameState = 'menu';
 
-// --- JOGADOR (Voltou para 100x100) ---
+// --- JOGADOR (100x100) ---
 const player = {
     x: 100, y: 100, width: 100, height: 100,
     velX: 0, velY: 0, speed: 5, jumpForce: -15,
@@ -35,7 +35,7 @@ function initEnemies() {
         { type: 'Blue_Slime', x: 2500, y: 320, hp: 1, speed: 1.8, range: 200, damage: 1, jumpTimer: 0 },
         { 
             type: 'Enchantress', x: 6500, y: 250, hp: 10, speed: 2, range: 400, damage: 2, 
-            width: 100, height: 100, // Enchantress agora 100x100
+            width: 100, height: 100, 
             walkFrames: 8, attackFrames: 10, deadFrames: 5, hurtFrames: 3, jumpFrames: 8
         }
     ];
@@ -107,7 +107,6 @@ function checkPlayerHit() {
         let pCenterX = player.x + player.width/2;
         let eCenterX = en.x + en.width/2;
         let dist = Math.abs(pCenterX - eCenterX);
-        // Distância ajustada para personagens de 100px
         if(dist < 110 && Math.abs(player.y - en.y) < 70) { 
             if((player.facing === 'right' && eCenterX > pCenterX) || (player.facing === 'left' && eCenterX < pCenterX)) {
                 en.hp--;
@@ -146,7 +145,6 @@ function update() {
 
     player.onGround = false;
     platforms.forEach(p => {
-        // Colisão ajustada para pés de personagem 100px
         if (player.x + 40 < p.x + p.w && player.x + 60 > p.x) {
             if (player.velY >= 0 && player.y + player.height <= p.y + player.velY + 5 && player.y + player.height >= p.y - 10) {
                 player.velY = 0; player.y = p.y - player.height; player.onGround = true;
@@ -157,13 +155,20 @@ function update() {
     // --- CÂMERA DINÂMICA (X e Y) ---
     let centroX = (canvas.width / 2) / zoom;
     let centroY = (canvas.height / 2) / zoom;
+    
+    // Calcula a posição alvo para centralizar o jogador
     let targetX = (player.x + player.width / 2) - centroX;
     let targetY = (player.y + player.height / 2) - centroY;
     
+    // Suavização da câmera nos dois eixos
     cameraX += (targetX - cameraX) * 0.1;
     cameraY += (targetY - cameraY) * 0.1;
+
+    // Limites para não sair do mapa
     if (cameraX < 0) cameraX = 0;
     if (cameraX > mapWidth - canvas.width / zoom) cameraX = mapWidth - canvas.width / zoom;
+    // Opcional: limite superior da câmera para não mostrar muito o céu
+    if (cameraY < -100) cameraY = -100; 
 
     // --- LÓGICA DE INIMIGOS ---
     for (let i = enemies.length - 1; i >= 0; i--) {
@@ -233,8 +238,12 @@ function draw() {
     if (gameState === 'menu') return;
     ctx.save();
     ctx.scale(zoom, zoom);
+    // Aplica a translação da câmera nos eixos X e Y
     ctx.translate(-Math.floor(cameraX), -Math.floor(cameraY));
+    
+    // Fundo acompanhando a câmera
     ctx.fillStyle = "#87CEEB"; ctx.fillRect(cameraX, cameraY, canvas.width / zoom, canvas.height / zoom);
+    
     platforms.forEach(p => { ctx.fillStyle = "#4e342e"; ctx.fillRect(p.x, p.y, p.w, p.h); });
 
     enemies.concat(player).forEach(obj => {
@@ -289,4 +298,3 @@ window.addEventListener('keyup', (e) => {
     if (key === 'a' || e.key === 'ArrowLeft') window.mover('left', false);
     if (key === 'd' || e.key === 'ArrowRight') window.mover('right', false);
 });
-
