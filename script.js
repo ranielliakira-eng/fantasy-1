@@ -88,24 +88,15 @@ window.escolherPersonagem = function(genero) {
 
     gameState = 'playing';
     initEnemies();
-    bgMusic.play().catch(e => console.log("Áudio aguardando interação."));
+    bgMusic.play().catch(e => console.log("Som ativado pelo clique."));
     const menu = document.querySelector('.selection-menu');
     if (menu) menu.style.display = 'none';
 };
 
 window.mover = function(dir, estado) {
-    // Agora permitimos registrar o movimento mesmo em 'hurt', 
-    // ele só vai aplicar a velocidade quando o estado voltar a 'normal'
     if (gameState !== 'playing' || player.state === 'dead') return;
-    
-    if (dir === 'left') { 
-        keys.left = estado; 
-        if (estado) { keys.right = false; player.facing = 'left'; }
-    }
-    if (dir === 'right') { 
-        keys.right = estado; 
-        if (estado) { keys.left = false; player.facing = 'right'; }
-    }
+    if (dir === 'left') { keys.left = estado; if (estado) { keys.right = false; player.facing = 'left'; } }
+    if (dir === 'right') { keys.right = estado; if (estado) { keys.left = false; player.facing = 'right'; } }
 };
 
 window.pular = function() {
@@ -130,10 +121,8 @@ function checkPlayerHit() {
         if(dist < 90 && Math.abs(player.y - en.y) < 60) {
             if((player.facing === 'right' && en.x > player.x) || (player.facing === 'left' && en.x < player.x)) {
                 en.hp--;
-                if(en.hp <= 0) { 
-                    en.state = 'dead'; en.currentFrame = 0; 
-                    if(en.type === 'Enchantress') gameState = 'victory';
-                } else { en.state = 'hurt'; en.currentFrame = 0; en.velX = (player.x < en.x) ? 5 : -5; }
+                if(en.hp <= 0) { en.state = 'dead'; en.currentFrame = 0; if(en.type === 'Enchantress') gameState = 'victory'; }
+                else { en.state = 'hurt'; en.currentFrame = 0; en.velX = (player.x < en.x) ? 5 : -5; }
             }
         }
     });
@@ -143,37 +132,35 @@ function takeDamage() {
     if(!player.invincible && player.state !== 'dead' && gameState === 'playing') {
         player.hp--;
         if(player.hp <= 0) { 
-            player.state = 'dead'; gameState = 'dead'; 
-            bgMusic.pause();
+            player.state = 'dead'; gameState = 'dead'; bgMusic.pause();
         } else { 
             player.invincible = true; 
-            player.invincibilityTimer = 60; // 1 segundo de piscar
+            player.invincibilityTimer = 60; 
             player.state = 'hurt'; 
             player.currentFrame = 0;
-            
-            // Forçar a saída do estado "hurt" após 300ms se a animação falhar
-            setTimeout(() => {
-                if(player.state === 'hurt') player.state = 'normal';
-            }, 300);
+            // Knockback: empurra o player para o lado oposto que ele está olhando
+            player.velY = -5;
+            player.velX = (player.facing === 'right') ? -8 : 8;
         }
     }
 }
 
-// --- UPDATE ---
 function update() {
     if (gameState !== 'playing') return;
 
     if(player.invincible) { player.invincibilityTimer--; if(player.invincibilityTimer <= 0) player.invincible = false; }
 
+    // Movimentação
     if (player.state === 'normal' || player.state === 'hurt') {
         if (keys.left) player.velX = -player.speed;
         else if (keys.right) player.velX = player.speed;
         else player.velX *= 0.4;
-    } else player.velX *= 0.7;
+    } else { player.velX *= 0.7; }
 
     player.velY += gravity; player.x += player.velX; player.y += player.velY;
     if(player.x < 0) player.x = 0;
 
+    // Colisão Plataforma
     player.onGround = false;
     platforms.forEach(p => {
         if (player.x + 40 < p.x + p.w && player.x + 60 > p.x) {
@@ -183,6 +170,7 @@ function update() {
         }
     });
 
+    // Lógica Inimigos
     enemies.forEach(en => {
         if(en.state === 'dead') {
             en.frameTimer++; if(en.frameTimer > en.frameInterval) { en.currentFrame++; en.frameTimer = 0; }
@@ -210,7 +198,7 @@ function update() {
         en.frameTimer++; if(en.frameTimer > en.frameInterval) { en.currentFrame = (en.currentFrame + 1) % en.walkFrames; en.frameTimer = 0; }
     });
 
-    // Câmera dinâmica
+    // Câmera
     let targetX = (player.x + player.width / 2) - (canvas.width / 2) / zoom;
     let targetY = (player.y + player.height / 2) - (canvas.height / 2) / zoom;
     cameraX += (targetX - cameraX) * 0.1;
@@ -219,30 +207,22 @@ function update() {
     if (cameraX > mapWidth - canvas.width / zoom) cameraX = mapWidth - canvas.width / zoom;
 
     // Animação do Player
-// Animação do Player
     player.frameTimer++;
     if (player.frameTimer > player.frameInterval) {
         if (player.state === 'attacking') {
-            player.currentFrame++; 
-            if (player.currentFrame >= player.attackFrames) { 
-                player.state = 'normal'; 
-                player.currentFrame = 0; 
-            }
+            player.currentFrame++;
+            if (player.currentFrame >= player.attackFrames) { player.state = 'normal'; player.currentFrame = 0; }
         } else if (player.state === 'hurt') {
             player.currentFrame++;
-            // Se acabar os frames de dor, volta a andar
-            if (player.currentFrame >= player.hurtFrames) { 
-                player.state = 'normal'; 
-                player.currentFrame = 0; 
-            }
+            if (player.currentFrame >= player.hurtFrames) { player.state = 'normal'; player.currentFrame = 0; }
         } else {
-            // Se não estiver atacando nem levando dano, anima andar ou pular
             let maxF = player.onGround ? (Math.abs(player.velX) > 0.1 ? player.walkFrames : 1) : player.jumpFrames;
             player.currentFrame = (player.currentFrame + 1) % maxF;
         }
         player.frameTimer = 0;
     }
-// --- DRAW ---
+} // <--- AQUI ESTAVA FALTANDO FECHAR A FUNÇÃO UPDATE!
+
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (gameState === 'menu') return;
@@ -285,14 +265,13 @@ function draw() {
         ctx.fillStyle = gameState === 'victory' ? "gold" : "white";
         ctx.textAlign = "center"; ctx.font = "bold 34px Arial";
         ctx.fillText(gameState === 'victory' ? "VITÓRIA!" : "GAME OVER", canvas.width/2, canvas.height/2);
-        ctx.font = "18px Arial"; ctx.fillText("Toque em ATACAR ou Pressione J para reiniciar", canvas.width/2, canvas.height/2 + 50);
     }
 }
 
 function gameLoop() { update(); draw(); requestAnimationFrame(gameLoop); }
 gameLoop();
 
-// --- CONTROLES DE TECLADO ---
+// --- TECLADO ---
 window.addEventListener('keydown', (e) => {
     const key = e.key.toLowerCase();
     if (key === 'a' || e.key === 'ArrowLeft') window.mover('left', true);
@@ -300,12 +279,8 @@ window.addEventListener('keydown', (e) => {
     if (key === 'w' || key === ' ' || key === 'k') window.pular();
     if (key === 'j' || key === 'f') window.atacar();
 });
-
 window.addEventListener('keyup', (e) => {
     const key = e.key.toLowerCase();
     if (key === 'a' || e.key === 'ArrowLeft') window.mover('left', false);
     if (key === 'd' || e.key === 'ArrowRight') window.mover('right', false);
 });
-
-
-
