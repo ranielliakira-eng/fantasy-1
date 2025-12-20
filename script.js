@@ -42,11 +42,23 @@ function initEnemies() {
             type: 'Blue_Slime', x: 2500, y: 320, hp: 1, speed: 1.8, range: 200, damage: 1,
             width: 80, height: 80, walkFrames: 8, attackFrames: 4, deadFrames: 3, hurtFrames: 6, jumpFrames: 8, frameInterval: 5
         },
-        { 
-            type: 'Enchantress', x: 6500, y: 250, hp: 3, speed: 2, range: 400, damage: 1, 
-            width: 100, height: 100, walkFrames: 8, attackFrames: 6, deadFrames: 5, hurtFrames: 2, jumpFrames: 8, frameInterval: 5
-        }
-    ];
+      { 
+    type: 'Enchantress', x: 6600, y: 250, hp: 3, speed: 2, 
+    attackType: 'melee', range: 400,
+    // --- ADICIONE ESTAS LINHAS ABAIXO ---
+    width: 100, height: 100,
+    walkFrames: 8, attackFrames: 6, deadFrames: 5, hurtFrames: 2, jumpFrames: 8, frameInterval: 10,
+    currentFrame: 0, frameTimer: 0, 
+    state: 'patrol', facing: 'left',
+    velX: 0, velY: 0, onGround: false,
+    currentSpeech: "", // Para o texto aparecer na tela
+    // ------------------------------------
+    dialogs: [
+        { triggerHp: 3, text: "Você não entende!" },
+        { triggerHp: 2, text: "O desequilibrio!" },
+        { triggerHp: 1, text: "Você precisa ir mais longe!" }
+    ]
+};
 
     enemies.forEach(en => {
         en.imgWalk = new Image(); en.imgWalk.src = `assets/${en.type}/Walk.png`;
@@ -113,14 +125,39 @@ window.atacar = function() {
 function checkPlayerHit() {
     enemies.forEach(en => {
         if(en.state === 'dead' || en.state === 'hurt') return;
+        
         let pCenterX = player.x + player.width/2;
         let eCenterX = en.x + en.width/2;
         let dist = Math.abs(pCenterX - eCenterX);
+
         if(dist < 110 && Math.abs(player.y - en.y) < 70) { 
             if((player.facing === 'right' && eCenterX > pCenterX) || (player.facing === 'left' && eCenterX < pCenterX)) {
-                en.hp--;
-                if(en.hp <= 0) { en.state = 'dead'; en.currentFrame = 0; }
-                else { en.state = 'hurt'; en.currentFrame = 0; en.velX = (player.x < en.x) ? 8 : -8; }
+                
+                en.hp--; // Reduz o HP
+
+                // --- NOVO: LÓGICA DE FALA DA ENCHANTRESS ---
+                if (en.type === 'Enchantress' && en.dialogs) {
+                    // Busca a fala correspondente ao HP que restou
+                    let fala = en.dialogs.find(d => d.triggerHp === en.hp + 1); 
+                    // Usamos en.hp + 1 para pegar a fala do HP que ela estava antes do golpe
+                    
+                    if (fala) {
+                        en.currentSpeech = fala.text;
+                        // Limpa a fala depois de 2 segundos para não poluir a tela
+                        setTimeout(() => { en.currentSpeech = ""; }, 2000);
+                    }
+                }
+                // ------------------------------------------
+
+                if(en.hp <= 0) { 
+                    en.state = 'dead'; 
+                    en.currentFrame = 0; 
+                }
+                else { 
+                    en.state = 'hurt'; 
+                    en.currentFrame = 0; 
+                    en.velX = (player.x < en.x) ? 8 : -8; 
+                }
             }
         }
     });
@@ -242,15 +279,22 @@ function draw() {
     if (gameState === 'menu') return;
 
     ctx.save();
+    // Aplica o Zoom e segue a Câmera
     ctx.scale(zoom, zoom);
     ctx.translate(-Math.floor(cameraX), -Math.floor(cameraY));
 
-    platforms.forEach(p => { ctx.fillStyle = "#4e342e"; ctx.fillRect(p.x, p.y, p.w, p.h); });
+    // 1. Desenha o chão e plataformas da Parte 1
+    platforms.forEach(p => { 
+        ctx.fillStyle = "#4e342e"; 
+        ctx.fillRect(p.x, p.y, p.w, p.h); 
+    });
 
+    // 2. Desenha Jogador e Inimigos (Legião de Slimes e Enchantress)
     enemies.concat(player).forEach(obj => {
         let isP = obj === player;
         let img, frames;
 
+        // Lógica de seleção de imagem e frames
         if (isP) {
             if (obj.state === 'attacking') { img = obj.imgAttack; frames = obj.attackFrames; }
             else if (obj.state === 'dead') { img = obj.imgDead; frames = obj.deadFrames; }
@@ -261,21 +305,61 @@ function draw() {
             frames = (obj.state === 'attacking' ? obj.attackFrames : (obj.state === 'dead' ? obj.deadFrames : (obj.state === 'hurt' ? obj.hurtFrames : obj.walkFrames)));
         }
 
+        // Desenha a Sprite do personagem
         if (img && img.complete && img.width > 0) {
             const fw = img.width / frames;
             ctx.save();
-            if(isP && obj.invincible && Math.floor(Date.now()/100)%2===0) ctx.globalAlpha = 0.5;
+            
+            // Efeito de invencibilidade (piscar)
+            if(isP && obj.invincible && Math.floor(Date.now()/100)%2 === 0) ctx.globalAlpha = 0.5;
+            
             let fx = (Math.floor(obj.currentFrame) % frames) * fw;
+            
             if(obj.facing === 'left') {
-                ctx.translate(obj.x + obj.width, obj.y); ctx.scale(-1, 1);
+                ctx.translate(obj.x + obj.width, obj.y); 
+                ctx.scale(-1, 1);
                 ctx.drawImage(img, fx, 0, fw, img.height, 0, 0, obj.width, obj.height);
             } else {
                 ctx.drawImage(img, fx, 0, fw, img.height, obj.x, obj.y, obj.width, obj.height);
             }
             ctx.restore();
         }
+
+        // --- FALAS DA ENCHANTRESS (EXCLUSIVO PARTE 1) ---
+        if (!isP && obj.type === 'Enchantress' && obj.currentSpeech) {
+            ctx.save();
+            ctx.fillStyle = "white";
+            ctx.font = "bold 10px Arial"; // Ajustado para o scale(zoom)
+            ctx.textAlign = "center";
+            ctx.shadowColor = "black";
+            ctx.shadowBlur = 4;
+            // O texto segue a cabeça da Enchantress
+            ctx.fillText(obj.currentSpeech, obj.x + obj.width / 2, obj.y - 10);
+            ctx.restore();
+        }
     });
 
+    ctx.restore(); // Fecha o translate da câmera
+
+    // 3. Interface de Usuário (Fixa na tela)
+    if (gameState === 'playing') {
+        // Barra de Vida do Herói
+        ctx.fillStyle = "black";
+        ctx.fillRect(20, 20, 154, 24);
+        ctx.fillStyle = "#ff0000";
+        ctx.fillRect(22, 22, (player.hp / player.maxHp) * 150, 20);
+    }
+
+    // Telas de Vitória ou Derrota
+    if (gameState === 'dead' || gameState === 'victory') {
+        ctx.fillStyle = "rgba(0,0,0,0.8)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "white";
+        ctx.textAlign = "center";
+        ctx.font = "bold 30px Arial";
+        ctx.fillText(gameState === 'victory' ? "VITÓRIA!" : "FIM DE JOGO", canvas.width/2, canvas.height/2);
+    }
+}
     ctx.restore();
 
     if(gameState === 'playing') {
@@ -304,4 +388,5 @@ window.addEventListener('keyup', (e) => {
     if (key === 'a' || e.key === 'ArrowLeft') window.mover('left', false);
     if (key === 'd' || e.key === 'ArrowRight') window.mover('right', false);
 });
+
 
