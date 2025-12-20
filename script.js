@@ -2,16 +2,19 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 canvas.width = 800; canvas.height = 450;
 
+// --- CONFIGURAÇÕES DE ÁUDIO ---
 const bgMusic = new Audio('assets/sound/song.wav');
 bgMusic.loop = true;
 bgMusic.volume = 0.5;
 
+// --- CONFIGURAÇÕES GLOBAIS ---
 const gravity = 0.8;
 const zoom = 1.6; 
 const mapWidth = 7000; 
 let cameraX = 0, cameraY = 0;
 let gameState = 'menu';
 
+// --- JOGADOR ---
 const player = {
     x: 100, y: 100, width: 100, height: 100,
     velX: 0, velY: 0, speed: 5, jumpForce: -15,
@@ -24,6 +27,7 @@ const player = {
     frameTimer: 0, frameInterval: 6
 };
 
+// --- INIMIGOS ---
 let enemies = [];
 function initEnemies() {
     enemies = [
@@ -53,6 +57,7 @@ function initEnemies() {
     });
 }
 
+// --- PLATAFORMAS ---
 const platforms = [
     { x: 0, y: 400, w: mapWidth, h: 60 },
     { x: 400, y: 300, w: 200, h: 20 },
@@ -63,15 +68,9 @@ const platforms = [
 
 let keys = { left: false, right: false };
 
+// --- FUNÇÕES DE CONTROLE ---
 window.escolherPersonagem = function(genero) {
     const folder = (genero === 'menina') ? 'Knight' : 'Swordsman';
-    if (genero === 'menina') {
-        player.walkFrames = 8; player.jumpFrames = 8; player.deadFrames = 4; player.hurtFrames = 2;
-        player.attacks[0].frames = 4; player.attacks[1].frames = 5; player.attacks[2].frames = 4;
-    } else {
-        player.walkFrames = 8; player.jumpFrames = 8; player.deadFrames = 3; player.hurtFrames = 3;
-        player.attacks[0].frames = 6; player.attacks[1].frames = 6; player.attacks[2].frames = 6;
-    }
     player.imgWalk.src = `assets/${folder}/Walk.png`;
     player.imgJump.src = `assets/${folder}/Jump.png`;
     player.imgDead.src = `assets/${folder}/Dead.png`;
@@ -83,8 +82,7 @@ window.escolherPersonagem = function(genero) {
     gameState = 'playing';
     initEnemies();
     bgMusic.play().catch(() => {});
-    const menu = document.querySelector('.selection-menu');
-    if (menu) menu.style.display = 'none';
+    document.querySelector('.selection-menu').style.display = 'none';
 };
 
 window.mover = function(dir, estado) {
@@ -103,7 +101,6 @@ window.atacar = function() {
     if (gameState === 'dead' || gameState === 'victory') { location.reload(); return; }
     if (gameState !== 'playing' || player.state !== 'normal') return;
     player.currentAttackIndex = Math.floor(Math.random() * 3);
-    player.attackFrames = player.attacks[player.currentAttackIndex].frames;
     player.state = 'attacking'; player.currentFrame = 0; player.frameTimer = 0;
     checkPlayerHit();
 };
@@ -124,11 +121,9 @@ function checkPlayerHit() {
 
 function takeDamage(amount = 1) {
     if(!player.invincible && player.state !== 'dead' && gameState === 'playing') {
-        player.hp -= amount; // Subtrai a quantidade especificada
-        if(player.hp <= 0) { 
-            player.hp = 0;
-            player.state = 'dead'; gameState = 'dead'; bgMusic.pause(); 
-        } else { 
+        player.hp -= amount;
+        if(player.hp <= 0) { player.hp = 0; player.state = 'dead'; gameState = 'dead'; bgMusic.pause(); }
+        else { 
             player.invincible = true; player.invincibilityTimer = 60; 
             player.state = 'hurt'; player.currentFrame = 0;
             player.velY = -7; player.velX = (player.facing === 'right') ? -8 : 8;
@@ -161,14 +156,11 @@ function update() {
 
     enemies.forEach(en => {
         if(en.state === 'dead') {
-            en.frameTimer++; 
-            if(en.frameTimer > en.frameInterval) { en.currentFrame++; en.frameTimer = 0; }
+            en.frameTimer++; if(en.frameTimer > en.frameInterval) { en.currentFrame++; en.frameTimer = 0; }
             return;
         }
 
-        // Física básica do inimigo
         en.velY += gravity; en.y += en.velY; en.x += en.velX; en.velX *= 0.9;
-        
         platforms.forEach(p => {
             if (en.x + 30 < p.x + p.w && en.x + 50 > p.x) {
                 if (en.velY >= 0 && en.y + en.height <= p.y + en.velY + 5 && en.y + en.height >= p.y - 10) { 
@@ -179,100 +171,38 @@ function update() {
 
         let d = Math.abs((player.x + player.width/2) - (en.x + en.width/2));
 
-        // 1. IA de Movimento (Só se não estiver atacando ou levando dano)
         if (en.state !== 'attacking' && en.state !== 'hurt') {
             if (en.type === 'Green_Slime') {
                 if(en.facing === 'left') en.x -= en.speed; else en.x += en.speed;
                 if(en.x < en.startX - en.range) en.facing = 'right'; 
                 if(en.x > en.startX + en.range) en.facing = 'left';
-            } else if (en.type === 'Red_Slime') {
+            } else if (en.type === 'Red_Slime' || en.type === 'Enchantress') {
                 if (d < en.range) { 
                     if (player.x < en.x) { en.x -= en.speed; en.facing = 'left'; } 
                     else { en.x += en.speed; en.facing = 'right'; } 
                 }
             } else if (en.type === 'Blue_Slime' && en.onGround) {
-                en.jumpTimer++; 
-                if (en.jumpTimer > 70) { 
+                en.jumpTimer++; if (en.jumpTimer > 70) { 
                     en.velY = -12; en.velX = (en.facing === 'left') ? -5 : 5; 
                     en.jumpTimer = 0; en.onGround = false; 
                 }
-            } else if (en.type === 'Enchantress') {
-                // Boss se move na sua direção
-                if (d < en.range) {
-                    if (player.x < en.x) { en.x -= en.speed; en.facing = 'left'; }
-                    else { en.x += en.speed; en.facing = 'right'; }
-                }
             }
 
-            // GATILHO DE ATAQUE: Se encostar no player, começa a animação
-            if(d < 60 && Math.abs(player.y - en.y) < 40) {
-                en.state = 'attacking';
-                en.currentFrame = 0;
-                en.frameTimer = 0;
+            if(d < 65 && Math.abs(player.y - en.y) < 50) {
+                en.state = 'attacking'; en.currentFrame = 0; en.frameTimer = 0;
             }
         }
 
-        // 2. LÓGICA DE ANIMAÇÃO E DANO (Aqui é onde a mágica acontece)
         en.frameTimer++;
         if(en.frameTimer > en.frameInterval) {
             if (en.state === 'attacking') {
                 en.currentFrame++;
-                // Quando a animação de ataque termina:
                 if (en.currentFrame >= en.attackFrames) {
-                    // Verifica se você ainda está perto para levar o golpe
-                    let distFinal = Math.abs((player.x + player.width/2) - (en.x + en.width/2));
-                    if(distFinal < 70) {
-                        // DANO PERSONALIZADO AQUI
-                        if (en.type === 'Enchantress') {
-                            takeDamage(2); // Boss tira 2
-                        } else {
-                            takeDamage(1); // Slimes tiram 1
-                        }
+                    let distF = Math.abs((player.x + player.width/2) - (en.x + en.width/2));
+                    if(distF < 75) {
+                        if (en.type === 'Enchantress') takeDamage(2); else takeDamage(1);
                     }
-                    en.state = 'patrol'; // Volta a patrulhar
-                    en.currentFrame = 0;
-                }
-            } else if (en.state === 'hurt') {
-                en.currentFrame++;
-                if (en.currentFrame >= en.hurtFrames) { en.state = 'patrol'; en.currentFrame = 0; }
-            } else {
-                // Animação normal de andar
-                en.currentFrame = (en.currentFrame + 1) % en.walkFrames;
-            }
-            en.frameTimer = 0;
-        }
-    });
-
-        let d = Math.abs((player.x + player.width/2) - (en.x + en.width/2));
-
-        // Lógica de ataque do inimigo
-        if (en.state !== 'attacking' && en.state !== 'hurt') {
-            if (en.type === 'Green_Slime') {
-                if(en.facing === 'left') en.x -= en.speed; else en.x += en.speed;
-                if(en.x < en.startX - en.range) en.facing = 'right'; if(en.x > en.startX + en.range) en.facing = 'left';
-            } else if (en.type === 'Red_Slime') {
-                if (d < en.range) { if (player.x < en.x) { en.x -= en.speed; en.facing = 'left'; } else { en.x += en.speed; en.facing = 'right'; } }
-            } else if (en.type === 'Blue_Slime' && en.onGround) {
-                en.jumpTimer++; if (en.jumpTimer > 70) { en.velY = -12; en.velX = (en.facing === 'left') ? -5 : 5; en.jumpTimer = 0; en.onGround = false; }
-                if(en.x < en.startX - en.range) en.facing = 'right'; if(en.x > en.startX + en.range) en.facing = 'left';
-            }
-
-            // Iniciar ataque se estiver perto
-            if(d < 60 && Math.abs(player.y - en.y) < 40) {
-                en.state = 'attacking';
-                en.currentFrame = 0;
-            }
-        }
-
-        // Animação do Inimigo
-        en.frameTimer++;
-        if(en.frameTimer > en.frameInterval) {
-            if (en.state === 'attacking') {
-                en.currentFrame++;
-                if (en.currentFrame >= en.attackFrames) {
-                    takeDamage(); // Aplica o dano no fim da animação
-                    en.state = 'patrol';
-                    en.currentFrame = 0;
+                    en.state = 'patrol'; en.currentFrame = 0;
                 }
             } else if (en.state === 'hurt') {
                 en.currentFrame++;
@@ -314,22 +244,19 @@ function draw() {
     ctx.save();
     ctx.scale(zoom, zoom);
     ctx.translate(-Math.floor(cameraX), -Math.floor(cameraY));
-    ctx.fillStyle = "#87CEEB"; 
-    ctx.fillRect(cameraX, cameraY, canvas.width / zoom, canvas.height / zoom);
+    ctx.fillStyle = "#87CEEB"; ctx.fillRect(cameraX, cameraY, canvas.width / zoom, canvas.height / zoom);
     platforms.forEach(p => { ctx.fillStyle = "#4e342e"; ctx.fillRect(p.x, p.y, p.w, p.h); });
 
     enemies.concat(player).forEach(obj => {
         let isP = obj === player;
         let img, frames;
-
         if (isP) {
             img = (obj.state === 'attacking' ? obj.attacks[obj.currentAttackIndex].img : (obj.state === 'hurt' ? obj.imgHurt : (obj.onGround ? obj.imgWalk : obj.imgJump)));
-            frames = (obj.state === 'attacking' ? obj.attackFrames : (obj.state === 'hurt' ? obj.hurtFrames : (obj.onGround ? obj.walkFrames : obj.jumpFrames)));
+            frames = (obj.state === 'attacking' ? obj.attacks[obj.currentAttackIndex].frames : (obj.state === 'hurt' ? obj.hurtFrames : (obj.onGround ? obj.walkFrames : obj.jumpFrames)));
         } else {
             img = (obj.state === 'attacking' ? obj.imgAttack : (obj.state === 'dead' ? obj.imgDead : (obj.state === 'hurt' ? obj.imgHurt : obj.imgWalk)));
             frames = (obj.state === 'attacking' ? obj.attackFrames : (obj.state === 'dead' ? obj.deadFrames : (obj.state === 'hurt' ? obj.hurtFrames : obj.walkFrames)));
         }
-        
         if (img && img.complete && img.width > 0) {
             const fw = img.width / frames;
             ctx.save();
@@ -372,4 +299,3 @@ window.addEventListener('keyup', (e) => {
     if (key === 'a' || e.key === 'ArrowLeft') window.mover('left', false);
     if (key === 'd' || e.key === 'ArrowRight') window.mover('right', false);
 });
-
