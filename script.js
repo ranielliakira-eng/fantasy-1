@@ -107,13 +107,37 @@ window.atacar = function() {
 
 function checkPlayerHit() {
     enemies.forEach(en => {
-        if(en.state === 'dead') return;
-        let dist = Math.abs((player.x + player.width/2) - (en.x + en.width/2));
-        if(dist < 90 && Math.abs(player.y - en.y) < 60) {
-            if((player.facing === 'right' && en.x > player.x) || (player.facing === 'left' && en.x < player.x)) {
+        if (en.state === 'dead' || en.state === 'hurt') return;
+
+        // Calcula a distância entre o centro do player e o centro do inimigo
+        let playerCenterX = player.x + player.width / 2;
+        let enemyCenterX = en.x + en.width / 2;
+        let dist = Math.abs(playerCenterX - enemyCenterX);
+        
+        // Verifica se estão na mesma altura aproximada (Y)
+        let verticalDist = Math.abs(player.y - en.y);
+
+        // Aumentamos a distância de acerto para 110 pixels
+        if (dist < 110 && verticalDist < 80) {
+            // Verifica se o player está virado para o lado correto
+            let mirandoCorreto = (player.facing === 'right' && enemyCenterX > playerCenterX) || 
+                                 (player.facing === 'left' && enemyCenterX < playerCenterX);
+
+            if (mirandoCorreto) {
                 en.hp--;
-                if(en.hp <= 0) { en.state = 'dead'; en.currentFrame = 0; if(en.type === 'Enchantress') gameState = 'victory'; }
-                else { en.state = 'hurt'; en.currentFrame = 0; en.velX = (player.x < en.x) ? 5 : -5; }
+                console.log(`Inimigo atingido! HP restante: ${en.hp}`); // Para você ver no console (F12)
+
+                if (en.hp <= 0) {
+                    en.state = 'dead';
+                    en.currentFrame = 0;
+                    if (en.type === 'Enchantress') gameState = 'victory';
+                } else {
+                    en.state = 'hurt';
+                    en.currentFrame = 0;
+                    // Empurra o inimigo para trás ao levar dano (Knockback)
+                    en.velX = (player.facing === 'right') ? 10 : -10;
+                    en.velY = -5; 
+                }
             }
         }
     });
@@ -299,3 +323,4 @@ window.addEventListener('keyup', (e) => {
     if (key === 'a' || e.key === 'ArrowLeft') window.mover('left', false);
     if (key === 'd' || e.key === 'ArrowRight') window.mover('right', false);
 });
+
