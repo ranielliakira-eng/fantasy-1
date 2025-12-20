@@ -3,13 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Fantasy 2D</title>
+    <title>Fantasy 2D - Versão Blindada</title>
     <style>
-        body, html {
+        /* RESET TOTAL PARA EVITAR BUGS DE ROLAGEM */
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
             margin: 0; padding: 0;
             width: 100%; height: 100%;
             overflow: hidden; background-color: #000;
-            display: flex; align-items: center; justify-content: center;
+            font-family: Arial, sans-serif;
             touch-action: none; 
         }
 
@@ -19,37 +25,52 @@
             display: flex; align-items: center; justify-content: center;
         }
 
+        /* CANVAS NO FUNDO */
         canvas {
+            display: block;
             max-width: 100%; max-height: 100%;
             object-fit: contain; 
             background-color: #87CEEB;
-            z-index: 5;
+            image-rendering: pixelated;
+            z-index: 1; /* Camada mais baixa */
         }
 
-        /* MENU DE SELEÇÃO - Ele cobre os botões no início */
+        /* MENU DE SELEÇÃO NO TOPO */
         .selection-menu {
-            position: absolute;
+            position: fixed; /* Fixed garante que ignore o scroll */
             inset: 0;
-            z-index: 5000; /* Z-index muito alto para cobrir tudo */
+            z-index: 10000; /* Acima de TUDO no início */
             display: flex; flex-direction: column;
             justify-content: center; align-items: center;
             gap: 20px; background: rgba(0,0,0,0.95);
         }
 
-        /* CONTROLES MOBILE - Já começam ativos (display: flex) */
-        .controls {
-            position: absolute;
-            bottom: 40px; 
-            left: 0; width: 100%;
-            display: flex; /* MUDANÇA: Agora ele já nasce visível */
-            justify-content: space-between;
-            padding: 0 30px; 
-            box-sizing: border-box;
-            z-index: 1000; /* Fica abaixo do menu, mas acima do canvas */
-            pointer-events: none; 
+        .selection-menu h1 { color: gold; text-shadow: 2px 2px #000; margin-bottom: 20px; }
+
+        .selection-menu button {
+            width: 260px; height: 65px;
+            font-size: 18px; font-weight: bold;
+            cursor: pointer; border-radius: 12px;
+            border: 2px solid gold; background: #222;
+            color: white;
         }
 
-        .btn-group { display: flex; gap: 15px; pointer-events: auto; }
+        /* CONTROLES MOBILE - ESTE É O PONTO CHAVE */
+        .controls {
+            position: fixed; /* FIXED para não sumir no celular */
+            bottom: 35px; 
+            left: 0; width: 100%;
+            display: none; /* JS vai ativar com 'flex' */
+            justify-content: space-between;
+            padding: 0 25px; 
+            z-index: 5000; /* Acima do Canvas (1), mas abaixo do Menu (10000) */
+            pointer-events: none; /* Deixa o toque passar para o fundo */
+        }
+
+        .btn-group {
+            display: flex; gap: 20px;
+            pointer-events: auto; /* Reativa o toque nos botões */
+        }
 
         .btn {
             width: 85px; height: 85px;
@@ -58,32 +79,43 @@
             border-radius: 50%;
             color: white; font-size: 14px; font-weight: bold;
             display: flex; align-items: center; justify-content: center;
-            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            touch-action: manipulation;
         }
-        .btn:active { background: rgba(255, 255, 255, 0.4); transform: scale(0.9); }
+
+        .btn:active {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(0.9);
+        }
     </style>
 </head>
 <body>
 
 <div id="game-container">
-    <!-- O Menu começa por cima de tudo -->
+    <!-- Menu Inicial -->
     <div id="selection-menu" class="selection-menu">
-        <h1 style="color: gold;">FANTASY 2D</h1>
-        <button style="padding: 15px 30px;" onclick="window.escolherPersonagem('menina')">GUERREIRA</button>
-        <button style="padding: 15px 30px;" onclick="window.escolherPersonagem('menino')">ESPADACHIM</button>
+        <h1>FANTASY 2D</h1>
+        <button onclick="window.escolherPersonagem('menina')">GUERREIRA (KNIGHT)</button>
+        <button onclick="window.escolherPersonagem('menino')">ESPADACHIM (SWORDSMAN)</button>
     </div>
 
     <canvas id="gameCanvas" width="800" height="450"></canvas>
 
-    <!-- Os botões já estão aqui embaixo do menu, prontos para aparecer -->
-    <div class="controls">
+    <!-- Controles com o ID que o JS procura -->
+    <div id="mobile-controls" class="controls">
         <div class="btn-group">
-            <button class="btn" ontouchstart="window.mover('left', true)" ontouchend="window.mover('left', false)"> ESQ </button>
-            <button class="btn" ontouchstart="window.mover('right', true)" ontouchend="window.mover('right', false)"> DIR </button>
+            <button class="btn" 
+                ontouchstart="window.mover('left', true)" 
+                ontouchend="window.mover('left', false)"> ESQ </button>
+            <button class="btn" 
+                ontouchstart="window.mover('right', true)" 
+                ontouchend="window.mover('right', false)"> DIR </button>
         </div>
+
         <div class="btn-group">
             <button class="btn" ontouchstart="window.pular()"> PULAR </button>
-            <button class="btn" ontouchstart="window.atacar()" style="border-color: red;"> ATACAR </button>
+            <button class="btn" ontouchstart="window.atacar()" 
+                style="border-color: #ff4444; background: rgba(150, 0, 0, 0.4);"> ATACAR </button>
         </div>
     </div>
 </div>
