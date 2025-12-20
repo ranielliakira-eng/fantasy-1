@@ -27,12 +27,12 @@ const player = {
 let enemies = [];
 function initEnemies() {
     enemies = [
-        { type: 'Green_Slime', x: 600, y: 320, hp: 1, speed: 1.2, range: 150 },
-        { type: 'Red_Slime', x: 1500, y: 320, hp: 1, speed: 2.5, range: 450 },
-        { type: 'Blue_Slime', x: 2500, y: 320, hp: 1, speed: 1.8, range: 200, jumpTimer: 1 },
+        { type: 'Green_Slime', x: 600, y: 320, hp: 1, speed: 1.2, range: 150, damage: 1 },
+        { type: 'Red_Slime', x: 1500, y: 320, hp: 1, speed: 2.5, range: 450, damage: 1 },
+        { type: 'Blue_Slime', x: 2500, y: 320, hp: 1, speed: 1.8, range: 200, jumpTimer: 1, damage: 1 },
         { 
             type: 'Enchantress', x: 6500, y: 250, hp: 10, speed: 2, range: 400, 
-            width: 120, height: 120, walkFrames: 8, attackFrames: 6, deadFrames: 5, hurtFrames: 2, jumpFrames: 8
+            width: 120, height: 120, walkFrames: 8, attackFrames: 6, deadFrames: 5, hurtFrames: 2, jumpFrames: 8, damage: 1
         }
     ];
 
@@ -285,3 +285,4 @@ window.addEventListener('keyup', (e) => {
     if (key === 'a' || e.key === 'ArrowLeft') window.mover('left', false);
     if (key === 'd' || e.key === 'ArrowRight') window.mover('right', false);
 });
+
