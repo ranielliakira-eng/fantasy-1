@@ -70,30 +70,39 @@ window.escolherPersonagem = function(genero) {
         player.imgJump.src = `assets/${folder}/Jump.png`;
         player.imgDead.src = `assets/${folder}/Dead.png`;
         player.imgHurt.src = `assets/${folder}/Hurt.png`;
+        
+        // Frames específicos para os 3 ataques da Menina
         player.attacks[0].img.src = `assets/${folder}/Attack_1.png`;
+        player.attacks[0].frames = 5; // Ajuste o número real aqui
         player.attacks[1].img.src = `assets/${folder}/Attack_2.png`;
+        player.attacks[1].frames = 2; // Ajuste o número real aqui
         player.attacks[2].img.src = `assets/${folder}/Attack_3.png`;
+        player.attacks[2].frames = 5; // Ajuste o número real aqui
 
-        player.walkFrames = 10;
-        player.jumpFrames = 10;
-        player.attackFrames = 8;
-        player.deadFrames = 5;
+        player.walkFrames = 8;
+        player.jumpFrames = 6;
+        player.deadFrames = 4;
+        player.hurtFrames = 3;
     } else {
         const folder = 'Swordsman';
         player.imgWalk.src = `assets/${folder}/Walk.png`;
         player.imgJump.src = `assets/${folder}/Jump.png`;
         player.imgDead.src = `assets/${folder}/Dead.png`;
         player.imgHurt.src = `assets/${folder}/Hurt.png`;
+
+        // Frames específicos para os 3 ataques do Menino
         player.attacks[0].img.src = `assets/${folder}/Attack_1.png`;
+        player.attacks[0].frames = 6;
         player.attacks[1].img.src = `assets/${folder}/Attack_2.png`;
+        player.attacks[1].frames = 3;
         player.attacks[2].img.src = `assets/${folder}/Attack_3.png`;
+        player.attacks[2].frames = 4;
 
-        player.walkFrames = 8;    
+        player.walkFrames = 8;
         player.jumpFrames = 8;
-        player.attackFrames = 6;
         player.deadFrames = 3;
+        player.hurtFrames = 3;
     }
-
     gameState = 'playing';
     initEnemies();
     bgMusic.play().catch(() => {});
@@ -316,5 +325,6 @@ window.addEventListener('keyup', (e) => {
     if (key === 'a' || e.key === 'ArrowLeft') window.mover('left', false);
     if (key === 'd' || e.key === 'ArrowRight') window.mover('right', false);
 });
+
 
 
