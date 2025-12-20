@@ -180,6 +180,153 @@ function update() {
         }
     });
 
+    // --- CÂMERA DINÂMICA ---
+    let centroX = (canvas.width / 2) / zoom;
+    let centroY = (canvas.height / 2) / zoom;
+    let targetX = (player.x + player.width / 2) - centroX;
+    let targetY = (player.y + player.height / 2) - centroY;
+    cameraX += (targetX - cameraX) * 0.1;
+    cameraY += (targetY - cameraY) * 0.1;
+
+    if (cameraX < 0) cameraX = 0;
+    if (cameraX > mapWidth - canvas.width / zoom) cameraX = mapWidth - canvas.width / zoom;
+    if (cameraY < -100) cameraY = -100; 
+
+    // --- LÓGICA DE INIMIGOS ---
+    for (let i = enemies.length - 1; i >= 0; i--) {
+        let en = enemies[i];
+        if (en.state === 'dead') {
+            en.frameTimer++;
+            if (en.frameTimer > en.frameInterval) {
+                en.currentFrame++; en.frameTimer = 0;
+                if (en.currentFrame >= en.deadFrames) enemies.splice(i, 1);
+            }
+            continue;
+        }
+        
+        en.velY += gravity; en.y += en.velY; en.x += en.velX; en.velX *= 0.9;
+        platforms.forEach(p => {
+            if (en.x + 30 < p.x + p.w && en.x + 50 > p.x) {
+                if (en.velY >= 0 && en.y + en.height <= p.y + en.velY + 5 && en.y + en.height >= p.y - 10) { 
+                    en.velY = 0; en.y = p.y - en.height; en.onGround = true;
+                }
+            }
+        });
+
+        let dist = Math.abs((player.x + player.width/2) - (en.x + en.width/2));
+        if (en.state !== 'attacking' && en.state !== 'hurt') {
+            if (en.type === 'Green_Slime') {
+                if(en.facing === 'left') en.x -= en.speed; else en.x += en.speed;
+                if(en.x < en.startX - en.range) en.facing = 'right'; if(en.x > en.startX + en.range) en.facing = 'left';
+            } else if (en.type === 'Red_Slime' || en.type === 'Enchantress' || en.type === 'Blue_Slime') {
+                if (dist < en.range) { if (player.x < en.x) { en.x -= en.speed; en.facing = 'left'; } else { en.x += en.speed; en.facing = 'right'; } }
+            }
+            if(dist < 75 && Math.abs(player.y - en.y) < 50) { en.state = 'attacking'; en.currentFrame = 0; }
+        }
+
+        en.frameTimer++;
+        if(en.frameTimer > en.frameInterval) {
+            if (en.state === 'attacking') {
+                en.currentFrame++;
+                if (en.currentFrame >= en.attackFrames) {
+                    if(dist < 80) takeDamage(en.damage);
+                    en.state = 'patrol'; en.currentFrame = 0;
+                }
+            } else if (en.state === 'hurt') {
+                en.currentFrame++; if (en.currentFrame >= en.hurtFrames) { en.state = 'patrol'; en.currentFrame = 0; }
+            } else { en.currentFrame = (en.currentFrame + 1) % en.walkFrames; }
+            en.frameTimer = 0;
+        }
+    }
+
+    // --- ANIMAÇÃO DO JOGADOR ---
+    player.frameTimer++;
+    if (player.frameTimer > player.frameInterval) {
+        if (player.state === 'attacking') {
+            player.currentFrame++;
+            let maxAtkFrames = player.attacks[player.currentAttackIndex].frames;
+            if (player.currentFrame >= maxAtkFrames) { 
+                player.state = 'normal'; 
+                player.currentFrame = 0; 
+            }
+        } else if (player.state === 'hurt') {
+            player.currentFrame++;
+            if (player.currentFrame >= player.hurtFrames) { 
+                player.state = 'normal'; 
+                player.currentFrame = 0; 
+            }
+        } else if (player.state === 'dead') {
+            player.currentFrame = Math.min(player.currentFrame + 1, player.deadFrames - 1);
+        } else {
+            let maxF = player.onGround ? (Math.abs(player.velX) > 0.1 ? player.walkFrames : 1) : player.jumpFrames;
+            player.currentFrame = (player.currentFrame + 1) % maxF;
+        }
+        player.frameTimer = 0;
+    }
+}
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (gameState === 'menu') return;
+    ctx.save();
+    ctx.scale(zoom, zoom);
+    ctx.translate(-Math.floor(cameraX), -Math.floor(cameraY));
+    
+    ctx.fillStyle = "#87CEEB"; ctx.fillRect(cameraX, cameraY, canvas.width / zoom, canvas.height / zoom);
+    platforms.forEach(p => { ctx.fillStyle = "#4e342e"; ctx.fillRect(p.x, p.y, p.w, p.h); });
+
+    enemies.concat(player).forEach(obj => {
+        let isP = obj === player;
+        let img, frames;
+
+        if (isP) {
+            if (obj.state === 'attacking') {
+                img = obj.attacks[obj.currentAttackIndex].img;
+                frames = obj.attacks[obj.currentAttackIndex].frames;
+            } else if (obj.state === 'dead') {
+                img = obj.imgDead; frames = obj.deadFrames;
+            } else if (obj.state === 'hurt') {
+                img = obj.imgHurt; frames = obj.hurtFrames;
+            } else {
+                img = obj.onGround ? obj.imgWalk : obj.imgJump;
+                frames = obj.onGround ? obj.walkFrames : obj.jumpFrames;
+            }
+        } else {
+            // LÓGICA PARA INIMIGOS (Readicionada)
+            img = (obj.state === 'attacking' ? obj.imgAttack : (obj.state === 'dead' ? obj.imgDead : (obj.state === 'hurt' ? obj.imgHurt : obj.imgWalk)));
+            frames = (obj.state === 'attacking' ? obj.attackFrames : (obj.state === 'dead' ? obj.deadFrames : (obj.state === 'hurt' ? obj.hurtFrames : obj.walkFrames)));
+        }
+
+        if (img && img.complete && img.width > 0 && frames > 0) {
+            const fw = img.width / frames;
+            ctx.save();
+            if(isP && obj.invincible && Math.floor(Date.now()/100)%2===0) ctx.globalAlpha = 0.5;
+            
+            let frameX = Math.floor(obj.currentFrame % frames) * fw;
+            
+            if(obj.facing === 'left') {
+                ctx.translate(obj.x + obj.width, obj.y); ctx.scale(-1, 1);
+                ctx.drawImage(img, frameX, 0, fw, img.height, 0, 0, obj.width, obj.height);
+            } else {
+                ctx.drawImage(img, frameX, 0, fw, img.height, obj.x, obj.y, obj.width, obj.height);
+            }
+            ctx.restore();
+        }
+    });
+    ctx.restore();
+
+    // UI (HP e Telas)
+    if(gameState === 'playing') {
+        ctx.fillStyle = "black"; ctx.fillRect(20, 20, 154, 24);
+        ctx.fillStyle = "red"; ctx.fillRect(22, 22, (player.hp/player.maxHp)*150, 20);
+    }
+    if(gameState === 'dead' || gameState === 'victory') {
+        ctx.fillStyle = "rgba(0,0,0,0.8)"; ctx.fillRect(0,0,canvas.width, canvas.height);
+        ctx.fillStyle = gameState === 'victory' ? "gold" : "white";
+        ctx.textAlign = "center"; ctx.font = "bold 34px Arial";
+        ctx.fillText(gameState === 'victory' ? "VITÓRIA!" : "GAME OVER", canvas.width/2, canvas.height/2);
+    }
+}
     // --- CÂMERA DINÂMICA (X e Y) ---
     let centroX = (canvas.width / 2) / zoom;
     let centroY = (canvas.height / 2) / zoom;
@@ -338,6 +485,7 @@ window.addEventListener('keyup', (e) => {
     if (key === 'a' || e.key === 'ArrowLeft') window.mover('left', false);
     if (key === 'd' || e.key === 'ArrowRight') window.mover('right', false);
 });
+
 
 
 
