@@ -260,3 +260,31 @@ function draw() {
 function gameLoop() { update(); draw(); requestAnimationFrame(gameLoop); }
 gameLoop();
 
+// --- CONTROLES DE TECLADO (PC) ---
+window.addEventListener('keydown', (e) => {
+    const key = e.key.toLowerCase(); // Converte para minúsculo para aceitar A ou a
+
+    if (key === 'a' || e.key === 'ArrowLeft') {
+        window.mover('left', true);
+    }
+    if (key === 'd' || e.key === 'ArrowRight') {
+        window.mover('right', true);
+    }
+    if (key === 'w' || key === ' ' || key === 'k') { // W, Espaço ou K para Pular
+        window.pular();
+    }
+    if (key === 'j' || key === 'f') { // J ou F para Atacar
+        window.atacar();
+    }
+});
+
+window.addEventListener('keyup', (e) => {
+    const key = e.key.toLowerCase();
+
+    if (key === 'a' || e.key === 'ArrowLeft') {
+        window.mover('left', false);
+    }
+    if (key === 'd' || e.key === 'ArrowRight') {
+        window.mover('right', false);
+    }
+});
