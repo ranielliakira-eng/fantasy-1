@@ -186,21 +186,22 @@ function update() {
 
             en.frameTimer++;
             if(en.frameTimer > en.frameInterval) {
-                if (en.state === 'attacking') {
-                    en.currentFrame++;
-                    if (en.currentFrame >= en.attackFrames) {
-                        if(d < 75) { if(en.type === 'Enchantress') takeDamage(2); else takeDamage(1); }
-                        en.state = 'patrol'; en.currentFrame = 0;
-                    }
-                } else if (en.state === 'hurt') {
-                    en.currentFrame++;
-                    if (en.currentFrame >= en.hurtFrames) { en.state = 'patrol'; en.currentFrame = 0; }
-                } else {
-                    en.currentFrame = (en.currentFrame + 1) % en.walkFrames;
-                }
-                en.frameTimer = 0;
-            }
+               if (en.state === 'attacking') {
+    en.currentFrame++;
+    if (en.currentFrame >= en.attackFrames) {
+        // Calcula a distância atual para ver se o golpe pegou
+        let d = Math.abs((player.x + player.width/2) - (en.x + en.width/2));
+        
+        // Se estiver perto (ajustado para o player de 120px)
+        if(d < 95) { 
+            // Ele vai ler o "damage" que você colocou lá no topo
+            takeDamage(en.damage); 
         }
+        
+        en.state = 'patrol'; 
+        en.currentFrame = 0;
+    }
+}
     }
 
     cameraX += ((player.x + player.width/2) - (canvas.width/2)/zoom - cameraX) * 0.1;
@@ -285,5 +286,6 @@ window.addEventListener('keyup', (e) => {
     if (key === 'a' || e.key === 'ArrowLeft') window.mover('left', false);
     if (key === 'd' || e.key === 'ArrowRight') window.mover('right', false);
 });
+
 
 
