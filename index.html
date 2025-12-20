@@ -1,101 +1,130 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Fantasy 2D</title>
-    <style>
-        /* Garante que o fundo ocupe tudo e não role */
-        body, html { 
-            margin: 0; 
-            padding: 0; 
-            width: 100%; 
-            height: 100%; 
-            overflow: hidden; 
-            background: #000; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-        }
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 
-        /* O container do jogo deve ser relativo para os botões ficarem em cima */
-        #game-container {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+<title>Fantasy 2D</title>
 
-        /* Canvas responsivo: mantém a proporção sem sumir */
-        #gameCanvas { 
-            display: block;
-            max-width: 100%; 
-            max-height: 100%; 
-            object-fit: contain; 
-            background: #87CEEB; 
-            image-rendering: pixelated; /* Para sprites ficarem nítidas */
-        }
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+}
 
-        /* Controles sobrepostos */
-        .controls { 
-            position: absolute; 
-            bottom: 30px; 
-            width: 100%; 
-            display: flex; 
-            justify-content: space-between; 
-            padding: 0 30px; 
-            box-sizing: border-box; 
-            z-index: 100;
-            pointer-events: none; /* Deixa o clique passar para o canvas se necessário */
-        }
+#game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
 
-        .btn-group { display: flex; gap: 15px; pointer-events: auto; }
+#gameCanvas {
+    display: block;
+    margin: auto;
+    background: #87CEEB;
+    image-rendering: pixelated;
+}
 
-        .btn { 
-            width: 75px; 
-            height: 75px; 
-            background: rgba(255, 255, 255, 0.3); 
-            border-radius: 50%; 
-            border: 2px solid #fff; 
-            color: white; 
-            font-weight: bold; 
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
-        }
+/* MENU DE SELEÇÃO */
+.selection-menu {
+    position: absolute;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    background: rgba(0,0,0,0.6);
+}
 
-        .btn:active { background: rgba(255, 255, 255, 0.5); }
-    </style>
+.selection-menu h1 {
+    color: white;
+    font-family: Arial;
+}
+
+.selection-menu button {
+    width: 160px;
+    height: 60px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 10px;
+}
+
+/* CONTROLES */
+.controls {
+    position: absolute;
+    bottom: 30px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 30px;
+    box-sizing: border-box;
+    z-index: 100;
+    pointer-events: none;
+}
+
+.btn-group {
+    display: flex;
+    gap: 15px;
+    pointer-events: auto;
+}
+
+.btn {
+    width: 75px;
+    height: 75px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border: 2px solid #fff;
+    color: white;
+    font-weight: bold;
+}
+</style>
 </head>
+
 <body>
 
-    <div id="game-container">
-        <canvas id="gameCanvas"></canvas>
+<div id="game-container">
 
-        <div class="controls">
-            <div class="btn-group">
-                <button class="btn" 
-                    onmousedown="mover('left', true)" onmouseup="mover('left', false)"
-                    ontouchstart="mover('left', true)" ontouchend="mover('left', false)"> < </button>
-                <button class="btn" 
-                    onmousedown="mover('right', true)" onmouseup="mover('right', false)"
-                    ontouchstart="mover('right', true)" ontouchend="mover('right', false)"> > </button>
-            </div>
+    <!-- MENU -->
+    <div class="selection-menu">
+        <h1>SELECIONE SEU PERSONAGEM</h1>
+        <button onclick="escolherPersonagem('menina')">MENINA</button>
+        <button onclick="escolherPersonagem('menino')">MENINO</button>
+    </div>
 
-            <div class="btn-group">
-                <button class="btn" onclick="pular()" ontouchstart="pular()">JUMP</button>
-                <button class="btn" onclick="atacar()" ontouchstart="atacar()">ATTACK</button>
-            </div>
+    <!-- CANVAS -->
+    <canvas id="gameCanvas" width="800" height="450"></canvas>
+
+    <!-- CONTROLES -->
+    <div class="controls">
+        <div class="btn-group">
+            <button class="btn"
+                onmousedown="mover('left', true)" onmouseup="mover('left', false)"
+                ontouchstart="mover('left', true)" ontouchend="mover('left', false)">
+                ◀
+            </button>
+
+            <button class="btn"
+                onmousedown="mover('right', true)" onmouseup="mover('right', false)"
+                ontouchstart="mover('right', true)" ontouchend="mover('right', false)">
+                ▶
+            </button>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn" onclick="pular()">JUMP</button>
+            <button class="btn" onclick="atacar()">ATTACK</button>
         </div>
     </div>
 
-    <script src="script.js"></script>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
-
