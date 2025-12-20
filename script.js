@@ -21,7 +21,7 @@ const player = {
     hp: 3, maxHp: 3, invincible: false, invincibilityTimer: 0,
     imgWalk: new Image(), imgDead: new Image(), imgJump: new Image(), imgHurt: new Image(),
     imgAttack: new Image(), 
-    attackFrames: 6, // Valor padrão que será sobrescrito na escolha
+    attackFrames: 6,
     currentFrame: 0, walkFrames: 8, jumpFrames: 8, deadFrames: 3, hurtFrames: 3,
     frameTimer: 0, frameInterval: 6
 };
@@ -33,12 +33,12 @@ function initEnemies() {
         { type: 'Green_Slime', x: 600, y: 320, hp: 1, speed: 1.2, range: 150, damage: 1 },
         { type: 'Red_Slime', x: 1500, y: 320, hp: 1, speed: 2.5, range: 450, damage: 1 },
         { type: 'Blue_Slime', x: 2500, y: 320, hp: 1, speed: 1.8, range: 200, damage: 1 },
-       { 
-    type: 'Enchantress', x: 6500, y: 250, hp: 10, speed: 2, range: 400, damage: 1, 
-    width: 100, height: 100,
-    walkFrames: 8, attackFrames: 6, deadFrames: 5, hurtFrames: 2, jumpFrames: 8,
-    frameInterval: 10 // Adicionei para garantir que a animação não seja rápida demais
-}
+        { 
+            type: 'Enchantress', x: 6500, y: 250, hp: 10, speed: 2, range: 400, damage: 1, 
+            width: 100, height: 100,
+            walkFrames: 8, attackFrames: 6, deadFrames: 5, hurtFrames: 2, jumpFrames: 8,
+            frameInterval: 10
+        }
     ];
 
     enemies.forEach(en => {
@@ -76,7 +76,6 @@ window.escolherPersonagem = function(genero) {
     player.imgHurt.src = `assets/${folder}/Hurt.png`;
     player.imgAttack.src = `assets/${folder}/Attack_1.png`;
 
-    // Correção dos frames específicos
     if (genero === 'menina') {
         player.attackFrames = 5; 
         player.walkFrames = 8; player.jumpFrames = 6; player.deadFrames = 4; player.hurtFrames = 3;
@@ -118,7 +117,10 @@ function checkPlayerHit() {
         if(dist < 110 && Math.abs(player.y - en.y) < 70) { 
             if((player.facing === 'right' && eCenterX > pCenterX) || (player.facing === 'left' && eCenterX < pCenterX)) {
                 en.hp--;
-                if(en.hp <= 0) { en.state = 'dead'; en.currentFrame = 0; if(en.type === 'Enchantress') gameState = 'victory'; }
+                if(en.hp <= 0) { 
+                    en.state = 'dead'; en.currentFrame = 0; 
+                    if(en.type === 'Enchantress') gameState = 'victory'; 
+                }
                 else { en.state = 'hurt'; en.currentFrame = 0; en.velX = (player.x < en.x) ? 8 : -8; }
             }
         }
@@ -160,24 +162,16 @@ function update() {
         }
     });
 
-    // Câmera
     let targetX = (player.x + player.width/2) - (canvas.width/2)/zoom;
     let targetY = (player.y + player.height/2) - (canvas.height/2)/zoom;
     cameraX += (targetX - cameraX) * 0.1;
     cameraY += (targetY - cameraY) * 0.1;
     cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width/zoom));
 
-    // Inimigos
+    // INIMIGOS LOOP
     enemies.forEach((en, i) => {
-        if (en.state === 'dead') {
-            en.frameTimer++;
-            if (en.frameTimer > en.frameInterval) {
-                en.currentFrame++; en.frameTimer = 0;
-                if (en.currentFrame >= en.deadFrames) enemies.splice(i, 1);
-            }
-            return;
-        }
         en.velY += gravity; en.y += en.velY; en.x += en.velX; en.velX *= 0.9;
+        
         platforms.forEach(p => {
             if (en.x + 30 < p.x + p.w && en.x + 50 > p.x) {
                 if (en.velY >= 0 && en.y + en.height <= p.y + en.velY + 5 && en.y + en.height >= p.y - 10) { 
@@ -187,7 +181,7 @@ function update() {
         });
 
         let dist = Math.abs((player.x + player.width/2) - (en.x + en.width/2));
-        if (en.state !== 'attacking' && en.state !== 'hurt') {
+        if (en.state !== 'attacking' && en.state !== 'hurt' && en.state !== 'dead') {
             if (dist < en.range) {
                 if (player.x < en.x) { en.x -= en.speed; en.facing = 'left'; } 
                 else { en.x += en.speed; en.facing = 'right'; }
@@ -195,17 +189,27 @@ function update() {
             if(dist < 75) { en.state = 'attacking'; en.currentFrame = 0; }
         }
 
+        // Animação Inimigos
         en.frameTimer++;
         if(en.frameTimer > en.frameInterval) {
-            if (en.state === 'attacking') {
+            if (en.state === 'dead') {
+                en.currentFrame++;
+                if (en.currentFrame >= en.deadFrames) {
+                    if (en.type === 'Enchantress') en.currentFrame = en.deadFrames - 1;
+                    else { enemies.splice(i, 1); return; }
+                }
+            } else if (en.state === 'hurt') {
+                en.currentFrame++;
+                if (en.currentFrame >= en.hurtFrames) { en.state = 'patrol'; en.currentFrame = 0; en.velX = 0; }
+            } else if (en.state === 'attacking') {
                 en.currentFrame++;
                 if (en.currentFrame >= en.attackFrames) {
                     if(dist < 80) takeDamage(en.damage);
                     en.state = 'patrol'; en.currentFrame = 0;
                 }
-            } else if (en.state === 'hurt') {
-                en.currentFrame++; if (en.currentFrame >= en.hurtFrames) { en.state = 'patrol'; en.currentFrame = 0; }
-            } else { en.currentFrame = (en.currentFrame + 1) % en.walkFrames; }
+            } else {
+                en.currentFrame = (en.currentFrame + 1) % en.walkFrames;
+            }
             en.frameTimer = 0;
         }
     });
@@ -215,9 +219,7 @@ function update() {
     if (player.frameTimer > player.frameInterval) {
         if (player.state === 'attacking') {
             player.currentFrame++;
-            if (player.currentFrame >= player.attackFrames) { 
-                player.state = 'normal'; player.currentFrame = 0; 
-            }
+            if (player.currentFrame >= player.attackFrames) { player.state = 'normal'; player.currentFrame = 0; }
         } else if (player.state === 'hurt') {
             player.currentFrame++;
             if (player.currentFrame >= player.hurtFrames) { player.state = 'normal'; player.currentFrame = 0; }
@@ -239,27 +241,17 @@ function draw() {
     ctx.scale(zoom, zoom);
     ctx.translate(-Math.floor(cameraX), -Math.floor(cameraY));
 
-    // Fundo e Chão
-    ctx.fillStyle = "#87CEEB"; ctx.fillRect(cameraX, cameraY, canvas.width/zoom, canvas.height/zoom);
     platforms.forEach(p => { ctx.fillStyle = "#4e342e"; ctx.fillRect(p.x, p.y, p.w, p.h); });
 
-    // Desenha Personagens
     enemies.concat(player).forEach(obj => {
         let isP = obj === player;
         let img, frames;
 
         if (isP) {
-            if (obj.state === 'attacking') {
-                img = obj.imgAttack;
-                frames = obj.attackFrames;
-            } else if (obj.state === 'dead') {
-                img = obj.imgDead; frames = obj.deadFrames;
-            } else if (obj.state === 'hurt') {
-                img = obj.imgHurt; frames = obj.hurtFrames;
-            } else {
-                img = (obj.onGround ? obj.imgWalk : obj.imgJump);
-                frames = (obj.onGround ? obj.walkFrames : obj.jumpFrames);
-            }
+            if (obj.state === 'attacking') { img = obj.imgAttack; frames = obj.attackFrames; }
+            else if (obj.state === 'dead') { img = obj.imgDead; frames = obj.deadFrames; }
+            else if (obj.state === 'hurt') { img = obj.imgHurt; frames = obj.hurtFrames; }
+            else { img = (obj.onGround ? obj.imgWalk : obj.imgJump); frames = (obj.onGround ? obj.walkFrames : obj.jumpFrames); }
         } else {
             img = (obj.state === 'attacking' ? obj.imgAttack : (obj.state === 'dead' ? obj.imgDead : (obj.state === 'hurt' ? obj.imgHurt : obj.imgWalk)));
             frames = (obj.state === 'attacking' ? obj.attackFrames : (obj.state === 'dead' ? obj.deadFrames : (obj.state === 'hurt' ? obj.hurtFrames : obj.walkFrames)));
@@ -282,7 +274,6 @@ function draw() {
 
     ctx.restore();
 
-    // UI
     if(gameState === 'playing') {
         ctx.fillStyle = "black"; ctx.fillRect(20, 20, 154, 24);
         ctx.fillStyle = "red"; ctx.fillRect(22, 22, (player.hp/player.maxHp)*150, 20);
@@ -309,4 +300,3 @@ window.addEventListener('keyup', (e) => {
     if (key === 'a' || e.key === 'ArrowLeft') window.mover('left', false);
     if (key === 'd' || e.key === 'ArrowRight') window.mover('right', false);
 });
-
