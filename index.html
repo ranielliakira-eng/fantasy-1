@@ -3,17 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Fantasy 2D - Corrigido</title>
+    <title>Fantasy 2D</title>
     <style>
-        html, body {
+        body, html {
             margin: 0; padding: 0;
             width: 100%; height: 100%;
-            overflow: hidden; background: #000;
-            font-family: 'Arial', sans-serif;
-            /* Impede toques acidentais de selecionar texto ou dar zoom */
+            overflow: hidden; background-color: #000;
+            display: flex; align-items: center; justify-content: center;
             touch-action: none; 
-            user-select: none;
-            -webkit-user-select: none;
         }
 
         #game-container {
@@ -22,101 +19,75 @@
             display: flex; align-items: center; justify-content: center;
         }
 
-        #gameCanvas {
-            display: block;
+        canvas {
             max-width: 100%; max-height: 100%;
-            background: #87CEEB;
-            image-rendering: pixelated;
-            border: 2px solid #333;
-            z-index: 10; /* Canvas na camada base */
+            object-fit: contain; 
+            background-color: #87CEEB;
+            z-index: 5;
         }
 
-        /* MENU DE SELEÇÃO */
+        /* MENU DE SELEÇÃO - Ele cobre os botões no início */
         .selection-menu {
             position: absolute;
             inset: 0;
-            z-index: 500; /* Sempre no topo antes de começar */
+            z-index: 5000; /* Z-index muito alto para cobrir tudo */
             display: flex; flex-direction: column;
             justify-content: center; align-items: center;
-            gap: 20px; background: rgba(0,0,0,0.9);
+            gap: 20px; background: rgba(0,0,0,0.95);
         }
 
-        .selection-menu h1 { color: gold; text-shadow: 2px 2px #000; }
-
-        .selection-menu button {
-            width: 250px; height: 60px;
-            font-size: 18px; font-weight: bold;
-            cursor: pointer; border-radius: 12px;
-            border: 2px solid gold; background: #222;
-            color: white;
-            transition: transform 0.2s;
-        }
-
-        /* CONTROLES MOBILE */
+        /* CONTROLES MOBILE - Já começam ativos (display: flex) */
         .controls {
             position: absolute;
-            bottom: 30px; /* Um pouco mais alto para evitar barras do celular */
-            width: 100%;
-            display: none; /* Começa escondido, JS ativa */
+            bottom: 40px; 
+            left: 0; width: 100%;
+            display: flex; /* MUDANÇA: Agora ele já nasce visível */
             justify-content: space-between;
-            padding: 0 40px; 
+            padding: 0 30px; 
             box-sizing: border-box;
-            z-index: 1000; /* Z-INDEX MUITO ALTO para garantir visibilidade */
+            z-index: 1000; /* Fica abaixo do menu, mas acima do canvas */
             pointer-events: none; 
         }
 
-        .btn-group {
-            display: flex; gap: 20px;
-            pointer-events: auto; 
-        }
+        .btn-group { display: flex; gap: 15px; pointer-events: auto; }
 
         .btn {
-            width: 80px; height: 80px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 3px solid rgba(255, 255, 255, 0.6);
+            width: 85px; height: 85px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 3px solid rgba(255, 255, 255, 0.8);
             border-radius: 50%;
             color: white; font-size: 14px; font-weight: bold;
             display: flex; align-items: center; justify-content: center;
             -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
         }
-
-        .btn:active { background: rgba(255, 255, 255, 0.5); }
+        .btn:active { background: rgba(255, 255, 255, 0.4); transform: scale(0.9); }
     </style>
 </head>
 <body>
 
 <div id="game-container">
-    <!-- Menu de Seleção -->
+    <!-- O Menu começa por cima de tudo -->
     <div id="selection-menu" class="selection-menu">
-        <h1>FANTASY 2D</h1>
-        <button onclick="window.escolherPersonagem('menina')">GUERREIRA (KNIGHT)</button>
-        <button onclick="window.escolherPersonagem('menino')">ESPADACHIM (SWORDSMAN)</button>
+        <h1 style="color: gold;">FANTASY 2D</h1>
+        <button style="padding: 15px 30px;" onclick="window.escolherPersonagem('menina')">GUERREIRA</button>
+        <button style="padding: 15px 30px;" onclick="window.escolherPersonagem('menino')">ESPADACHIM</button>
     </div>
 
     <canvas id="gameCanvas" width="800" height="450"></canvas>
 
-    <!-- Controles com Z-Index corrigido -->
-    <div id="mobile-controls" class="controls">
+    <!-- Os botões já estão aqui embaixo do menu, prontos para aparecer -->
+    <div class="controls">
         <div class="btn-group">
-            <button class="btn" 
-                ontouchstart="window.mover('left', true)" 
-                ontouchend="window.mover('left', false)"> ESQ </button>
-            <button class="btn" 
-                ontouchstart="window.mover('right', true)" 
-                ontouchend="window.mover('right', false)"> DIR </button>
+            <button class="btn" ontouchstart="window.mover('left', true)" ontouchend="window.mover('left', false)"> ESQ </button>
+            <button class="btn" ontouchstart="window.mover('right', true)" ontouchend="window.mover('right', false)"> DIR </button>
         </div>
-
         <div class="btn-group">
             <button class="btn" ontouchstart="window.pular()"> PULAR </button>
-            <button class="btn" ontouchstart="window.atacar()" 
-                style="border-color: #ff4444; background: rgba(255, 0, 0, 0.3);"> ATACAR </button>
+            <button class="btn" ontouchstart="window.atacar()" style="border-color: red;"> ATACAR </button>
         </div>
     </div>
 </div>
 
-<!-- Verifique se o nome do seu arquivo JS é exatamente script.js -->
 <script src="script.js"></script>
-
 </body>
 </html>
