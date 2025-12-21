@@ -321,11 +321,11 @@ if (boss && boss.state === 'dead' && boss.currentFrame === boss.deadFrames - 1) 
     ctx.fillStyle = "#2e7d32"; // Verde vitória
     ctx.font = "bold 45px Arial";
     ctx.textAlign = "center";
-    ctx.fillText("VILA SALVA!", canvas.width / 2, canvas.height / 2 - 20);
+    ctx.fillText("Uma historia começa", canvas.width / 2, canvas.height / 2 - 20);
 
     ctx.font = "20px Arial";
     ctx.fillStyle = "#333";
-    ctx.fillText("Você derrotou a Enchantress e corrompeu a treva!", canvas.width / 2, canvas.height / 2 + 30);
+    ctx.fillText("Enchantress desmaia, mas sente que o que ela dizia significava algo...", canvas.width / 2, canvas.height / 2 + 30);
     ctx.fillText("Pressione 'K' para jogar novamente", canvas.width / 2, canvas.height / 2 + 70);
 }
     
@@ -409,6 +409,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
