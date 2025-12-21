@@ -40,10 +40,10 @@ function initEnemies() {
         
         { type: 'Blue_Slime', x: 2500, y: 300, hp: 1, speed: 1.8, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
         { type: 'Blue_Slime', x: 2505, y: 300, hp: 1, speed: 1.8, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 2495, y: 300, hp: 1, speed: 1.8, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 2495, y: 300, hp: 1, speed: 1.8, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3, vy: 0, jumpTimer: 0 },
         { type: 'Blue_Slime', x: 2700, y: 300, hp: 1, speed: 1.8, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
         { type: 'Blue_Slime', x: 2705, y: 300, hp: 1, speed: 1.8, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 2720, y: 300, hp: 1, speed: 1.8, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Blue_Slime', x: 2495, y: 300, hp: 1, speed: 1.8, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3, vy: 0, jumpTimer: 0 },
         
         { type: 'Red_Slime', x: 4000, y: 300, hp: 1, speed: 2.5, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         { type: 'Red_Slime', x: 4005, y: 300, hp: 1, speed: 2.5, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
@@ -51,7 +51,7 @@ function initEnemies() {
         { type: 'Red_Slime', x: 4015, y: 300, hp: 1, speed: 2.5, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
 
         { type: 'Blue_Slime', x: 5000, y: 300, hp: 1, speed: 1.8, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 5010, y: 300, hp: 1, speed: 1.8, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 2495, y: 300, hp: 1, speed: 1.8, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3, vy: 0, jumpTimer: 0 }, 
         { type: 'Blue_Slime', x: 5005, y: 300, hp: 1, speed: 1.8, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         { type: 'Green_Slime', x: 4995, y: 300, hp: 1, speed: 1.2, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         { type: 'Green_Slime', x: 5000, y: 300, hp: 1, speed: 1.2, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
@@ -161,6 +161,29 @@ function checkMeleeHit() {
     let hitboxX = player.facing === 'right' ? player.x + player.width : player.x - alcance;
 
     enemies.forEach(en => {
+        if (en.state === 'dead') return;
+        
+        if (en.type === 'Blue_Slime') {
+        en.vy = en.vy || 0; // Inicia a velocidade vertical
+        en.jumpTimer = en.jumpTimer || 0;
+        
+        en.vy += 0.6; // Gravidade própria do slime
+        en.y += en.vy;
+
+        // Colisão com o chão (y=300)
+        if (en.y > 300) {
+            en.y = 300;
+            en.vy = 0;
+            en.jumpTimer++;
+        }
+
+        // Pula a cada 120 frames (aprox. 2 segundos)
+        if (en.jumpTimer > 120) {
+            en.vy = -12; // Força do pulo
+            en.jumpTimer = 0;
+        }
+    }
+        
         if (en.state === 'dead') {
     en.frameTimer++;
     if (en.frameTimer >= en.frameInterval) {
@@ -169,7 +192,7 @@ function checkMeleeHit() {
         } else {
             // Se for a Enchantress, ela pode sumir ou ficar caída
             if (en.type === 'Enchantress') {
-                en.dialogue = "A energia... se esvai...";
+                en.dialogue = "A energia... ";
                 en.dialogueTimer = 100;
             }
         }
@@ -177,7 +200,7 @@ function checkMeleeHit() {
     }
     return;
 }
-        if (en.state === 'dead') return;
+        
 
         // 3. Use a variável 'alcance' na verificação de colisão
         if (hitboxX < en.x + en.width && 
@@ -380,13 +403,13 @@ function draw() {
         ctx.fillStyle = "#2e7d32"; 
         ctx.font = "bold 45px Arial";
         ctx.textAlign = "center";
-        ctx.fillText("Uma historia começa", canvas.width / 2, canvas.height / 2 - 20);
+        ctx.fillText("Uma historia começa...", canvas.width / 2, canvas.height / 2 - 20);
 
         ctx.font = "20px Arial";
         ctx.fillStyle = "#333";
-        ctx.fillText("Enchantress desmaia, mas sente que o que ela dizia significava algo...", canvas.width / 2, canvas.height / 2 + 30);
+        ctx.fillText("Enchantress estava descontrolada você sente que ela queria dizer significava algo...", canvas.width / 2, canvas.height / 2 + 30);
         ctx.font = "bold 18px Arial";
-        ctx.fillText("Pressione 'K' para jogar novamente", canvas.width / 2, canvas.height / 2 + 80);
+        ctx.fillText("Pressione 'R' para jogar novamente", canvas.width / 2, canvas.height / 2 + 80);
     }
 }
 
@@ -420,4 +443,5 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
