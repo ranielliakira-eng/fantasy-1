@@ -199,7 +199,7 @@ function update() {
             player.onGround = true;
         }
     });
-
+}
     // 5. Máquina de Estados (Animação)
     player.frameTimer++;
     if (player.frameTimer >= player.frameInterval) {
@@ -408,6 +408,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
