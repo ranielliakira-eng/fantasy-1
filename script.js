@@ -9,6 +9,7 @@ bgMusic.volume = 0.5;
 const gravity = 0.8;
 const zoom = 1.6; 
 const mapWidth = 7000; 
+const mapHeight = 1000; // Definindo uma altura para o mapa
 let cameraX = 0, cameraY = 0;
 let gameState = 'menu';
 
@@ -124,18 +125,26 @@ function update() {
     platforms.forEach(p => { if (player.x + 40 < p.x + p.w && player.x + 60 > p.x && player.velY >= 0 && player.y + player.height <= p.y + player.velY + 5 && player.y + player.height >= p.y - 10) { player.velY = 0; player.y = p.y - player.height; player.onGround = true; } });
     enemies.forEach(en => { if(en.state === 'dead') return; en.velY += gravity; en.y += en.velY; en.x += en.velX; en.velX *= 0.9; if(en.facing === 'left') en.x -= en.speed; else en.x += en.speed; if(en.x < en.startX - en.range) en.facing = 'right'; if(en.x > en.startX + en.range) en.facing = 'left'; if(Math.abs(player.x - en.x) < 50 && Math.abs(player.y - en.y) < 50) takeDamage(1); });
     
-    // CÂMERA DINÂMICA (X e Y)
-    let targetX = (player.x + player.width/2) - (canvas.width/2)/zoom;
-    let targetY = (player.y + player.height/2) - (canvas.height/2)/zoom;
+    // --- LÓGICA DE CÂMERA CORRIGIDA ---
+    // Centraliza o jogador e suaviza o movimento (fator 0.1)
+    let targetX = (player.x + player.width / 2) - (canvas.width / 2) / zoom;
+    let targetY = (player.y + player.height / 2) - (canvas.height / 2) / zoom;
+
     cameraX += (targetX - cameraX) * 0.1;
     cameraY += (targetY - cameraY) * 0.1;
-    cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width/zoom));
+
+    // Impede que a câmera saia dos limites do mapa (X e Y)
+    cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width / zoom));
+    cameraY = Math.max(-200, Math.min(cameraY, 500 - canvas.height / zoom)); 
 }
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (gameState === 'menu') return;
-    ctx.save(); ctx.scale(zoom, zoom); ctx.translate(-Math.floor(cameraX), -Math.floor(cameraY));
+    ctx.save(); 
+    ctx.scale(zoom, zoom); 
+    ctx.translate(-Math.floor(cameraX), -Math.floor(cameraY));
+    
     ctx.fillStyle = "#4e342e"; platforms.forEach(p => ctx.fillRect(p.x, p.y, p.w, p.h));
     enemies.concat(player).forEach(obj => {
         let isP = obj === player;
