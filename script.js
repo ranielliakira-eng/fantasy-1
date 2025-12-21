@@ -95,14 +95,14 @@ window.escolherPersonagem = function(genero) {
     
     // Configura os frames específicos para cada personagem
     if (genero === 'menina') {
-        player.IdleFrames = 6;
+        player.idleFrames = 6;
         player.walkFrames = 8;
         player.jumpFrames = 6;
         player.hurtFrames = 3;
         player.deadFrames = 4;
         player.attackFrames = 5;
     } else {
-        player.IdleFrames = 8;
+        player.idleFrames = 8;
         player.walkFrames = 8;
         player.jumpFrames = 8;
         player.hurtFrames = 3;
@@ -141,6 +141,7 @@ window.atacar = function() {
     if (gameState === 'dead') { window.resetGame(); return; }
     if (gameState !== 'playing' || player.state !== 'normal' || isPaused) return;
     player.state = 'attacking'; player.currentFrame = 0;
+    
     checkPlayerHit();
 };
 
@@ -320,6 +321,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
