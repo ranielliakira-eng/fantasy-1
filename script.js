@@ -409,9 +409,11 @@ window.addEventListener('keydown', (e) => {
     if(k === 'd') window.mover('right', true);
     if(k === 'w' || k === ' ') window.pular();
     if(k === 'k') window.atacar();
-    if (e.key.toLowerCase() === 'r') {
-        // Só reinicia se o player estiver morto OU se o boss estiver morto (vitória)
+    
+    // Sistema do botão R para reiniciar
+    if (k === 'r') {
         const boss = enemies.find(en => en.type === 'Enchantress');
+        // Se morreu ou se venceu a vilã, o R reseta
         if (player.state === 'dead' || (boss && boss.state === 'dead')) {
             window.resetGame();
         }
@@ -422,6 +424,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
