@@ -21,7 +21,7 @@ const player = {
     x: 100, y: 100, width: 100, height: 100,
     velX: 0, velY: 0, speed: 5, jumpForce: -15,
     facing: 'right', onGround: false, state: 'idle',
-    hp: 10, maxHp: 10, canAirAttack: true,
+    hp: 3, maxHp: 3, canAirAttack: true,
     imgWalk: new Image(), imgDead: new Image(), imgJump: new Image(), imgHurt: new Image(),
     imgAttack: new Image(), imgIdle: new Image (),
     attackFrames: 6, walkFrames: 8, idleFrames: 8, jumpFrames: 8, deadFrames: 4,
@@ -32,33 +32,33 @@ const player = {
 let enemies = [];
 function initEnemies() {
     enemies = [
-        { type: 'Green_Slime', x: 800, y: 200, hp: 1, speed: 1.2, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 850, y: 205, hp: 1, speed: 1.2, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 910, y: 200, hp: 1, speed: 1.2, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 905, y: 207, hp: 1, speed: 1.2, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 907, y: 200, hp: 1, speed: 1.2, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 800, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 850, y: 205, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 910, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 905, y: 207, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 907, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         
-        { type: 'Blue_Slime', x: 2500, y: 200, hp: 1, speed: 1.8, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 2505, y: 203, hp: 1, speed: 1.8, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 2495, y: 206, hp: 1, speed: 1.8, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3, vy: 0, jumpTimer: 0 },
-        { type: 'Blue_Slime', x: 2700, y: 200, hp: 1, speed: 1.8, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 2705, y: 198, hp: 1, speed: 1.8, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 2495, y: 205, hp: 1, speed: 1.8, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3, vy: 0, jumpTimer: 0 },
+        { type: 'Blue_Slime', x: 2500, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 2505, y: 203, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 2495, y: 206, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3, vy: 0, jumpTimer: 0 },
+        { type: 'Blue_Slime', x: 2700, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 2705, y: 198, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 2495, y: 205, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3, vy: 0, jumpTimer: 0 },
         
-        { type: 'Red_Slime', x: 4000, y: 200, hp: 1, speed: 2.5, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Red_Slime', x: 4005, y: 205, hp: 1, speed: 2.5, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Red_Slime', x: 4010, y: 200, hp: 1, speed: 2.5, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Red_Slime', x: 4015, y: 205, hp: 1, speed: 2.5, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 4000, y: 200, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 4005, y: 205, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 4010, y: 200, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 4015, y: 205, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
 
-        { type: 'Blue_Slime', x: 5000, y: 200, hp: 1, speed: 1.8, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 2495, y: 207, hp: 1, speed: 1.8, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3, vy: 0, jumpTimer: 0 }, 
-        { type: 'Blue_Slime', x: 5005, y: 200, hp: 1, speed: 1.8, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 4995, y: 205, hp: 1, speed: 1.2, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 5000, y: 203, hp: 1, speed: 1.2, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Red_Slime', x: 5000, y: 200, hp: 1, speed: 2.5, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Red_Slime', x: 5000, y: 207, hp: 1, speed: 2.5, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Blue_Slime', x: 5000, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 2495, y: 207, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3, vy: 0, jumpTimer: 0 }, 
+        { type: 'Blue_Slime', x: 5005, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 4995, y: 205, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 5000, y: 203, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 5000, y: 200, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 5000, y: 207, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         
-        { type: 'Enchantress', x: 6600, y: 100, hp: 3, speed: 2, attackRange: 100, idleFrames: 5, walkFrames: 8, attackFrames: 6, hurtFrames: 2, deadFrames: 5, dialogue: "", dialogueTimer: 0,}
+        { type: 'Enchantress', x: 6600, y: 100, hp: 3, speed: 2, attackRange: 60, idleFrames: 5, walkFrames: 8, attackFrames: 6, hurtFrames: 2, deadFrames: 5, dialogue: "", dialogueTimer: 0,}
     ];
 
     enemies.forEach(en => {
@@ -76,7 +76,7 @@ function initEnemies() {
 }
 
 const platforms = [
-    { x: 0, y: 300, w: mapWidth, h: 60 },
+    { x: 0, y: 300, w: mapWidth, h: 200 },
     { x: 6400, y: 180, w: 500, h: 20 }
 ];
 
@@ -188,25 +188,26 @@ function checkMeleeHit() {
         if (en.state === 'dead') return;
         
         if (en.type === 'Blue_Slime') {
-        en.vy = en.vy || 0; // Inicia a velocidade vertical
-        en.jumpTimer = en.jumpTimer || 0;
-        
-        en.vy += 0.6; // Gravidade própria do slime
-        en.y += en.vy;
+          en.vy = en.vy || 0;
+          en.jumpTimer = en.jumpTimer || 0;
 
-        // Colisão com o chão (y=300)
-        if (en.y > 300) {
-            en.y = 300;
-            en.vy = 0;
-            en.jumpTimer++;
-        }
+          en.vy += 0.6;
+          en.y += en.vy;
 
-        // Pula a cada 120 frames (aprox. 2 segundos)
-        if (en.jumpTimer > 120) {
-            en.vy = -12; // Força do pulo
+          const groundY = (en.type === 'Blue_Slime') ? 200 : 300; 
+          if (en.y > groundY) {
+             en.y = groundY;
+             en.vy = 0;
+             en.jumpTimer++;
+           }
+
+          if (en.jumpTimer > 120) {
+            en.vy = -12;
             en.jumpTimer = 0;
         }
+
     }
+
         
         if (en.state === 'dead') {
     en.frameTimer++;
@@ -383,11 +384,11 @@ function update() {
             if (en.frameTimer >= 30) { en.state = 'patrol'; en.frameTimer = 0; en.currentFrame = 0; }
         } else if (en.state === 'patrol') {
             en.x += (en.facing === 'left' ? -en.speed : en.speed);
-            if (dist < 300) en.state = 'chase';
+            if (dist < 100) en.state = 'chase';
         } else if (en.state === 'chase') {
             if (player.x < en.x) { en.x -= en.speed * 1.2; en.facing = 'left'; }
             else { en.x += en.speed * 1.2; en.facing = 'right'; }
-            if (dist > 500) en.state = 'patrol';
+            if (dist > 50) en.state = 'patrol';
         }
 
         // Animação dos Inimigos
