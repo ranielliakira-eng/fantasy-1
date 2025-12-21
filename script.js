@@ -8,10 +8,10 @@ bgMusic.loop = true;
 bgMusic.volume = 0.5;
 
 const gravity = 0.8;
-const zoom = 0; 
+const zoom = 1; 
 const mapWidth = 7000; 
 let cameraX = 0;
-let cameraY = 120;
+let cameraY = 0;
 let gameState = 'menu';
 let isPaused = false;
 let isMuted = false;
@@ -408,6 +408,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
