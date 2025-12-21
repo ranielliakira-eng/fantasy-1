@@ -285,7 +285,7 @@ function update() {
 
         // Ataque do Inimigo ao Player
         if (dist < en.attackRange && en.attackCooldown <= 0 && player.state !== 'dead') {
-            en.state = 'attacking'; en.currentFrame = 0; player.hp -= 0.5; en.attackCooldown = 80;
+            en.state = 'attacking'; en.currentFrame = 0; player.hp -= 1; en.attackCooldown = 80;
         }
         if (en.attackCooldown > 0) en.attackCooldown--;
     });
@@ -373,6 +373,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
