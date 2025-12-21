@@ -175,30 +175,50 @@ function draw() {
     // APLICANDO A CÂMERA
     ctx.save();
     ctx.scale(zoom, zoom);
-    ctx.translate(-Math.floor(cameraX), 0); // O segredo está aqui
+    ctx.translate(-Math.floor(cameraX), 0); 
 
-    // Desenhar Plataformas
+    // 1. DESENHAR O CENÁRIO (Fundo)
+    // Aqui você pode chamar as funções de desenhar casas e árvores depois
     ctx.fillStyle = "#4e342e";
     platforms.forEach(p => ctx.fillRect(p.x, p.y, p.w, p.h));
 
-    // Desenhar Personagens (Simplificado para o exemplo rodar)
+    // 2. DESENHAR PERSONAGENS E INIMIGOS
     [...enemies, player].forEach(obj => {
-        ctx.fillStyle = obj === player ? "blue" : "red";
-        // Se a imagem existir, desenha ela, se não, desenha um bloco para teste
-        let img = obj === player ? obj.imgWalk : obj.imgWalk;
+        // Seleciona a imagem correta baseada no estado
+        let img = obj.imgWalk; 
+        if (obj.state === 'attacking') img = obj.imgAttack;
+        if (obj.state === 'dead') img = obj.imgDead;
+
         if(img && img.complete) {
-            ctx.drawImage(img, 0, 0, img.width/8, img.height, obj.x, obj.y, obj.width, obj.height);
+            // Define quantos frames a imagem tem (Player tem frames diferentes de Slimes)
+            let totalFrames = (obj === player && obj.state === 'attacking') ? obj.attackFrames : 8;
+            const fw = img.width / totalFrames;
+            
+            ctx.save();
+            // Lógica para inverter a imagem (olhar para esquerda/direita)
+            if(obj.facing === 'left') {
+                ctx.translate(obj.x + obj.width, obj.y);
+                ctx.scale(-1, 1);
+                ctx.drawImage(img, (obj.currentFrame % totalFrames) * fw, 0, fw, img.height, 0, 0, obj.width, obj.height);
+            } else {
+                ctx.drawImage(img, (obj.currentFrame % totalFrames) * fw, 0, fw, img.height, obj.x, obj.y, obj.width, obj.height);
+            }
+            ctx.restore();
         } else {
+            // Bloco de segurança se a imagem não carregar
+            ctx.fillStyle = obj === player ? "blue" : "red";
             ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
         }
     });
 
-    ctx.restore();
+    ctx.restore(); // FECHA A CÂMERA AQUI
 
-    // UI fixa na tela (HP)
+    // 3. UI FIXA NA TELA (Sempre depois do restore)
     if (gameState === 'playing') {
+        ctx.fillStyle = "rgba(0,0,0,0.5)";
+        ctx.fillRect(20, 20, 150, 15); // Fundo da barra
         ctx.fillStyle = "red";
-        ctx.fillRect(20, 20, player.hp * 50, 10);
+        ctx.fillRect(20, 20, (player.hp / player.maxHp) * 150, 15); // Vida proporcional
     }
 }
 
@@ -223,3 +243,4 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
