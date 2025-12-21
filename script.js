@@ -32,10 +32,10 @@ const player = {
 let enemies = [];
 function initEnemies() {
     enemies = [
-        { type: 'Green_Slime', x: 800, y: 320, hp: 1, speed: 1.2, range: 200 },
-        { type: 'Red_Slime', x: 2500, y: 320, hp: 1, speed: 2.5, range: 450 },
-        { type: 'Blue_Slime', x: 4000, y: 320, hp: 1, speed: 1.8, range: 250 },
-        { type: 'Enchantress', x: 6600, y: 300, hp: 3, speed: 2, range: 400 }
+        { type: 'Green_Slime', x: 800, y: 320, hp: 1, damage: 1, speed: 1.2, range: 200, attackType: 'melee', state: 'patrol', walkFrames: 8, attackFrames: 4, deadFrames: 3, currentFrame: 0, frameTimer: 0, frameInterval: 4 },
+        { type: 'Blue_Slime', x: 2500, y: 320, hp: 1, damage: 1, speed: 1.8, range: 250, attackType: 'melee', state: 'jumping', walkFrames: 8, attackFrames: 4, deadFrames: 3, currentFrame: 0, frameTimer: 0, frameInterval: 4 },
+        { type: 'Red_Slime', x: 4000, y: 320, hp: 1, damage: 1, speed: 2.5, range: 450, attackType: 'melee', state: 'chase', walkFrames: 8, attackFrames: 4, deadFrames: 3, currentFrame: 0, frameTimer: 0, frameInterval: 4 },
+        { type: 'Enchantress', x: 6600, y: 300, hp: 3, damage: 1, speed: 2, range: 400, attackType: 'melee', walkFrames: 8, attackFrames: 6, deadFrames: 5, currentFrame: 0, frameTimer: 0, frameInterval: 4  }
     ];
 
     enemies.forEach(en => {
@@ -215,3 +215,4 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
