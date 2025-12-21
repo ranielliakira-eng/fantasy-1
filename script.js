@@ -335,57 +335,45 @@ function draw() {
 
     // 2. Desenhar Personagens e Inimigos
     [...enemies, player].forEach(obj => {
-        let img = obj.imgWalk; // Imagem padrão
-        let totalFrames = 8;    // Valor padrão caso algo falhe
+    let img = obj.imgIdle;
+    let totalF = obj.idleFrames || 8;
 
-        // --- LÓGICA DINÂMICA DE IMAGEM E FRAMES ---
-        if (obj.state === 'attacking') {
-            img = obj.imgAttack;
-            totalFrames = obj.attackFrames || 6;
-        } else if (obj.state === 'dead') {
-            img = obj.imgDead;
-            totalFrames = obj.deadFrames || 4;
-        } else if (obj.state === 'hurt') {
-            img = obj.imgHurt || obj.imgWalk; // Usa walk se não tiver imagem de dano
-            totalFrames = obj.hurtFrames || 2;
-        } else if (obj === player && !obj.onGround) {
-            img = obj.imgJump;
-            totalFrames = obj.jumpFrames || 8;
+    if (obj.state === 'walking') { img = obj.imgWalk; totalF = obj.walkFrames || 8; }
+    else if (obj.state === 'attacking') { img = obj.imgAttack; totalF = obj.attackFrames || 6; }
+    else if (obj.state === 'hurt') { 
+        img = obj.imgHurt; 
+        totalF = 2; // Confirmado pela sua imagem
+    }
+    else if (obj.state === 'dead') { img = obj.imgDead; totalF = obj.deadFrames || 5; }
+
+    if (img.complete && img.width > 0) {
+        const fw = img.width / totalF;
+        const fh = img.height;
+
+        ctx.save();
+        
+        // Se for a Enchantress levando dano, vamos ajustar a escala interna
+        // para ignorar o excesso de espaço vazio da imagem
+        let drawHeight = obj.height;
+        let drawY = obj.y;
+
+        if (obj.type === 'Enchantress' && obj.state === 'hurt') {
+            // Como a imagem tem muito vazio no topo, aumentamos um pouco 
+            // a área de desenho para a boneca não parecer pequena
+            drawHeight = obj.height * 1.5; 
+            drawY = obj.y - (obj.height * 0.5); // Sobe o desenho para alinhar os pés
+        }
+
+        if (obj.facing === 'left') {
+            ctx.translate(obj.x + obj.width, drawY);
+            ctx.scale(-1, 1);
+            ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, 0, 0, obj.width, drawHeight);
         } else {
-            img = obj.imgWalk;
-            totalFrames = obj.walkFrames || 8;
+            ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, obj.x, drawY, obj.width, drawHeight);
         }
-
-        // --- RENDERIZAÇÃO ---
-        if(img && img.complete && totalFrames > 0) {
-            // fw é a largura total da imagem dividida pela quantidade de bonequinhos nela
-            const fw = img.width / totalFrames;
-            
-            ctx.save();
-            if(obj.facing === 'left') {
-                // Inverte o desenho horizontalmente para olhar para a esquerda
-                ctx.translate(obj.x + obj.width, obj.y); 
-                ctx.scale(-1, 1);
-                ctx.drawImage(
-                    img, 
-                    (obj.currentFrame % totalFrames) * fw, 0, // Onde começa o corte (X)
-                    fw, img.height,                          // Tamanho do corte
-                    0, 0,                                    // Posição no canvas (após translate)
-                    obj.width, obj.height                    // Tamanho do desenho
-                );
-            } else {
-                // Desenha normal para a direita
-                ctx.drawImage(
-                    img, 
-                    (obj.currentFrame % totalFrames) * fw, 0, 
-                    fw, img.height, 
-                    obj.x, obj.y, 
-                    obj.width, obj.height
-                );
-            }
-            ctx.restore();
-        }
-    });
+        ctx.restore();
+    }
+});
 
     ctx.restore();
 
@@ -412,4 +400,5 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
