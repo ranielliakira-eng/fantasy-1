@@ -1,9 +1,151 @@
-// --- LÓGICA DE ATUALIZAÇÃO (Física e IA) ---
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = 800; canvas.height = 450;
+
+// --- CONFIGURAÇÕES GLOBAIS ---
+const bgMusic = new Audio('assets/sounds/song.wav');
+bgMusic.loop = true;
+bgMusic.volume = 0.5;
+
+const gravity = 0.8;
+const zoom = 1; 
+const mapWidth = 7000; 
+let cameraX = 0;
+let cameraY = 0;
+let gameState = 'menu';
+let isPaused = false;
+let isMuted = false;
+
+// --- JOGADOR ---
+const player = {
+    x: 100, y: 100, width: 100, height: 100,
+    velX: 0, velY: 0, speed: 5, jumpForce: -15,
+    facing: 'right', onGround: false, state: 'idle',
+    hp: 3, maxHp: 3,
+    imgWalk: new Image(), imgDead: new Image(), imgJump: new Image(), imgHurt: new Image(),
+    imgAttack: new Image(), imgIdle: new Image (),
+    attackFrames: 6, walkFrames: 8, idleFrames: 8, jumpFrames: 8, deadFrames: 4,
+    currentFrame: 0, frameTimer: 0, frameInterval: 6
+};
+
+// --- INIMIGOS ---
+let enemies = [];
+function initEnemies() {
+    enemies = [
+        { type: 'Green_Slime', x: 800, y: 320, hp: 1, speed: 1.2, attackRange: 50, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Blue_Slime', x: 2500, y: 320, hp: 1, speed: 1.8, attackRange: 50, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 4000, y: 320, hp: 1, speed: 2.5, attackRange: 50, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Enchantress', x: 6600, y: 300, hp: 3, speed: 2, attackRange: 100, walkFrames: 8, attackFrames: 6, hurtFrames: 2, deadFrames: 5 }
+    ];
+
+    enemies.forEach(en => {
+        en.imgIdle = new Image(); en.imgIdle.src = `assets/${en.type}/Idle.png`;
+        en.imgWalk = new Image(); en.imgWalk.src = `assets/${en.type}/Walk.png`;
+        en.imgAttack = new Image(); en.imgAttack.src = `assets/${en.type}/Attack_1.png`;
+        en.imgHurt = new Image(); en.imgHurt.src = `assets/${en.type}/Hurt.png`;
+        en.imgDead = new Image(); en.imgDead.src = `assets/${en.type}/Dead.png`;
+        
+        en.width = 100; en.height = 100;
+        en.currentFrame = 0; en.frameTimer = 0; en.frameInterval = 8;
+        en.state = 'patrol'; en.facing = 'left'; en.attackCooldown = 0;
+    });
+}
+
+const platforms = [
+    { x: 0, y: 400, w: mapWidth, h: 60 },
+    { x: 6400, y: 280, w: 500, h: 20 }
+];
+
+let keys = { left: false, right: false };
+
+// --- SISTEMA ---
+window.togglePause = function() {
+    if (gameState !== 'playing') return;
+    isPaused = !isPaused;
+    if (isPaused) bgMusic.pause();
+    else if (!isMuted) bgMusic.play().catch(() => {});
+};
+
+window.toggleSom = function() {
+    isMuted = !isMuted;
+    bgMusic.muted = isMuted;
+    const btn = document.getElementById('btn-audio');
+    if (btn) btn.innerText = isMuted ? "Mudo" : "Som";
+};
+
+window.resetGame = function() {
+    player.hp = player.maxHp; player.x = 100; player.y = 100;
+    player.velX = 0; player.velY = 0; player.state = 'idle';
+    cameraX = 0; isPaused = false; gameState = 'playing';
+    initEnemies();
+};
+
+window.escolherPersonagem = function(genero) {
+    const menu = document.getElementById('selection-menu');
+    if (menu) menu.style.display = 'none';
+    
+    const folder = (genero === 'menina') ? 'Knight' : 'Swordsman';
+    player.idleFrames = (genero === 'menina') ? 6 : 8;
+    player.deadFrames = (genero === 'menina') ? 4 : 3;
+
+    player.imgIdle.src = `assets/${folder}/Idle.png`;
+    player.imgWalk.src = `assets/${folder}/Walk.png`;
+    player.imgJump.src = `assets/${folder}/Jump.png`;
+    player.imgHurt.src = `assets/${folder}/Hurt.png`;
+    player.imgDead.src = `assets/${folder}/Dead.png`;
+    player.imgAttack.src = `assets/${folder}/Attack_1.png`;
+
+    gameState = 'playing';
+    initEnemies();
+    bgMusic.play().catch(() => {});
+    document.getElementById('mobile-controls').style.display = 'flex';
+};
+
+window.mover = function(dir, estado) {
+    if (gameState !== 'playing' || player.state === 'dead' || isPaused) return;
+    if (dir === 'left') keys.left = estado;
+    if (dir === 'right') keys.right = estado;
+    if (estado) player.facing = dir;
+};
+
+window.pular = function() {
+    if (gameState === 'playing' && player.onGround && !isPaused) {
+        player.velY = player.jumpForce; 
+        player.onGround = false;        
+    }
+};
+
+window.atacar = function() {
+    if (player.state === 'dead') { window.resetGame(); return; }
+    if (gameState !== 'playing' || isPaused || !player.onGround) return;
+    if (player.state === 'attacking') return;
+
+    player.state = 'attacking'; 
+    player.currentFrame = 0;
+    checkMeleeHit();
+};
+
+function checkMeleeHit() {
+    let hitboxX = player.facing === 'right' ? player.x + player.width : player.x - 50;
+    enemies.forEach(en => {
+        if (en.state === 'dead') return;
+        if (hitboxX < en.x + en.width && hitboxX + 60 > en.x && 
+            player.y < en.y + en.height && player.y + player.height > en.y) {
+            en.hp -= 1;
+            en.state = 'hurt';
+            en.currentFrame = 0;
+            en.frameTimer = 0;
+            if(en.hp <= 0) en.state = 'dead';
+        }
+    });
+}
+
+// --- LÓGICA (UPDATE) ---
 function update() {
     if (player.state === 'dead') {
         player.frameTimer++;
         if (player.frameTimer >= player.frameInterval) {
-            if (player.currentFrame < (player.deadFrames || 4) - 1) player.currentFrame++;
+            if (player.currentFrame < player.deadFrames - 1) player.currentFrame++;
             player.frameTimer = 0;
         }
         return;
@@ -11,84 +153,60 @@ function update() {
 
     if (gameState !== 'playing' || isPaused) return;
 
-    if (player.hp <= 0) {
-        player.state = 'dead';
-        player.currentFrame = 0;
-        return;
-    }
-
-    // Movimentação do Player
-    if (keys.left) player.velX = -player.speed;
-    else if (keys.right) player.velX = player.speed;
-    else player.velX *= 0.7;
+    if (player.hp <= 0) { player.state = 'dead'; player.currentFrame = 0; return; }
 
     player.velY += gravity;
     player.x += player.velX;
     player.y += player.velY;
+    if (keys.left) player.velX = -player.speed;
+    else if (keys.right) player.velX = player.speed;
+    else player.velX *= 0.7;
 
-    // Colisão Plataformas
     player.onGround = false;
     platforms.forEach(p => {
         if (player.x + 40 < p.x + p.w && player.x + 60 > p.x && 
             player.y + player.height >= p.y && player.y + player.height <= p.y + 10) {
-            player.y = p.y - player.height; 
-            player.velY = 0; 
-            player.onGround = true;
+            player.y = p.y - player.height; player.velY = 0; player.onGround = true;
         }
     });
 
-    // Animação do Player
+    // Animação Player
     player.frameTimer++;
     if (player.frameTimer >= player.frameInterval) {
         player.frameTimer = 0;
         if (player.state === 'attacking') {
             player.currentFrame++;
-            if (player.currentFrame >= player.attackFrames) {
-                player.state = 'idle';
-                player.currentFrame = 0;
-            }
-        } 
-        else if (!player.onGround) {
+            if (player.currentFrame >= player.attackFrames) { player.state = 'idle'; player.currentFrame = 0; }
+        } else if (!player.onGround) {
             player.state = 'jumping';
-            player.currentFrame = (player.currentFrame + 1) % (player.jumpFrames || 1);
-        }
-        else if (Math.abs(player.velX) > 0.5) {
+            player.currentFrame = (player.currentFrame + 1) % player.jumpFrames;
+        } else if (Math.abs(player.velX) > 0.5) {
             player.state = 'walking';
-            player.currentFrame = (player.currentFrame + 1) % (player.walkFrames || 1);
-        } 
-        else {
+            player.currentFrame = (player.currentFrame + 1) % player.walkFrames;
+        } else {
             player.state = 'idle';
-            player.currentFrame = (player.currentFrame + 1) % (player.idleFrames || 1);
+            player.currentFrame = (player.currentFrame + 1) % player.idleFrames;
         }
     }
 
-    // Câmera
-    let alvoX = (player.x + player.width / 2) - (canvas.width / 2) / zoom;
-    cameraX += (alvoX - cameraX) * 0.1;
-    cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width / zoom));
+    cameraX += ((player.x + player.width/2 - canvas.width/2) - cameraX) * 0.1;
+    cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width));
 
-    // IA dos Inimigos
+    // IA Inimigos
     enemies.forEach(en => {
         if (en.state === 'dead') {
             en.frameTimer++;
-            if (en.frameTimer >= en.frameInterval) {
-                if (en.currentFrame < (en.deadFrames || 4) - 1) en.currentFrame++;
-                en.frameTimer = 0;
-            }
+            if (en.frameTimer >= en.frameInterval && en.currentFrame < en.deadFrames - 1) en.currentFrame++;
             return;
         }
 
         if (en.state === 'hurt') {
             en.frameTimer++;
-            if (en.frameTimer >= 30) {
-                en.state = 'patrol';
-                en.frameTimer = 0;
-                en.currentFrame = 0;
-            }
+            if (en.frameTimer % 10 === 0) en.currentFrame = (en.currentFrame + 1) % (en.hurtFrames || 2);
+            if (en.frameTimer >= 30) { en.state = 'patrol'; en.frameTimer = 0; en.currentFrame = 0; }
             return;
         }
 
-        // Movimentação Básica (Patrulha/Chase)
         let dist = Math.abs(player.x - en.x);
         if (en.state === 'patrol') {
             en.x += (en.facing === 'left' ? -en.speed : en.speed);
@@ -99,82 +217,80 @@ function update() {
             if (dist > 500) en.state = 'patrol';
         }
 
-        // Animação Inimigo
         en.frameTimer++;
         if (en.frameTimer >= en.frameInterval) {
-            let framesTotais = (en.state === 'attacking') ? (en.attackFrames || 6) : (en.walkFrames || 8);
-            en.currentFrame = (en.currentFrame + 1) % framesTotais;
+            let totalF = (en.state === 'attacking') ? en.attackFrames : en.walkFrames;
+            en.currentFrame = (en.currentFrame + 1) % totalF;
             if (en.state === 'attacking' && en.currentFrame === 0) en.state = 'patrol';
             en.frameTimer = 0;
         }
 
-        // Ataque Inimigo
-        if (dist < (en.attackRange || 60) && (en.attackCooldown || 0) <= 0 && player.state !== 'dead') {
-            en.state = 'attacking';
-            en.currentFrame = 0;
-            player.hp -= 0.5;
-            en.attackCooldown = 80;
+        if (dist < en.attackRange && en.attackCooldown <= 0 && player.state !== 'dead') {
+            en.state = 'attacking'; en.currentFrame = 0; player.hp -= 0.5; en.attackCooldown = 80;
         }
         if (en.attackCooldown > 0) en.attackCooldown--;
     });
 }
 
-// --- LÓGICA DE DESENHO (Visual) ---
+// --- DESENHO (DRAW) ---
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (gameState === 'menu') return;
 
     ctx.save();
-    ctx.scale(zoom, zoom);
-    ctx.translate(-Math.floor(cameraX), -Math.floor(cameraY)); 
+    ctx.translate(-Math.floor(cameraX), 0);
 
-    // Chão
     ctx.fillStyle = "#4e342e";
     platforms.forEach(p => ctx.fillRect(p.x, p.y, p.w, p.h));
 
-    // Personagens e Inimigos
     [...enemies, player].forEach(obj => {
         let img = obj.imgIdle;
         let totalF = obj.idleFrames || 8;
-
-        if (obj.state === 'walking') { img = obj.imgWalk; totalF = obj.walkFrames || 8; }
-        else if (obj.state === 'attacking') { img = obj.imgAttack; totalF = obj.attackFrames || 6; }
+        if (obj.state === 'walking') { img = obj.imgWalk; totalF = obj.walkFrames; }
+        else if (obj.state === 'attacking') { img = obj.imgAttack; totalF = obj.attackFrames; }
         else if (obj.state === 'jumping') { img = obj.imgJump; totalF = obj.jumpFrames || 8; }
-        else if (obj.state === 'hurt') { 
-            img = obj.imgHurt; 
-            totalF = (obj.type === 'Enchantress') ? 2 : (obj.hurtFrames || 4); 
-        }
-        else if (obj.state === 'dead') { img = obj.imgDead; totalF = obj.deadFrames || 5; }
+        else if (obj.state === 'hurt') { img = obj.imgHurt; totalF = (obj.type === 'Enchantress' ? 2 : obj.hurtFrames); }
+        else if (obj.state === 'dead') { img = obj.imgDead; totalF = obj.deadFrames; }
 
         if (img.complete && img.width > 0) {
             const fw = img.width / totalF;
             const fh = img.height;
-            let drawHeight = obj.height;
-            let drawY = obj.y;
+            let dH = obj.height, dY = obj.y;
 
-            // Ajuste especial para o sprite da Enchantress (Hurt)
             if (obj.type === 'Enchantress' && obj.state === 'hurt') {
-                drawHeight = obj.height * 1.5; 
-                drawY = obj.y - (obj.height * 0.5);
+                dH = obj.height * 1.5; dY = obj.y - (obj.height * 0.5);
             }
 
             ctx.save();
             if (obj.facing === 'left') {
-                ctx.translate(obj.x + obj.width, drawY);
-                ctx.scale(-1, 1);
-                ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, 0, 0, obj.width, drawHeight);
+                ctx.translate(obj.x + obj.width, dY); ctx.scale(-1, 1);
+                ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, 0, 0, obj.width, dH);
             } else {
-                ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, obj.x, drawY, obj.width, drawHeight);
+                ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, obj.x, dY, obj.width, dH);
             }
             ctx.restore();
         }
     });
 
     ctx.restore();
-
-    // HUD
     if (gameState === 'playing') {
         ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(20, 20, 150, 15);
         ctx.fillStyle = "red"; ctx.fillRect(20, 20, (player.hp / player.maxHp) * 150, 15);
     }
 }
+
+function gameLoop() { update(); draw(); requestAnimationFrame(gameLoop); }
+gameLoop();
+
+window.addEventListener('keydown', (e) => {
+    const k = e.key.toLowerCase();
+    if(k === 'a') window.mover('left', true);
+    if(k === 'd') window.mover('right', true);
+    if(k === 'w' || k === ' ') window.pular();
+    if(k === 'k') window.atacar();
+});
+window.addEventListener('keyup', (e) => {
+    const k = e.key.toLowerCase();
+    if(k === 'a') window.mover('left', false);
+    if(k === 'd') window.mover('right', false);
+});
