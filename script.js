@@ -227,25 +227,59 @@ function draw() {
     ctx.scale(zoom, zoom);
     ctx.translate(-Math.floor(cameraX), -Math.floor(cameraY)); 
 
-    // Chão
+    // 1. Desenhar o Chão
     ctx.fillStyle = "#4e342e";
     platforms.forEach(p => ctx.fillRect(p.x, p.y, p.w, p.h));
 
-    // Personagens
+    // 2. Desenhar Personagens e Inimigos
     [...enemies, player].forEach(obj => {
-        let img = obj.imgWalk; 
-        if (obj.state === 'attacking') img = obj.imgAttack;
-        if (obj.state === 'dead') img = obj.imgDead;
+        let img = obj.imgWalk; // Imagem padrão
+        let totalFrames = 8;    // Valor padrão caso algo falhe
 
-        if(img && img.complete) {
-            let totalFrames = (obj === player && obj.state === 'attacking') ? obj.attackFrames : 8;
+        // --- LÓGICA DINÂMICA DE IMAGEM E FRAMES ---
+        if (obj.state === 'attacking') {
+            img = obj.imgAttack;
+            totalFrames = obj.attackFrames || 6;
+        } else if (obj.state === 'dead') {
+            img = obj.imgDead;
+            totalFrames = obj.deadFrames || 4;
+        } else if (obj.state === 'hurt') {
+            img = obj.imgHurt || obj.imgWalk; // Usa walk se não tiver imagem de dano
+            totalFrames = obj.hurtFrames || 2;
+        } else if (obj === player && !obj.onGround) {
+            img = obj.imgJump;
+            totalFrames = obj.jumpFrames || 8;
+        } else {
+            img = obj.imgWalk;
+            totalFrames = obj.walkFrames || 8;
+        }
+
+        // --- RENDERIZAÇÃO ---
+        if(img && img.complete && totalFrames > 0) {
+            // fw é a largura total da imagem dividida pela quantidade de bonequinhos nela
             const fw = img.width / totalFrames;
+            
             ctx.save();
             if(obj.facing === 'left') {
-                ctx.translate(obj.x + obj.width, obj.y); ctx.scale(-1, 1);
-                ctx.drawImage(img, (obj.currentFrame % totalFrames) * fw, 0, fw, img.height, 0, 0, obj.width, obj.height);
+                // Inverte o desenho horizontalmente para olhar para a esquerda
+                ctx.translate(obj.x + obj.width, obj.y); 
+                ctx.scale(-1, 1);
+                ctx.drawImage(
+                    img, 
+                    (obj.currentFrame % totalFrames) * fw, 0, // Onde começa o corte (X)
+                    fw, img.height,                          // Tamanho do corte
+                    0, 0,                                    // Posição no canvas (após translate)
+                    obj.width, obj.height                    // Tamanho do desenho
+                );
             } else {
-                ctx.drawImage(img, (obj.currentFrame % totalFrames) * fw, 0, fw, img.height, obj.x, obj.y, obj.width, obj.height);
+                // Desenha normal para a direita
+                ctx.drawImage(
+                    img, 
+                    (obj.currentFrame % totalFrames) * fw, 0, 
+                    fw, img.height, 
+                    obj.x, obj.y, 
+                    obj.width, obj.height
+                );
             }
             ctx.restore();
         }
@@ -253,6 +287,7 @@ function draw() {
 
     ctx.restore();
 
+    // 3. Interface (Barra de Vida)
     if (gameState === 'playing') {
         ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(20, 20, 150, 15);
         ctx.fillStyle = "red"; ctx.fillRect(20, 20, (player.hp / player.maxHp) * 150, 15);
@@ -275,6 +310,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
