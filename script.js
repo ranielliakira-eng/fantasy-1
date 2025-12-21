@@ -250,13 +250,24 @@ function update() {
         }
 
         // Recuperação de dano
-        if (en.state === 'hurt') {
-            en.frameTimer++;
-            if (en.frameTimer >= 20) {
-                en.state = 'patrol';
-                en.frameTimer = 0;
-            }
-        }
+if (en.state === 'hurt') {
+    en.frameTimer++;
+    
+    // 1. Controle da animação (troca entre os 2 frames)
+    // Usamos um intervalo menor (ex: 10) para o movimento ser visível
+    if (en.frameTimer % 10 === 0) {
+        en.currentFrame = (en.currentFrame + 1) % (en.hurtFrames || 2);
+    }
+
+    // 2. Controle do tempo total do estado (quanto tempo ela fica atordoada)
+    // Se o timer chegar a 30, ela volta ao normal
+    if (en.frameTimer >= 30) { 
+        en.state = 'patrol';
+        en.frameTimer = 0;
+        en.currentFrame = 0;
+    }
+    return; // Importante para ela não andar enquanto sente dor
+}
 
         // Animação do inimigo
         en.frameTimer++;
@@ -401,27 +412,3 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
