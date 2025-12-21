@@ -161,6 +161,22 @@ function checkMeleeHit() {
     let hitboxX = player.facing === 'right' ? player.x + player.width : player.x - alcance;
 
     enemies.forEach(en => {
+        if (en.state === 'dead') {
+    en.frameTimer++;
+    if (en.frameTimer >= en.frameInterval) {
+        if (en.currentFrame < en.deadFrames - 1) {
+            en.currentFrame++;
+        } else {
+            // Se for a Enchantress, ela pode sumir ou ficar caída
+            if (en.type === 'Enchantress') {
+                en.dialogue = "A energia... se esvai...";
+                en.dialogueTimer = 100;
+            }
+        }
+        en.frameTimer = 0;
+    }
+    return;
+}
         if (en.state === 'dead') return;
 
         // 3. Use a variável 'alcance' na verificação de colisão
@@ -393,6 +409,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
