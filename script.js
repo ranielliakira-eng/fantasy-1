@@ -144,24 +144,21 @@ window.pular = function() {
 };
 
 window.atacar = function() {
-    // Se o player estiver morto, o botão reinicia o jogo
-    if (player.state === 'dead') { 
-        window.resetGame(); 
-        return; 
-    }
+    // Se estiver morto, reinicia
+    if (player.state === 'dead') { window.resetGame(); return; }
+    
+    // Bloqueios: Só ataca se estiver jogando, sem pausa e NO CHÃO
+    if (gameState !== 'playing' || isPaused || !player.onGround) return;
 
-    // Bloqueios de segurança
-    if (gameState !== 'playing' || isPaused) return;
+    // Se já estiver atacando, não faz nada (evita spam de animação)
+    if (player.state === 'attacking') return;
 
-    // CORREÇÃO: Permitir o ataque se estiver parado (idle) ou andando (walking)
-    // E garantir que não estamos pulando (onGround)
-    if ((player.state === 'idle' || player.state === 'walking') && player.onGround) {
-        player.state = 'attacking'; 
-        player.currentFrame = 0;
+    // Inicia o ataque
+    player.state = 'attacking'; 
+    player.currentFrame = 0;
 
-        if (typeof checkMeleeHit === "function") {
-            checkMeleeHit(); 
-        }
+    if (typeof checkMeleeHit === "function") {
+        checkMeleeHit(); 
     }
 };
 
@@ -171,9 +168,7 @@ function update() {
     if (player.state === 'dead') {
         player.frameTimer++;
         if (player.frameTimer >= player.frameInterval) {
-            if (player.currentFrame < (player.deadFrames || 4) - 1) {
-                player.currentFrame++;
-            }
+            if (player.currentFrame < (player.deadFrames || 4) - 1) player.currentFrame++;
             player.frameTimer = 0;
         }
         return; 
@@ -188,22 +183,17 @@ function update() {
         return;
     }
 
-    // 3. Movimentação e Física
-    if (keys.left) {
-        player.velX = -player.speed;
-        player.facing = 'left';
-    } else if (keys.right) {
-        player.velX = player.speed;
-        player.facing = 'right';
-    } else {
-        player.velX *= 0.7; // Desaceleração
-    }
+    // 3. Movimentação Horizontal
+    if (keys.left) player.velX = -player.speed;
+    else if (keys.right) player.velX = player.speed;
+    else player.velX *= 0.7; // Atrito
 
+    // 4. Física
     player.velY += gravity;
     player.x += player.velX;
     player.y += player.velY;
 
-    // 4. Colisão com Plataformas
+    // 5. Colisão com Chão
     player.onGround = false;
     platforms.forEach(p => {
         if (player.x + 40 < p.x + p.w && player.x + 60 > p.x && 
@@ -214,14 +204,14 @@ function update() {
         }
     });
 
-    // 5. Máquina de Estados (Animação)
+    // 6. MÁQUINA DE ESTADOS (Animação) - O segredo para o WALK funcionar
     player.frameTimer++;
     if (player.frameTimer >= player.frameInterval) {
         player.frameTimer = 0;
 
         if (player.state === 'attacking') {
             player.currentFrame++;
-            // Quando acaba o ataque, volta para o estado neutro
+            // Quando acaba o ataque, volta para IDLE para a lógica abaixo reavaliar
             if (player.currentFrame >= player.attackFrames) {
                 player.state = 'idle';
                 player.currentFrame = 0;
@@ -231,16 +221,33 @@ function update() {
             player.state = 'jumping';
             player.currentFrame = (player.currentFrame + 1) % (player.jumpFrames || 1);
         }
-        else if (Math.abs(player.velX) > 0.3) { 
+        else if (Math.abs(player.velX) > 0.5) { // Se estiver se movendo...
             player.state = 'walking';
             player.currentFrame = (player.currentFrame + 1) % (player.walkFrames || 1);
         } 
-        else {
+        else { // Se estiver parado...
             player.state = 'idle';
             player.currentFrame = (player.currentFrame + 1) % (player.idleFrames || 1);
         }
     }
 
+    // 7. Câmera
+    let alvoX = (player.x + player.width / 2) - (canvas.width / 2) / zoom;
+    cameraX += (alvoX - cameraX) * 0.1;
+    cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width / zoom));
+
+    // 8. Processar Inimigos
+    if (typeof enemies !== 'undefined') {
+        enemies.forEach(en => {
+             // Lógica de animação simples para inimigos
+             en.frameTimer++;
+             if (en.frameTimer >= en.frameInterval) {
+                 en.currentFrame = (en.currentFrame + 1) % (en.walkFrames || 1);
+                 en.frameTimer = 0;
+             }
+        });
+    }
+}
     // 6. Atualização da Câmera
     let alvoX = (player.x + player.width / 2) - (canvas.width / 2) / zoom;
     cameraX += (alvoX - cameraX) * 0.1;
@@ -425,6 +432,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
