@@ -40,7 +40,7 @@ function initEnemies() {
         
         { type: 'Blue_Slime', x: 2500, y: 300, hp: 1, speed: 1.8, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         { type: 'Red_Slime', x: 4000, y: 300, hp: 1, speed: 2.5, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Enchantress', x: 6600, y: 300, hp: 3, speed: 2, attackRange: 100,  walkFrames: 8, attackFrames: 6, hurtFrames: 2, deadFrames: 5 }
+        { type: 'Enchantress', x: 6600, y: 300, hp: 3, speed: 2, attackRange: 100, idleFrames: 5, walkFrames: 8, attackFrames: 6, hurtFrames: 2, deadFrames: 5 }
     ];
 
     enemies.forEach(en => {
@@ -321,6 +321,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
