@@ -9,7 +9,7 @@ bgMusic.volume = 0.5;
 
 const gravity = 0.8;
 const zoom = 1.6; 
-const mapWidth = 7000; // O tamanho total do seu mundo
+const mapWidth = 7000; 
 let cameraX = 0;
 let cameraY = 0;
 let gameState = 'menu';
@@ -26,7 +26,7 @@ const player = {
     imgAttack: new Image(), 
     attackFrames: 6,
     currentFrame: 0, walkFrames: 8, jumpFrames: 8, deadFrames: 3, hurtFrames: 3,
-    frameTimer: 0, frameInterval: 6
+    frameTimer: 0, frameInterval: 6 // Velocidade da animação
 };
 
 // --- INIMIGOS ---
@@ -61,7 +61,7 @@ function initEnemies() {
 }
 
 const platforms = [
-    { x: 0, y: 400, w: mapWidth, h: 60 }, // Chão principal comprido
+    { x: 0, y: 400, w: mapWidth, h: 60 },
     { x: 6400, y: 280, w: 500, h: 20 }
 ];
 
@@ -151,7 +151,7 @@ function update() {
     player.x += player.velX;
     player.y += player.velY;
 
-    // Colisão Chão Simples
+    // Colisão Chão
     player.onGround = false;
     platforms.forEach(p => {
         if (player.x + 50 < p.x + p.w && player.x + 50 > p.x && 
@@ -160,49 +160,58 @@ function update() {
         }
     });
 
-    // --- CÁLCULO DA CÂMERA (CORRIGIDO E UNIFICADO) ---
-    // 1. Calcula onde a câmera deveria estar para centralizar o herói
-    let alvoX = (player.x + player.width / 2) - (canvas.width / 2) / zoom;
-    
-    // 2. Aplica a suavização (o 0.1 faz ela seguir com um leve atraso)
-    cameraX += (alvoX - cameraX) * 0.1;
+    // --- ANIMAÇÃO (Isso faltava no seu código!) ---
+    player.frameTimer++;
+    if (player.frameTimer >= player.frameInterval) {
+        if (player.state === 'attacking') {
+            player.currentFrame++;
+            if (player.currentFrame >= player.attackFrames) player.state = 'normal';
+        } else if (player.state === 'normal') {
+            // Só anima se estiver se movendo
+            if (Math.abs(player.velX) > 0.1) player.currentFrame = (player.currentFrame + 1) % player.walkFrames;
+            else player.currentFrame = 0;
+        }
+        player.frameTimer = 0;
+    }
 
-    // 3. TRAVA NOS LIMITES DO MAPA (Essencial)
-    if (cameraX < 0) {
-        cameraX = 0;
-    }
-    if (cameraX > mapWidth - canvas.width / zoom) {
-        cameraX = mapWidth - canvas.width / zoom;
-    }
+    // --- CÂMERA ---
+    let targetX = (player.x + player.width/2) - (canvas.width / 2) / zoom;
+    cameraX += (targetX - cameraX) * 0.1;
+    cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width / zoom));
 }
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (gameState === 'menu') return;
 
-    // APLICANDO A CÂMERA
     ctx.save();
     ctx.scale(zoom, zoom);
     ctx.translate(-Math.floor(cameraX), 0); 
 
-    // 1. DESENHAR O CENÁRIO (Fundo)
+    // 1. DESENHAR CENÁRIO (Para você ver a câmera andando)
+    // Vila (0 a 2000)
+    ctx.fillStyle = "#8d6e63"; 
+    for(let i=200; i<2000; i+=500) ctx.fillRect(i, 300, 100, 100); // Casas
+    
+    // Floresta (4000 a 7000)
+    ctx.fillStyle = "#2e7d32";
+    for(let i=4000; i<7000; i+=300) ctx.fillRect(i, 200, 50, 200); // Árvores
+
+    // 2. CHÃO
     ctx.fillStyle = "#4e342e";
     platforms.forEach(p => ctx.fillRect(p.x, p.y, p.w, p.h));
 
-    // 2. DESENHAR PERSONAGENS E INIMIGOS
+    // 3. PERSONAGENS
     [...enemies, player].forEach(obj => {
-        // Seleciona a imagem correta baseada no estado
         let img = obj.imgWalk; 
         if (obj.state === 'attacking') img = obj.imgAttack;
         if (obj.state === 'dead') img = obj.imgDead;
 
         if(img && img.complete) {
-            // Define quantos frames a imagem tem
             let totalFrames = (obj === player && obj.state === 'attacking') ? obj.attackFrames : 8;
             const fw = img.width / totalFrames;
             
             ctx.save();
-            // Lógica para inverter a imagem (olhar para esquerda/direita)
             if(obj.facing === 'left') {
                 ctx.translate(obj.x + obj.width, obj.y);
                 ctx.scale(-1, 1);
@@ -212,20 +221,17 @@ function draw() {
             }
             ctx.restore();
         } else {
-            // Bloco de segurança se a imagem não carregar
             ctx.fillStyle = obj === player ? "blue" : "red";
             ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
         }
     });
 
-    ctx.restore(); // FECHA A CÂMERA AQUI
+    ctx.restore(); // Fim da Câmera
 
-    // 3. UI FIXA NA TELA (Sempre depois do restore)
+    // 4. UI FIXA
     if (gameState === 'playing') {
-        ctx.fillStyle = "rgba(0,0,0,0.5)";
-        ctx.fillRect(20, 20, 150, 15); // Fundo da barra
-        ctx.fillStyle = "red";
-        ctx.fillRect(20, 20, (player.hp / player.maxHp) * 150, 15); // Vida proporcional
+        ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(20, 20, 150, 15);
+        ctx.fillStyle = "red"; ctx.fillRect(20, 20, (player.hp / player.maxHp) * 150, 15);
     }
 }
 
