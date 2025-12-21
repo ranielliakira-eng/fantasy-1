@@ -144,23 +144,15 @@ window.pular = function() {
 };
 
 window.atacar = function() {
-    // Se estiver morto, o botão de ataque reinicia o jogo
-    if (player.state === 'dead' || gameState === 'dead') { 
-        window.resetGame(); 
-        return; 
-    }
-
-    // Só ataca se estiver no estado normal (evita atacar enquanto pula ou já ataca)
+    if (player.state === 'dead' || gameState === 'dead') { window.resetGame(); return; }
     if (gameState !== 'playing' || player.state !== 'normal' || isPaused) return;
 
     player.state = 'attacking'; 
     player.currentFrame = 0;
-    
-    // CORREÇÃO: Chamando a função de colisão por Hitbox que criamos
+
+    // AQUI ESTAVA O ERRO: Mude de checkPlayerHit() para checkMeleeHit()
     if (typeof checkMeleeHit === "function") {
-        checkMeleeHit();
-    } else {
-        console.warn("Atenção: função checkMeleeHit não encontrada!");
+        checkMeleeHit(); 
     }
 };
 
@@ -379,6 +371,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
