@@ -8,7 +8,7 @@ bgMusic.loop = true;
 bgMusic.volume = 0.5;
 
 const gravity = 0.8;
-const zoom = 1.6; 
+const zoom = 0; 
 const mapWidth = 7000; 
 let cameraX = 0;
 let cameraY = 0;
@@ -23,7 +23,7 @@ const player = {
     facing: 'right', onGround: false, state: 'normal',
     hp: 3, maxHp: 3,
     imgWalk: new Image(), imgDead: new Image(), imgJump: new Image(), imgHurt: new Image(),
-    imgAttack: new Image(), 
+    imgAttack: new Image(), imgIdle: new Image (),
     attackFrames: 6, walkFrames: 8,
     currentFrame: 0, frameTimer: 0, frameInterval: 6
 };
@@ -39,10 +39,12 @@ function initEnemies() {
     ];
 
     enemies.forEach(en => {
+        en.imgIdlealk = new Image(); en.imgIdle.src = `assets/${en.type}/Idle.png`;
         en.imgWalk = new Image(); en.imgWalk.src = `assets/${en.type}/Walk.png`;
         en.imgAttack = new Image(); en.imgAttack.src = `assets/${en.type}/Attack_1.png`;
-        en.imgDead = new Image(); en.imgDead.src = `assets/${en.type}/Dead.png`;
         en.imgDead = new Image(); en.imgHurt.src = `assets/${en.type}/Hurt.png`;
+        en.imgDead = new Image(); en.imgDead.src = `assets/${en.type}/Dead.png`;
+                
         en.width = 100; en.height = 100;
         en.currentFrame = 0; en.frameTimer = 0; en.frameInterval = 8;
         en.state = 'patrol'; en.facing = 'left';
@@ -80,16 +82,36 @@ window.resetGame = function() {
 
 window.escolherPersonagem = function(genero) {
     const folder = (genero === 'menina') ? 'Knight' : 'Swordsman';
+    
+    // Configura os frames específicos para cada personagem
+    if (genero === 'menina') {
+        player.IdleFrames = 6;
+        player.walkFrames = 8;
+        player.jumpFrames = 6;
+        player.hurtFrames = 3;
+        player.deadFrames = 4;
+        player.attackFrames = 5;
+    } else {
+        player.IdleFrames = 8;
+        player.walkFrames = 8;
+        player.jumpFrames = 8;
+        player.hurtFrames = 3;
+        player.deadFrames = 3;
+        player.attackFrames = 6;
+
+    }
+
+    // Carrega as imagens
+    player.imgIdle.src = `assets/${folder}/Idle.png`;
     player.imgWalk.src = `assets/${folder}/Walk.png`;
     player.imgJump.src = `assets/${folder}/Jump.png`;
     player.imgDead.src = `assets/${folder}/Dead.png`;
     player.imgAttack.src = `assets/${folder}/Attack_1.png`;
-    player.imgHurt = new Image();
-    player.imgHurt.src = `assets/${folder}/Hurt.png`;
 
     gameState = 'playing';
     initEnemies();
     bgMusic.play().catch(() => {});
+    
     document.getElementById('selection-menu').style.display = 'none';
     document.getElementById('mobile-controls').style.display = 'flex';
 };
@@ -253,6 +275,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
