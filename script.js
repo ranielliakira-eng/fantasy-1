@@ -160,12 +160,20 @@ function update() {
         }
     });
 
-    // CORREÇÃO DA CÂMERA: Foca no jogador e suaviza
-    let targetCameraX = (player.x + player.width/2) - (canvas.width / 2) / zoom;
-    cameraX += (targetCameraX - cameraX) * 0.1;
+    // --- CÁLCULO DA CÂMERA (CORRIGIDO E UNIFICADO) ---
+    // 1. Calcula onde a câmera deveria estar para centralizar o herói
+    let alvoX = (player.x + player.width / 2) - (canvas.width / 2) / zoom;
     
-    // Trava a câmera nos limites do mapa (7000px)
-    cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width / zoom));
+    // 2. Aplica a suavização (o 0.1 faz ela seguir com um leve atraso)
+    cameraX += (alvoX - cameraX) * 0.1;
+
+    // 3. TRAVA NOS LIMITES DO MAPA (Essencial)
+    if (cameraX < 0) {
+        cameraX = 0;
+    }
+    if (cameraX > mapWidth - canvas.width / zoom) {
+        cameraX = mapWidth - canvas.width / zoom;
+    }
 }
 
 function draw() {
@@ -178,7 +186,6 @@ function draw() {
     ctx.translate(-Math.floor(cameraX), 0); 
 
     // 1. DESENHAR O CENÁRIO (Fundo)
-    // Aqui você pode chamar as funções de desenhar casas e árvores depois
     ctx.fillStyle = "#4e342e";
     platforms.forEach(p => ctx.fillRect(p.x, p.y, p.w, p.h));
 
@@ -190,7 +197,7 @@ function draw() {
         if (obj.state === 'dead') img = obj.imgDead;
 
         if(img && img.complete) {
-            // Define quantos frames a imagem tem (Player tem frames diferentes de Slimes)
+            // Define quantos frames a imagem tem
             let totalFrames = (obj === player && obj.state === 'attacking') ? obj.attackFrames : 8;
             const fw = img.width / totalFrames;
             
@@ -243,4 +250,3 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
-
