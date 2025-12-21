@@ -164,14 +164,16 @@ window.atacar = function() {
 
 // --- LÓGICA ---
 function update() {
-    // 1. Processamento de Morte
+    // 1. Processamento de Morte do Jogador
     if (player.state === 'dead') {
         player.frameTimer++;
         if (player.frameTimer >= player.frameInterval) {
-            if (player.currentFrame < (player.deadFrames || 4) - 1) player.currentFrame++;
+            if (player.currentFrame < (player.deadFrames || 4) - 1) {
+                player.currentFrame++;
+            }
             player.frameTimer = 0;
         }
-        return; 
+        return; // Para a execução se estiver morto
     }
 
     if (gameState !== 'playing' || isPaused) return;
@@ -186,14 +188,14 @@ function update() {
     // 3. Movimentação Horizontal
     if (keys.left) player.velX = -player.speed;
     else if (keys.right) player.velX = player.speed;
-    else player.velX *= 0.7; // Atrito
+    else player.velX *= 0.7; // Atrito/Inércia
 
-    // 4. Física
+    // 4. Física e Gravidade
     player.velY += gravity;
     player.x += player.velX;
     player.y += player.velY;
 
-    // 5. Colisão com Chão
+    // 5. Colisão com Plataformas
     player.onGround = false;
     platforms.forEach(p => {
         if (player.x + 40 < p.x + p.w && player.x + 60 > p.x && 
@@ -204,14 +206,14 @@ function update() {
         }
     });
 
-    // 6. MÁQUINA DE ESTADOS (Animação) - O segredo para o WALK funcionar
+    // 6. Máquina de Estados (Animação do Player)
     player.frameTimer++;
     if (player.frameTimer >= player.frameInterval) {
         player.frameTimer = 0;
 
         if (player.state === 'attacking') {
             player.currentFrame++;
-            // Quando acaba o ataque, volta para IDLE para a lógica abaixo reavaliar
+            // Quando acaba o ataque, volta para idle
             if (player.currentFrame >= player.attackFrames) {
                 player.state = 'idle';
                 player.currentFrame = 0;
@@ -221,77 +223,47 @@ function update() {
             player.state = 'jumping';
             player.currentFrame = (player.currentFrame + 1) % (player.jumpFrames || 1);
         }
-        else if (Math.abs(player.velX) > 0.5) { // Se estiver se movendo...
+        else if (Math.abs(player.velX) > 0.5) {
             player.state = 'walking';
             player.currentFrame = (player.currentFrame + 1) % (player.walkFrames || 1);
         } 
-        else { // Se estiver parado...
+        else {
             player.state = 'idle';
             player.currentFrame = (player.currentFrame + 1) % (player.idleFrames || 1);
         }
     }
 
-    // 7. Câmera
+    // 7. Câmera Suave
     let alvoX = (player.x + player.width / 2) - (canvas.width / 2) / zoom;
     cameraX += (alvoX - cameraX) * 0.1;
     cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width / zoom));
 
-    // 8. Processar Inimigos
-    if (typeof enemies !== 'undefined') {
-        enemies.forEach(en => {
-             // Lógica de animação simples para inimigos
-             en.frameTimer++;
-             if (en.frameTimer >= en.frameInterval) {
-                 en.currentFrame = (en.currentFrame + 1) % (en.walkFrames || 1);
-                 en.frameTimer = 0;
-             }
-        });
-    }
-}
-    // 6. Atualização da Câmera
-    let alvoX = (player.x + player.width / 2) - (canvas.width / 2) / zoom;
-    cameraX += (alvoX - cameraX) * 0.1;
-    cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width / zoom));
-}
-    // 6. Câmera Suave
-    let alvoX = (player.x + player.width / 2) - (canvas.width / 2) / zoom;
-    cameraX += (alvoX - cameraX) * 0.1;
-    cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width / zoom));
-
-    // 7. IA dos Inimigos
-    // 7. IA e Animação dos Inimigos
+    // 8. IA e Animação dos Inimigos
     enemies.forEach(en => {
-        // Se o inimigo estiver morto, processa apenas a animação de morte
         if (en.state === 'dead') {
             en.frameTimer++;
             if (en.frameTimer >= en.frameInterval) {
-                if (en.currentFrame < (en.deadFrames || 4) - 1) {
-                    en.currentFrame++;
-                }
+                if (en.currentFrame < (en.deadFrames || 4) - 1) en.currentFrame++;
                 en.frameTimer = 0;
             }
             return; 
         }
 
-        // Recuperação do estado de dano (Hurt)
+        // Recuperação de dano
         if (en.state === 'hurt') {
             en.frameTimer++;
-            if (en.frameTimer >= 20) { // Fica travado por 20 frames ao apanhar
+            if (en.frameTimer >= 20) {
                 en.state = 'patrol';
                 en.frameTimer = 0;
             }
         }
 
-        // Animação de movimento/ataque do inimigo
+        // Animação do inimigo
         en.frameTimer++;
         if (en.frameTimer >= en.frameInterval) {
-            let framesTotais = 8;
-            if (en.state === 'attacking') framesTotais = en.attackFrames || 6;
-            else framesTotais = en.walkFrames || 8;
-
+            let framesTotais = (en.state === 'attacking') ? (en.attackFrames || 6) : (en.walkFrames || 8);
             en.currentFrame = (en.currentFrame + 1) % framesTotais;
-            
-            // Se terminou a animação de ataque, volta a patrulhar
+
             if (en.state === 'attacking' && en.currentFrame === 0) {
                 en.state = 'patrol';
             }
@@ -300,19 +272,16 @@ function update() {
 
         // Lógica de Ataque contra o Jogador
         let dist = Math.abs(player.x - en.x);
-        if (dist < (en.attackRange || 100) && en.attackCooldown <= 0 && player.state !== 'dead') {
+        if (dist < (en.attackRange || 100) && (en.attackCooldown || 0) <= 0 && player.state !== 'dead') {
             en.state = 'attacking';
             en.currentFrame = 0;
             
-            if (en.attackType === 'melee') {
-                if (dist < 60) player.hp -= 10; 
-            } else if (en.attackType === 'ranged') {
-                if (typeof dispararProjetil === "function") dispararProjetil(en); 
-            }
-            en.attackCooldown = 80; // Tempo entre ataques do inimigo
+            if (dist < 60) player.hp -= 0.5; // Dano ajustado para não morrer instantâneo
+            en.attackCooldown = 80; 
         }
         if (en.attackCooldown > 0) en.attackCooldown--;
     });
+}
 
 function checkMeleeHit() {
     // Cria uma caixa invisível na frente do jogador dependendo do lado que ele olha
@@ -432,6 +401,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
