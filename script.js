@@ -309,10 +309,6 @@ function update() {
 
 // --- DESENHO (DRAW) ---
 function draw() {
-
-    // --- TELA DE VITÓRIA ---
-// Checa se a Enchantress (último inimigo) está com estado 'dead'
-function draw() {
     // 1. PRIMEIRO: Limpamos a tela
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (gameState === 'menu') return;
@@ -424,6 +420,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
