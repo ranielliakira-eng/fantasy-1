@@ -81,6 +81,16 @@ window.resetGame = function() {
 };
 
 window.escolherPersonagem = function(genero) {
+    console.log("Botão clicado! Gênero selecionado:", genero);
+
+    // 1. Tenta encontrar o menu para esconder
+    const menu = document.getElementById('selection-menu');
+    if (menu) {
+        menu.style.display = 'none';
+    } else {
+        console.error("Erro: Não achei o elemento com ID 'selection-menu'");
+    }
+    
     const folder = (genero === 'menina') ? 'Knight' : 'Swordsman';
     
     // Configura os frames específicos para cada personagem
@@ -310,6 +320,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
