@@ -400,14 +400,14 @@ function draw() {
         ctx.fillStyle = "rgba(255, 255, 255, 0.9)"; 
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        ctx.fillStyle = "#2e7d32"; 
+        ctx.fillStyle = "#470D1C"; 
         ctx.font = "bold 45px Arial";
         ctx.textAlign = "center";
         ctx.fillText("Uma historia começa...", canvas.width / 2, canvas.height / 2 - 20);
 
         ctx.font = "20px Arial";
-        ctx.fillStyle = "#333";
-        ctx.fillText("Enchantress estava descontrolada você sente que ela queria dizer significava algo...", canvas.width / 2, canvas.height / 2 + 30);
+        ctx.fillStyle = "#e3dede";
+        ctx.fillText("Enchantress estava descontrolada você sente que ela queria dizer algo...", canvas.width / 2, canvas.height / 2 + 30);
         ctx.font = "bold 18px Arial";
         ctx.fillText("Pressione 'R' para jogar novamente", canvas.width / 2, canvas.height / 2 + 80);
     }
@@ -443,5 +443,6 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
