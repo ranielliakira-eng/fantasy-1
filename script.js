@@ -135,18 +135,24 @@ window.atacar = function() {
 };
 
 function checkMeleeHit() {
-    let hitboxX = player.facing === 'right' ? player.x + player.width : player.x - 50;
+    // 1. Defina o novo alcance (ex: 30 pixels em vez de 60)
+    let alcance = 30; 
+    
+    // 2. Ajuste a posição inicial
+    // Direita: Começa colado no player. Esquerda: Recua apenas o tamanho do alcance.
+    let hitboxX = player.facing === 'right' ? player.x + player.width : player.x - alcance;
 
     enemies.forEach(en => {
         if (en.state === 'dead') return;
 
-        if (hitboxX < en.x + en.width && hitboxX + 60 > en.x && 
-            player.y < en.y + en.height && player.y + player.height > en.y) {
+        // 3. Use a variável 'alcance' na verificação de colisão
+        if (hitboxX < en.x + en.width && 
+            hitboxX + alcance > en.x && 
+            player.y < en.y + en.height && 
+            player.y + player.height > en.y) {
             
             en.hp -= 1;
 
-            // ALTERAÇÃO AQUI:
-            // Só entra no estado 'hurt' se NÃO for a Enchantress
             if (en.type !== 'Enchantress') {
                 en.state = 'hurt';
                 en.currentFrame = 0;
@@ -315,6 +321,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
