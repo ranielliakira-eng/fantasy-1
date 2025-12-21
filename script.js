@@ -134,15 +134,34 @@ window.mover = function(dir, estado) {
 };
 
 window.pular = function() {
-    if (gameState === 'playing' && player.onGround && !isPaused) player.velY = player.jumpForce;
+    if (gameState === 'playing' && player.onGround && !isPaused) {
+        player.velY = player.jumpForce; 
+        player.onGround = false;        
+        player.state = 'jumping'; 
+        player.currentFrame = 0; 
+        console.log("Pulo realizado!");
+    }
 };
 
 window.atacar = function() {
-    if (gameState === 'dead') { window.resetGame(); return; }
+    // Se estiver morto, o botão de ataque reinicia o jogo
+    if (player.state === 'dead' || gameState === 'dead') { 
+        window.resetGame(); 
+        return; 
+    }
+
+    // Só ataca se estiver no estado normal (evita atacar enquanto pula ou já ataca)
     if (gameState !== 'playing' || player.state !== 'normal' || isPaused) return;
-    player.state = 'attacking'; player.currentFrame = 0;
+
+    player.state = 'attacking'; 
+    player.currentFrame = 0;
     
-    checkPlayerHit();
+    // CORREÇÃO: Chamando a função de colisão por Hitbox que criamos
+    if (typeof checkMeleeHit === "function") {
+        checkMeleeHit();
+    } else {
+        console.warn("Atenção: função checkMeleeHit não encontrada!");
+    }
 };
 
 // --- LÓGICA ---
@@ -321,6 +340,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
