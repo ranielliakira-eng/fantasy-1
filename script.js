@@ -97,9 +97,24 @@ window.toggleSom = function() {
 };
 
 window.resetGame = function() {
-    player.hp = player.maxHp; player.x = 100; player.y = 100;
-    player.velX = 0; player.velY = 0; player.state = 'idle';
-    cameraX = 0; isPaused = false; gameState = 'playing';
+    // 1. Esconde a tela de Game Over / Vitória
+    const screen = document.getElementById('game-over-screen');
+    if (screen) screen.style.display = 'none';
+
+    // 2. Reseta o Player (Com os 10 de HP para teste!)
+    player.hp = player.maxHp; 
+    player.x = 100; 
+    player.y = 100;
+    player.velX = 0; 
+    player.velY = 0; 
+    player.state = 'idle';
+
+    // 3. Reseta o Mundo
+    cameraX = 0; 
+    isPaused = false; 
+    gameState = 'playing';
+
+    // 4. Recarrega os monstros
     initEnemies();
 };
 
@@ -226,35 +241,40 @@ function checkMeleeHit() {
 
 // --- LÓGICA (UPDATE) ---
 function update() {
-    // 1. Lógica de Morte do Player
-    if (player.state === 'dead') {
+    // 1. CHECAGEM DE MORTE DO PLAYER
+    if (player.hp <= 0) { 
+        if (player.state !== 'dead') {
+            player.state = 'dead'; 
+            player.currentFrame = 0; 
+            
+            // MOSTRAR TELA DE FIM DE JOGO
+            const screen = document.getElementById('game-over-screen');
+            if (screen) {
+                screen.style.display = 'flex';
+                const vText = document.getElementById('victory-text');
+                if (vText) {
+                    vText.innerText = "Fim de Jogo!";
+                    vText.style.color = "red";
+                }
+            }
+        }
+
+        // Animação de morte (trava no último frame)
         player.frameTimer++;
         if (player.frameTimer >= player.frameInterval) {
             if (player.currentFrame < player.deadFrames - 1) player.currentFrame++;
             player.frameTimer = 0;
         }
-        
-        // MOSTRAR TELA DE DERROTA (MOBILE)
-        const screen = document.getElementById('game-over-screen');
-        if (screen && screen.style.display !== 'flex') {
-            screen.style.display = 'flex';
-            document.getElementById('victory-text').innerText = "Fim de Jogo!";
-            document.getElementById('victory-text').style.color = "#ff4444";
-        }
-        return;
+        return; 
     }
 
     if (gameState !== 'playing' || isPaused) return;
 
-    if (player.hp <= 0) { 
-        player.state = 'dead'; 
-        player.currentFrame = 0; 
-        return; 
-    }
-
+    // 2. MOVIMENTAÇÃO E FÍSICA
     player.velY += gravity;
     player.x += player.velX;
     player.y += player.velY;
+    
     if (keys.left) player.velX = -player.speed;
     else if (keys.right) player.velX = player.speed;
     else player.velX *= 0.7;
@@ -267,7 +287,7 @@ function update() {
         }
     });
 
-    // Animação Player
+    // 3. ANIMAÇÃO DO PLAYER
     player.frameTimer++;
     if (player.frameTimer >= player.frameInterval) {
         player.frameTimer = 0;
@@ -286,10 +306,11 @@ function update() {
         }
     }
 
+    // 4. CÂMERA
     cameraX += ((player.x + player.width/2 - canvas.width/2) - cameraX) * 0.1;
     cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width));
 
-    // IA Inimigos
+    // 5. IA DOS INIMIGOS
     enemies.forEach(en => {
         let dist = Math.abs(player.x - en.x);
 
@@ -297,13 +318,16 @@ function update() {
             en.frameTimer++;
             if (en.frameTimer >= en.frameInterval && en.currentFrame < en.deadFrames - 1) en.currentFrame++;
             
-            // --- MOSTRAR TELA DE VITÓRIA (ENCHANTRESS) ---
+            // --- SE O BOSS MORRER, MOSTRA TELA DE VITÓRIA ---
             if (en.type === 'Enchantress') {
                 const screen = document.getElementById('game-over-screen');
-                if (screen && screen.style.display !== 'flex') {
+                if (screen) {
                     screen.style.display = 'flex';
-                    document.getElementById('victory-text').innerText = "Uma história começa...";
-                    document.getElementById('victory-text').style.color = "#ffffff";
+                    const vText = document.getElementById('victory-text');
+                    if (vText) {
+                        vText.innerText = "Uma história começa...";
+                        vText.style.color = "white";
+                    }
                 }
             }
             return;
@@ -322,7 +346,7 @@ function update() {
             }
         }
 
-        // Estados de Dano e Movimento
+        // Estados de Dano e Movimento dos Inimigos
         if (en.state === 'hurt') {
             en.frameTimer++;
             if (en.frameTimer % 10 === 0) en.currentFrame = (en.currentFrame + 1) % (en.hurtFrames || 2);
@@ -345,7 +369,7 @@ function update() {
             en.frameTimer = 0;
         }
 
-        // Ataque do Inimigo ao Player
+        // Inimigo ataca Player
         if (dist < en.attackRange && en.attackCooldown <= 0 && player.state !== 'dead') {
             en.state = 'attacking'; en.currentFrame = 0; player.hp -= 1; en.attackCooldown = 80;
         }
@@ -466,6 +490,22 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
+// Localiza o botão que criamos no HTML
+const btnReset = document.getElementById('btn-reset');
+
+if (btnReset) {
+    // Para funcionar quando clicar com o mouse (PC)
+    btnReset.addEventListener('click', () => {
+        window.resetGame();
+    });
+
+    // Para funcionar instantaneamente com o toque (Celular)
+    btnReset.addEventListener('touchstart', (e) => {
+        e.preventDefault(); // Evita bugs de duplo clique no mobile
+        window.resetGame();
+    });
+}
 
 
 
