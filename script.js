@@ -1,201 +1,32 @@
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-canvas.width = 800; canvas.height = 450;
-
-// --- CONFIGURAÇÕES GLOBAIS ---
-const bgMusic = new Audio('assets/sounds/song.wav');
-bgMusic.loop = true;
-bgMusic.volume = 0.5;
-
-const gravity = 0.8;
-const zoom = 1; 
-const mapWidth = 7000; 
-let cameraX = 0;
-let cameraY = 0;
-let gameState = 'menu';
-let isPaused = false;
-let isMuted = false;
-
-// --- JOGADOR ---
-const player = {
-    x: 100, y: 100, width: 100, height: 100,
-    velX: 0, velY: 0, speed: 5, jumpForce: -15,
-    facing: 'right', onGround: false, state: 'normal',
-    hp: 3, maxHp: 3,
-    imgWalk: new Image(), imgDead: new Image(), imgJump: new Image(), imgHurt: new Image(),
-    imgAttack: new Image(), imgIdle: new Image (),
-    attackFrames: 6, walkFrames: 8,
-    currentFrame: 0, frameTimer: 0, frameInterval: 8
-};
-
-// --- INIMIGOS ---
-let enemies = [];
-function initEnemies() {
-    enemies = [
-        { type: 'Green_Slime', x: 800, y: 300, hp: 1, damage: 1, speed: 1.2, range: 200, attackType: 'melee', attackRange: 50, state: 'patrol', walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3, currentFrame: 0, frameTimer: 0, frameInterval: 4 },
-        { type: 'Blue_Slime', x: 2500, y: 300, hp: 1, damage: 1, speed: 1.8, range: 250, attackType: 'melee', attackRange: 50, state: 'jumping', walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3, currentFrame: 0, frameTimer: 0, frameInterval: 4 },
-        { type: 'Red_Slime', x: 4000, y: 300, hp: 1, damage: 1, speed: 2.5, range: 450, attackType: 'melee', attackRange: 50, state: 'chase', walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3, currentFrame: 0, frameTimer: 0, frameInterval: 4 },
-        { type: 'Enchantress', x: 6600, y: 300, hp: 3, damage: 1, speed: 2, range: 400, attackType: 'melee', attackRange: 100, walkFrames: 8, attackFrames: 6, hurtFrames: 2, hurtFrames: 6, deadFrames: 5, currentFrame: 0, frameTimer: 0, frameInterval: 4  }
-    ];
-
-    enemies.forEach(en => {
-        en.imgIdle = new Image(); en.imgIdle.src = `assets/${en.type}/Idle.png`;
-        en.imgWalk = new Image(); en.imgWalk.src = `assets/${en.type}/Walk.png`;
-        en.imgAttack = new Image(); en.imgAttack.src = `assets/${en.type}/Attack_1.png`;
-        en.imgHurt = new Image(); en.imgHurt.src = `assets/${en.type}/Hurt.png`;
-        en.imgDead = new Image(); en.imgDead.src = `assets/${en.type}/Dead.png`;
-                
-        en.width = 100; en.height = 100;
-        en.currentFrame = 0; en.frameTimer = 0; en.frameInterval = 8;
-        en.state = 'patrol'; en.facing = 'left';
-    });
-}
-
-const platforms = [
-    { x: 0, y: 400, w: mapWidth, h: 60 },
-    { x: 6400, y: 280, w: 500, h: 20 }
-];
-
-let keys = { left: false, right: false };
-
-// --- SISTEMA ---
-window.togglePause = function() {
-    if (gameState !== 'playing') return;
-    isPaused = !isPaused;
-    if (isPaused) bgMusic.pause();
-    else if (!isMuted) bgMusic.play().catch(() => {});
-};
-
-window.toggleSom = function() {
-    isMuted = !isMuted;
-    bgMusic.muted = isMuted;
-    const btn = document.getElementById('btn-audio');
-    if (btn) btn.innerText = isMuted ? "Mudo" : "Som";
-};
-
-window.resetGame = function() {
-    player.hp = player.maxHp; player.x = 100; player.y = 100;
-    player.velX = 0; player.velY = 0; player.state = 'normal';
-    cameraX = 0; isPaused = false; gameState = 'playing';
-    initEnemies();
-};
-
-window.escolherPersonagem = function(genero) {
-    console.log("Botão clicado! Gênero selecionado:", genero);
-
-    // 1. Tenta encontrar o menu para esconder
-    const menu = document.getElementById('selection-menu');
-    if (menu) {
-        menu.style.display = 'none';
-    } else {
-        console.error("Erro: Não achei o elemento com ID 'selection-menu'");
-    }
-    
-    const folder = (genero === 'menina') ? 'Knight' : 'Swordsman';
-    
-    // Configura os frames específicos para cada personagem
-    if (genero === 'menina') {
-        player.idleFrames = 6;
-        player.walkFrames = 8;
-        player.jumpFrames = 6;
-        player.hurtFrames = 3;
-        player.deadFrames = 4;
-        player.attackFrames = 5;
-    } else {
-        player.idleFrames = 8;
-        player.walkFrames = 8;
-        player.jumpFrames = 8;
-        player.hurtFrames = 3;
-        player.deadFrames = 3;
-        player.attackFrames = 6;
-    }
-
-    // Carrega as imagens
-    player.imgIdle.src = `assets/${folder}/Idle.png`;
-    player.imgWalk.src = `assets/${folder}/Walk.png`;
-    player.imgJump.src = `assets/${folder}/Jump.png`;
-    player.imgHurt.src = `assets/${folder}/Hurt.png`;
-    player.imgDead.src = `assets/${folder}/Dead.png`;
-    player.imgAttack.src = `assets/${folder}/Attack_1.png`;
-
-    gameState = 'playing';
-    initEnemies();
-    bgMusic.play().catch(() => {});
-    
-    document.getElementById('selection-menu').style.display = 'none';
-    document.getElementById('mobile-controls').style.display = 'flex';
-};
-
-window.mover = function(dir, estado) {
-    if (gameState !== 'playing' || player.state === 'dead' || isPaused) return;
-    if (dir === 'left') keys.left = estado;
-    if (dir === 'right') keys.right = estado;
-    if (estado) player.facing = dir;
-};
-
-window.pular = function() {
-    if (gameState === 'playing' && player.onGround && !isPaused) {
-        player.velY = player.jumpForce; 
-        player.onGround = false;        
-        player.state = 'jumping'; 
-        player.currentFrame = 0; 
-        console.log("Pulo realizado!");
-    }
-};
-
-window.atacar = function() {
-    // Se estiver morto, reinicia
-    if (player.state === 'dead') { window.resetGame(); return; }
-    
-    // Bloqueios: Só ataca se estiver jogando, sem pausa e NO CHÃO
-    if (gameState !== 'playing' || isPaused || !player.onGround) return;
-
-    // Se já estiver atacando, não faz nada (evita spam de animação)
-    if (player.state === 'attacking') return;
-
-    // Inicia o ataque
-    player.state = 'attacking'; 
-    player.currentFrame = 0;
-
-    if (typeof checkMeleeHit === "function") {
-        checkMeleeHit(); 
-    }
-};
-
-// --- LÓGICA ---
+// --- LÓGICA DE ATUALIZAÇÃO (Física e IA) ---
 function update() {
-    // 1. Processamento de Morte do Jogador
     if (player.state === 'dead') {
         player.frameTimer++;
         if (player.frameTimer >= player.frameInterval) {
-            if (player.currentFrame < (player.deadFrames || 4) - 1) {
-                player.currentFrame++;
-            }
+            if (player.currentFrame < (player.deadFrames || 4) - 1) player.currentFrame++;
             player.frameTimer = 0;
         }
-        return; // Para a execução se estiver morto
+        return;
     }
 
     if (gameState !== 'playing' || isPaused) return;
 
-    // 2. Verificação de Saúde
     if (player.hp <= 0) {
         player.state = 'dead';
         player.currentFrame = 0;
         return;
     }
 
-    // 3. Movimentação Horizontal
+    // Movimentação do Player
     if (keys.left) player.velX = -player.speed;
     else if (keys.right) player.velX = player.speed;
-    else player.velX *= 0.7; // Atrito/Inércia
+    else player.velX *= 0.7;
 
-    // 4. Física e Gravidade
     player.velY += gravity;
     player.x += player.velX;
     player.y += player.velY;
 
-    // 5. Colisão com Plataformas
+    // Colisão Plataformas
     player.onGround = false;
     platforms.forEach(p => {
         if (player.x + 40 < p.x + p.w && player.x + 60 > p.x && 
@@ -206,14 +37,12 @@ function update() {
         }
     });
 
-    // 6. Máquina de Estados (Animação do Player)
+    // Animação do Player
     player.frameTimer++;
     if (player.frameTimer >= player.frameInterval) {
         player.frameTimer = 0;
-
         if (player.state === 'attacking') {
             player.currentFrame++;
-            // Quando acaba o ataque, volta para idle
             if (player.currentFrame >= player.attackFrames) {
                 player.state = 'idle';
                 player.currentFrame = 0;
@@ -233,123 +62,64 @@ function update() {
         }
     }
 
-    // 7. Câmera Suave
+    // Câmera
     let alvoX = (player.x + player.width / 2) - (canvas.width / 2) / zoom;
     cameraX += (alvoX - cameraX) * 0.1;
     cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width / zoom));
 
-    // 8. IA e Animação dos Inimigos
-[...enemies, player].forEach(obj => {
-    // ... (sua lógica de selecionar img e totalF continua igual)
-
-    if (img.complete && img.width > 0) {
-        const fw = img.width / totalF;
-        const fh = img.height;
-
-        ctx.save();
-        
-        // Valores padrão (resetam a cada loop para não vazar de um inimigo para outro)
-        let drawHeight = obj.height;
-        let drawY = obj.y;
-
-        // AJUSTE ESPECÍFICO PARA ENCHANTRESS
-        if (obj.type === 'Enchantress') {
-            if (obj.state === 'hurt') {
-                // Ajuste para o Hurt.png (que tem muito vazio no topo)
-                drawHeight = obj.height * 1.5; 
-                drawY = obj.y - (obj.height * 0.5); 
-            } else if (obj.state === 'idle' || obj.state === 'patrol') {
-                // Se o Idle estiver "grandão" ou "achatado", ajuste aqui.
-                // Se o Idle estiver OK, mantenha drawHeight = obj.height
-                drawHeight = obj.height; 
-                drawY = obj.y;
+    // IA dos Inimigos
+    enemies.forEach(en => {
+        if (en.state === 'dead') {
+            en.frameTimer++;
+            if (en.frameTimer >= en.frameInterval) {
+                if (en.currentFrame < (en.deadFrames || 4) - 1) en.currentFrame++;
+                en.frameTimer = 0;
             }
+            return;
         }
 
-        // Desenho final usando as variáveis de ajuste
-        if (obj.facing === 'left') {
-            ctx.translate(obj.x + obj.width, drawY);
-            ctx.scale(-1, 1);
-            ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, 0, 0, obj.width, drawHeight);
-        } else {
-            ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, obj.x, drawY, obj.width, drawHeight);
+        if (en.state === 'hurt') {
+            en.frameTimer++;
+            if (en.frameTimer >= 30) {
+                en.state = 'patrol';
+                en.frameTimer = 0;
+                en.currentFrame = 0;
+            }
+            return;
         }
-        ctx.restore();
-    }
-});
 
-        // Recuperação de dano
-if (en.state === 'hurt') {
-    en.frameTimer++;
-    
-    // 1. Controle da animação (troca entre os 2 frames)
-    // Usamos um intervalo menor (ex: 10) para o movimento ser visível
-    if (en.frameTimer % 10 === 0) {
-        en.currentFrame = (en.currentFrame + 1) % (en.hurtFrames || 2);
-    }
+        // Movimentação Básica (Patrulha/Chase)
+        let dist = Math.abs(player.x - en.x);
+        if (en.state === 'patrol') {
+            en.x += (en.facing === 'left' ? -en.speed : en.speed);
+            if (dist < 300) en.state = 'chase';
+        } else if (en.state === 'chase') {
+            if (player.x < en.x) { en.x -= en.speed * 1.2; en.facing = 'left'; }
+            else { en.x += en.speed * 1.2; en.facing = 'right'; }
+            if (dist > 500) en.state = 'patrol';
+        }
 
-    // 2. Controle do tempo total do estado (quanto tempo ela fica atordoada)
-    // Se o timer chegar a 30, ela volta ao normal
-    if (en.frameTimer >= 30) { 
-        en.state = 'patrol';
-        en.frameTimer = 0;
-        en.currentFrame = 0;
-    }
-    return; // Importante para ela não andar enquanto sente dor
-}
-
-        // Animação do inimigo
+        // Animação Inimigo
         en.frameTimer++;
         if (en.frameTimer >= en.frameInterval) {
             let framesTotais = (en.state === 'attacking') ? (en.attackFrames || 6) : (en.walkFrames || 8);
             en.currentFrame = (en.currentFrame + 1) % framesTotais;
-
-            if (en.state === 'attacking' && en.currentFrame === 0) {
-                en.state = 'patrol';
-            }
+            if (en.state === 'attacking' && en.currentFrame === 0) en.state = 'patrol';
             en.frameTimer = 0;
         }
 
-        // Lógica de Ataque contra o Jogador
-        let dist = Math.abs(player.x - en.x);
-        if (dist < (en.attackRange || 100) && (en.attackCooldown || 0) <= 0 && player.state !== 'dead') {
+        // Ataque Inimigo
+        if (dist < (en.attackRange || 60) && (en.attackCooldown || 0) <= 0 && player.state !== 'dead') {
             en.state = 'attacking';
             en.currentFrame = 0;
-            
-            if (dist < 60) player.hp -= 0.5; // Dano ajustado para não morrer instantâneo
-            en.attackCooldown = 80; 
+            player.hp -= 0.5;
+            en.attackCooldown = 80;
         }
         if (en.attackCooldown > 0) en.attackCooldown--;
     });
 }
 
-function checkMeleeHit() {
-    // Cria uma caixa invisível na frente do jogador dependendo do lado que ele olha
-    let hitboxX = player.facing === 'right' ? player.x + player.width : player.x - 50;
-    let hitboxWidth = 60; // Largura do alcance da espada
-
-    enemies.forEach(en => {
-        if (en.state === 'dead') return; // Não bate em quem já morreu
-
-        // Verifica colisão entre a hitbox da espada e o corpo do inimigo
-        if (hitboxX < en.x + en.width && 
-            hitboxX + hitboxWidth > en.x &&
-            player.y < en.y + en.height && 
-            player.y + player.height > en.y) {
-            
-            en.hp -= 1;
-            en.state = 'hurt'; // Inimigo entra em estado de dano
-            en.currentFrame = 0; // Reseta animação para mostrar o dano
-            
-            if(en.hp <= 0) {
-                en.state = 'dead';
-                en.currentFrame = 0;
-            }
-        }
-    });
-}
-
-// --- DESENHO ---
+// --- LÓGICA DE DESENHO (Visual) ---
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (gameState === 'menu') return;
@@ -358,79 +128,53 @@ function draw() {
     ctx.scale(zoom, zoom);
     ctx.translate(-Math.floor(cameraX), -Math.floor(cameraY)); 
 
-    // 1. Desenhar o Chão
+    // Chão
     ctx.fillStyle = "#4e342e";
     platforms.forEach(p => ctx.fillRect(p.x, p.y, p.w, p.h));
 
-    // 2. Desenhar Personagens e Inimigos
+    // Personagens e Inimigos
     [...enemies, player].forEach(obj => {
-    let img = obj.imgIdle;
-    let totalF = obj.idleFrames || 8;
+        let img = obj.imgIdle;
+        let totalF = obj.idleFrames || 8;
 
-    if (obj.state === 'walking') { img = obj.imgWalk; totalF = obj.walkFrames || 8; }
-    else if (obj.state === 'attacking') { img = obj.imgAttack; totalF = obj.attackFrames || 6; }
-    else if (obj.state === 'hurt') { 
-        img = obj.imgHurt; 
-        totalF = 2; // Confirmado pela sua imagem
-    }
-    else if (obj.state === 'dead') { img = obj.imgDead; totalF = obj.deadFrames || 5; }
-
-    if (img.complete && img.width > 0) {
-        const fw = img.width / totalF;
-        const fh = img.height;
-
-        ctx.save();
-        
-        // Se for a Enchantress levando dano, vamos ajustar a escala interna
-        // para ignorar o excesso de espaço vazio da imagem
-        let drawHeight = obj.height;
-        let drawY = obj.y;
-
-        if (obj.type === 'Enchantress' && obj.state === 'hurt') {
-            // Como a imagem tem muito vazio no topo, aumentamos um pouco 
-            // a área de desenho para a boneca não parecer pequena
-            drawHeight = obj.height * 1.5; 
-            drawY = obj.y - (obj.height * 0.5); // Sobe o desenho para alinhar os pés
+        if (obj.state === 'walking') { img = obj.imgWalk; totalF = obj.walkFrames || 8; }
+        else if (obj.state === 'attacking') { img = obj.imgAttack; totalF = obj.attackFrames || 6; }
+        else if (obj.state === 'jumping') { img = obj.imgJump; totalF = obj.jumpFrames || 8; }
+        else if (obj.state === 'hurt') { 
+            img = obj.imgHurt; 
+            totalF = (obj.type === 'Enchantress') ? 2 : (obj.hurtFrames || 4); 
         }
+        else if (obj.state === 'dead') { img = obj.imgDead; totalF = obj.deadFrames || 5; }
 
-        if (obj.facing === 'left') {
-            ctx.translate(obj.x + obj.width, drawY);
-            ctx.scale(-1, 1);
-            ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, 0, 0, obj.width, drawHeight);
-        } else {
-            ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, obj.x, drawY, obj.width, drawHeight);
+        if (img.complete && img.width > 0) {
+            const fw = img.width / totalF;
+            const fh = img.height;
+            let drawHeight = obj.height;
+            let drawY = obj.y;
+
+            // Ajuste especial para o sprite da Enchantress (Hurt)
+            if (obj.type === 'Enchantress' && obj.state === 'hurt') {
+                drawHeight = obj.height * 1.5; 
+                drawY = obj.y - (obj.height * 0.5);
+            }
+
+            ctx.save();
+            if (obj.facing === 'left') {
+                ctx.translate(obj.x + obj.width, drawY);
+                ctx.scale(-1, 1);
+                ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, 0, 0, obj.width, drawHeight);
+            } else {
+                ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, obj.x, drawY, obj.width, drawHeight);
+            }
+            ctx.restore();
         }
-        ctx.restore();
-    }
-});
+    });
 
     ctx.restore();
 
-    // 3. Interface (Barra de Vida)
+    // HUD
     if (gameState === 'playing') {
         ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(20, 20, 150, 15);
         ctx.fillStyle = "red"; ctx.fillRect(20, 20, (player.hp / player.maxHp) * 150, 15);
     }
 }
-
-function gameLoop() { update(); draw(); requestAnimationFrame(gameLoop); }
-gameLoop();
-
-// Eventos
-window.addEventListener('keydown', (e) => {
-    const k = e.key.toLowerCase();
-    if(k === 'a') window.mover('left', true);
-    if(k === 'd') window.mover('right', true);
-    if(k === 'w' || k === ' ') window.pular();
-    if(k === 'k') window.atacar();
-});
-window.addEventListener('keyup', (e) => {
-    const k = e.key.toLowerCase();
-    if(k === 'a') window.mover('left', false);
-    if(k === 'd') window.mover('right', false);
-});
-
-
-
-
-
