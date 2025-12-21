@@ -24,8 +24,8 @@ const player = {
     hp: 3, maxHp: 3,
     imgWalk: new Image(), imgDead: new Image(), imgJump: new Image(), imgHurt: new Image(),
     imgAttack: new Image(), imgIdle: new Image (),
-    attackFrames: 6, walkFrames: 8,
-    currentFrame: 0, frameTimer: 0, frameInterval: 6
+    attackFrames: 1, walkFrames: 1,
+    currentFrame: 0, frameTimer: 0, frameInterval: 1
 };
 
 // --- INIMIGOS ---
@@ -325,7 +325,7 @@ function draw() {
     // 2. Desenhar Personagens e Inimigos
     [...enemies, player].forEach(obj => {
         let img = obj.imgWalk; // Imagem padrão
-        let totalFrames = 8;    // Valor padrão caso algo falhe
+        let totalFrames = 4;    // Valor padrão caso algo falhe
 
         // --- LÓGICA DINÂMICA DE IMAGEM E FRAMES ---
         if (obj.state === 'attacking') {
@@ -401,6 +401,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
