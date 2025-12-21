@@ -109,16 +109,6 @@ window.atacar = function() {
     checkPlayerHit();
 };
 
-function checkPlayerHit() {
-    enemies.forEach(en => {
-        let dist = Math.abs((player.x + player.width/2) - (en.x + en.width/2));
-        if(dist < 100 && en.state !== 'dead') {
-            en.hp--;
-            if(en.hp <= 0) { en.state = 'dead'; en.currentFrame = 0; }
-        }
-    });
-}
-
 // --- LÓGICA ---
 function update() {
     if (gameState !== 'playing' || isPaused) return;
@@ -260,6 +250,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
