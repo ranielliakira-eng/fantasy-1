@@ -11,7 +11,7 @@ const gravity = 0.8;
 const zoom = 0; 
 const mapWidth = 7000; 
 let cameraX = 0;
-let cameraY = 0;
+let cameraY = 120;
 let gameState = 'menu';
 let isPaused = false;
 let isMuted = false;
@@ -320,6 +320,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
