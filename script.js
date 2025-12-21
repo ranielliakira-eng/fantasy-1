@@ -42,7 +42,7 @@ function initEnemies() {
         en.imgWalk = new Image(); en.imgWalk.src = `assets/${en.type}/Walk.png`;
         en.imgAttack = new Image(); en.imgAttack.src = `assets/${en.type}/Attack_1.png`;
         en.imgDead = new Image(); en.imgDead.src = `assets/${en.type}/Dead.png`;
-        en.width = 80; en.height = 80;
+        en.width = 100; en.height = 100;
         en.currentFrame = 0; en.frameTimer = 0; en.frameInterval = 8;
         en.state = 'patrol'; en.facing = 'left';
     });
@@ -156,6 +156,51 @@ function update() {
     let alvoX = (player.x + player.width / 2) - (canvas.width / 2) / zoom;
     cameraX += (alvoX - cameraX) * 0.1;
     cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width / zoom));
+
+    enemies.forEach(en => {
+    let dist = Math.abs(player.x - en.x);
+
+    if (dist < en.attackRange && en.attackCooldown <= 0) {
+        if (en.attackType === 'melee') {
+            // Lógica de corpo a corpo
+            en.state = 'attacking';
+            if (dist < 50) player.hp -= 1; // Dano direto se estiver colado
+        } 
+        else if (en.attackType === 'ranged') {
+            // Lógica de longo alcance (ex: Enchantress)
+            en.state = 'attacking';
+            dispararProjetil(en); 
+        }
+        en.attackCooldown = 100; // Tempo entre ataques
+    }
+    if (en.attackCooldown > 0) en.attackCooldown--;
+});
+}
+
+function checkMeleeHit() {
+    // Cria uma caixa invisível na frente do jogador dependendo do lado que ele olha
+    let hitboxX = player.facing === 'right' ? player.x + player.width : player.x - 50;
+    let hitboxWidth = 60; // Largura do alcance da espada
+
+    enemies.forEach(en => {
+        if (en.state === 'dead') return; // Não bate em quem já morreu
+
+        // Verifica colisão entre a hitbox da espada e o corpo do inimigo
+        if (hitboxX < en.x + en.width && 
+            hitboxX + hitboxWidth > en.x &&
+            player.y < en.y + en.height && 
+            player.y + player.height > en.y) {
+            
+            en.hp -= 1;
+            en.state = 'hurt'; // Inimigo entra em estado de dano
+            en.currentFrame = 0; // Reseta animação para mostrar o dano
+            
+            if(en.hp <= 0) {
+                en.state = 'dead';
+                en.currentFrame = 0;
+            }
+        }
+    });
 }
 
 // --- DESENHO ---
@@ -215,5 +260,6 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
