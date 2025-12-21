@@ -11,7 +11,7 @@ const gravity = 0.8;
 const zoom = 1.6; 
 const mapWidth = 7000; 
 let cameraX = 0;
-let cameraY = 0;
+let cameraY = 0; // Agora vamos usar isso!
 let gameState = 'menu';
 let isPaused = false;
 let isMuted = false;
@@ -26,18 +26,18 @@ const player = {
     imgAttack: new Image(), 
     attackFrames: 6,
     currentFrame: 0, walkFrames: 8, jumpFrames: 8, deadFrames: 3, hurtFrames: 3,
-    frameTimer: 0, frameInterval: 6 // Velocidade da animação
+    frameTimer: 0, frameInterval: 6
 };
 
 // --- INIMIGOS ---
 let enemies = [];
 function initEnemies() {
     enemies = [
-        { type: 'Green_Slime', x: 800, y: 200, hp: 1, speed: 1.2, range: 200, damage: 1 },
-        { type: 'Red_Slime', x: 2500, y: 200, hp: 1, speed: 2.5, range: 450, damage: 1 },
-        { type: 'Blue_Slime', x: 4000, y: 200, hp: 1, speed: 1.8, range: 250, damage: 1 },
+        { type: 'Green_Slime', x: 800, y: 320, hp: 1, speed: 1.2, range: 200, damage: 1 }, // Ajustei o Y para 320 (ficar no chão)
+        { type: 'Red_Slime', x: 2500, y: 320, hp: 1, speed: 2.5, range: 450, damage: 1 },
+        { type: 'Blue_Slime', x: 4000, y: 320, hp: 1, speed: 1.8, range: 250, damage: 1 },
         { 
-            type: 'Enchantress', x: 6600, y: 150, hp: 3, speed: 2, 
+            type: 'Enchantress', x: 6600, y: 250, hp: 3, speed: 2, 
             attackType: 'melee', range: 400, damage: 1
         }
     ];
@@ -89,6 +89,7 @@ window.resetGame = function() {
     player.state = 'normal'; player.currentFrame = 0;
     player.invincible = false;
     cameraX = 0; 
+    cameraY = 0;
     isPaused = false;
     gameState = 'playing';
     initEnemies();
@@ -160,24 +161,37 @@ function update() {
         }
     });
 
-    // --- ANIMAÇÃO (Isso faltava no seu código!) ---
+    // --- ANIMAÇÃO ---
     player.frameTimer++;
     if (player.frameTimer >= player.frameInterval) {
         if (player.state === 'attacking') {
             player.currentFrame++;
             if (player.currentFrame >= player.attackFrames) player.state = 'normal';
         } else if (player.state === 'normal') {
-            // Só anima se estiver se movendo
             if (Math.abs(player.velX) > 0.1) player.currentFrame = (player.currentFrame + 1) % player.walkFrames;
             else player.currentFrame = 0;
         }
         player.frameTimer = 0;
     }
 
-    // --- CÂMERA ---
-    let targetX = (player.x + player.width/2) - (canvas.width / 2) / zoom;
-    cameraX += (targetX - cameraX) * 0.1;
+    // --- CÂMERA (CORRIGIDA X e Y) ---
+    // 1. Calcula o alvo X (Centraliza horizontalmente)
+    let alvoX = (player.x + player.width / 2) - (canvas.width / 2) / zoom;
+    
+    // 2. Calcula o alvo Y (Centraliza verticalmente) - ISSO É NOVO!
+    // O "- 100" ali no final serve para olhar um pouco mais acima do pé do jogador
+    let alvoY = (player.y + player.height / 2) - (canvas.height / 2) / zoom;
+
+    // 3. Suavização
+    cameraX += (alvoX - cameraX) * 0.1;
+    cameraY += (alvoY - cameraY) * 0.1;
+
+    // 4. Limites da Câmera
     cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width / zoom));
+    
+    // Opcional: Impedir câmera de olhar muito para baixo do chão
+    // Se o chão é 400, não deixar cameraY passar de certo ponto
+    if (cameraY > 100) cameraY = 100; 
 }
 
 function draw() {
@@ -186,16 +200,21 @@ function draw() {
 
     ctx.save();
     ctx.scale(zoom, zoom);
-    ctx.translate(-Math.floor(cameraX), 0); 
+    // AQUI ESTÁ O TRUQUE: Agora usamos cameraY também!
+    ctx.translate(-Math.floor(cameraX), -Math.floor(cameraY)); 
 
-    // 1. DESENHAR CENÁRIO (Para você ver a câmera andando)
-    // Vila (0 a 2000)
+    // 1. DESENHAR CENÁRIO DE FUNDO
+    // (Desenhando um retângulo azul claro gigante para ser o céu caso o CSS falhe)
+    ctx.fillStyle = "#87CEEB"; 
+    ctx.fillRect(cameraX, cameraY - 500, canvas.width/zoom + 100, canvas.height/zoom + 600);
+
+    // Casas
     ctx.fillStyle = "#8d6e63"; 
-    for(let i=200; i<2000; i+=500) ctx.fillRect(i, 300, 100, 100); // Casas
+    for(let i=200; i<2000; i+=500) ctx.fillRect(i, 300, 100, 100); 
     
-    // Floresta (4000 a 7000)
+    // Árvores
     ctx.fillStyle = "#2e7d32";
-    for(let i=4000; i<7000; i+=300) ctx.fillRect(i, 200, 50, 200); // Árvores
+    for(let i=4000; i<7000; i+=300) ctx.fillRect(i, 200, 50, 200); 
 
     // 2. CHÃO
     ctx.fillStyle = "#4e342e";
@@ -226,7 +245,7 @@ function draw() {
         }
     });
 
-    ctx.restore(); // Fim da Câmera
+    ctx.restore(); 
 
     // 4. UI FIXA
     if (gameState === 'playing') {
@@ -242,7 +261,7 @@ function gameLoop() {
 }
 gameLoop();
 
-// Eventos de teclado
+// Eventos
 window.addEventListener('keydown', (e) => {
     const k = e.key.toLowerCase();
     if(k === 'a') window.mover('left', true);
