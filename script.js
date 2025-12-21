@@ -409,12 +409,20 @@ window.addEventListener('keydown', (e) => {
     if(k === 'd') window.mover('right', true);
     if(k === 'w' || k === ' ') window.pular();
     if(k === 'k') window.atacar();
+    if (e.key.toLowerCase() === 'r') {
+        // Só reinicia se o player estiver morto OU se o boss estiver morto (vitória)
+        const boss = enemies.find(en => en.type === 'Enchantress');
+        if (player.state === 'dead' || (boss && boss.state === 'dead')) {
+            window.resetGame();
+        }
+    }
 });
 window.addEventListener('keyup', (e) => {
     const k = e.key.toLowerCase();
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
