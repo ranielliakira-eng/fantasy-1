@@ -239,53 +239,42 @@ function update() {
     cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width / zoom));
 
     // 8. IA e Animação dos Inimigos
-    enemies.forEach(en => {
-    // 1. Processamento de Morte (Já existe no seu)
-    if (en.state === 'dead') {
-        en.frameTimer++;
-        if (en.frameTimer >= en.frameInterval) {
-            if (en.currentFrame < (en.deadFrames || 4) - 1) en.currentFrame++;
-            en.frameTimer = 0;
+[...enemies, player].forEach(obj => {
+    // ... (sua lógica de selecionar img e totalF continua igual)
+
+    if (img.complete && img.width > 0) {
+        const fw = img.width / totalF;
+        const fh = img.height;
+
+        ctx.save();
+        
+        // Valores padrão (resetam a cada loop para não vazar de um inimigo para outro)
+        let drawHeight = obj.height;
+        let drawY = obj.y;
+
+        // AJUSTE ESPECÍFICO PARA ENCHANTRESS
+        if (obj.type === 'Enchantress') {
+            if (obj.state === 'hurt') {
+                // Ajuste para o Hurt.png (que tem muito vazio no topo)
+                drawHeight = obj.height * 1.5; 
+                drawY = obj.y - (obj.height * 0.5); 
+            } else if (obj.state === 'idle' || obj.state === 'patrol') {
+                // Se o Idle estiver "grandão" ou "achatado", ajuste aqui.
+                // Se o Idle estiver OK, mantenha drawHeight = obj.height
+                drawHeight = obj.height; 
+                drawY = obj.y;
+            }
         }
-        return; 
-    }
 
-    // --- O QUE FALTA ADICIONAR ABAIXO ---
-
-    // 2. Cálculo de Distância até o Player
-    let dist = Math.abs(player.x - en.x);
-
-    // 3. Lógica de IA (Patrol vs Chase)
-    if (en.state === 'patrol') {
-        // Move o inimigo na direção que ele está olhando
-        en.x += (en.facing === 'left' ? -en.speed : en.speed);
-
-        // Se o player chegar perto, muda para Perseguição (Chase)
-        if (dist < 300) {
-            en.state = 'chase';
-        }
-    } 
-    else if (en.state === 'chase') {
-        // Segue a posição do Player
-        if (player.x < en.x) {
-            en.x -= en.speed * 1.5;
-            en.facing = 'left';
+        // Desenho final usando as variáveis de ajuste
+        if (obj.facing === 'left') {
+            ctx.translate(obj.x + obj.width, drawY);
+            ctx.scale(-1, 1);
+            ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, 0, 0, obj.width, drawHeight);
         } else {
-            en.x += en.speed * 1.5;
-            en.facing = 'right';
+            ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, obj.x, drawY, obj.width, drawHeight);
         }
-
-        // Se o player fugir para longe, volta a Patrulhar
-        if (dist > 500) {
-            en.state = 'patrol';
-        }
-    }
-
-    // 4. Lógica de Animação Genérica (Walk/Run)
-    en.frameTimer++;
-    if (en.frameTimer >= en.frameInterval) {
-        en.currentFrame = (en.currentFrame + 1) % (en.walkFrames || 8);
-        en.frameTimer = 0;
+        ctx.restore();
     }
 });
 
@@ -440,6 +429,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
