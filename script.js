@@ -108,13 +108,13 @@ window.escolherPersonagem = function(genero) {
         player.hurtFrames = 3;
         player.deadFrames = 3;
         player.attackFrames = 6;
-
     }
 
     // Carrega as imagens
     player.imgIdle.src = `assets/${folder}/Idle.png`;
     player.imgWalk.src = `assets/${folder}/Walk.png`;
     player.imgJump.src = `assets/${folder}/Jump.png`;
+    player.imgHurt.src = `assets/${folder}/Hurt.png`;
     player.imgDead.src = `assets/${folder}/Dead.png`;
     player.imgAttack.src = `assets/${folder}/Attack_1.png`;
 
@@ -408,6 +408,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
