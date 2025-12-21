@@ -144,15 +144,24 @@ window.pular = function() {
 };
 
 window.atacar = function() {
-    if (player.state === 'dead' || gameState === 'dead') { window.resetGame(); return; }
-    if (gameState !== 'playing' || player.state !== 'normal' || isPaused) return;
+    // Se o player estiver morto, o botão reinicia o jogo
+    if (player.state === 'dead') { 
+        window.resetGame(); 
+        return; 
+    }
 
-    player.state = 'attacking'; 
-    player.currentFrame = 0;
+    // Bloqueios de segurança
+    if (gameState !== 'playing' || isPaused) return;
 
-    // AQUI ESTAVA O ERRO: Mude de checkPlayerHit() para checkMeleeHit()
-    if (typeof checkMeleeHit === "function") {
-        checkMeleeHit(); 
+    // CORREÇÃO: Permitir o ataque se estiver parado (idle) ou andando (walking)
+    // E garantir que não estamos pulando (onGround)
+    if ((player.state === 'idle' || player.state === 'walking') && player.onGround) {
+        player.state = 'attacking'; 
+        player.currentFrame = 0;
+
+        if (typeof checkMeleeHit === "function") {
+            checkMeleeHit(); 
+        }
     }
 };
 
@@ -416,6 +425,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
