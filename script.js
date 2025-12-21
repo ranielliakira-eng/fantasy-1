@@ -421,10 +421,3 @@ window.addEventListener('keyup', (e) => {
     if(k === 'd') window.mover('right', false);
 });
 
-
-
-
-
-
-
-
