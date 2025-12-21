@@ -8,7 +8,7 @@ bgMusic.loop = true;
 bgMusic.volume = 0.5;
 
 const gravity = 0.8;
-const zoom = 1; 
+const zoom = 1.6; 
 const mapWidth = 7000; 
 let cameraX = 0;
 let cameraY = 0;
@@ -294,3 +294,4 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
