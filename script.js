@@ -240,14 +240,54 @@ function update() {
 
     // 8. IA e Animação dos Inimigos
     enemies.forEach(en => {
-        if (en.state === 'dead') {
-            en.frameTimer++;
-            if (en.frameTimer >= en.frameInterval) {
-                if (en.currentFrame < (en.deadFrames || 4) - 1) en.currentFrame++;
-                en.frameTimer = 0;
-            }
-            return; 
+    // 1. Processamento de Morte (Já existe no seu)
+    if (en.state === 'dead') {
+        en.frameTimer++;
+        if (en.frameTimer >= en.frameInterval) {
+            if (en.currentFrame < (en.deadFrames || 4) - 1) en.currentFrame++;
+            en.frameTimer = 0;
         }
+        return; 
+    }
+
+    // --- O QUE FALTA ADICIONAR ABAIXO ---
+
+    // 2. Cálculo de Distância até o Player
+    let dist = Math.abs(player.x - en.x);
+
+    // 3. Lógica de IA (Patrol vs Chase)
+    if (en.state === 'patrol') {
+        // Move o inimigo na direção que ele está olhando
+        en.x += (en.facing === 'left' ? -en.speed : en.speed);
+
+        // Se o player chegar perto, muda para Perseguição (Chase)
+        if (dist < 300) {
+            en.state = 'chase';
+        }
+    } 
+    else if (en.state === 'chase') {
+        // Segue a posição do Player
+        if (player.x < en.x) {
+            en.x -= en.speed * 1.5;
+            en.facing = 'left';
+        } else {
+            en.x += en.speed * 1.5;
+            en.facing = 'right';
+        }
+
+        // Se o player fugir para longe, volta a Patrulhar
+        if (dist > 500) {
+            en.state = 'patrol';
+        }
+    }
+
+    // 4. Lógica de Animação Genérica (Walk/Run)
+    en.frameTimer++;
+    if (en.frameTimer >= en.frameInterval) {
+        en.currentFrame = (en.currentFrame + 1) % (en.walkFrames || 8);
+        en.frameTimer = 0;
+    }
+});
 
         // Recuperação de dano
 if (en.state === 'hurt') {
@@ -400,6 +440,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
