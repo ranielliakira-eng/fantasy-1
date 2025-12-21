@@ -22,7 +22,9 @@ const player = {
     velX: 0, velY: 0, speed: 5, jumpForce: -15,
     facing: 'right', onGround: false, state: 'idle',
     hp: 3, maxHp: 3, canAirAttack: true,
-    imgWalk: new Image(), imgDead: new Image(), imgJump: new Image(), imgHurt: new Image(),
+    imgWalk: new Image(), imgDead: new Image(), imgJump: new Image(), imgHurt: new Image
+
+(),
     imgAttack: new Image(), imgIdle: new Image (),
     attackFrames: 6, walkFrames: 8, idleFrames: 8, jumpFrames: 8, deadFrames: 4,
     currentFrame: 0, frameTimer: 0, frameInterval: 6
@@ -32,33 +34,81 @@ const player = {
 let enemies = [];
 function initEnemies() {
     enemies = [
-        { type: 'Green_Slime', x: 800, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 850, y: 205, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 910, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 905, y: 207, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 907, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        
-        { type: 'Blue_Slime', x: 2500, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 2505, y: 203, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 2495, y: 206, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3, vy: 0, jumpTimer: 0 },
-        { type: 'Blue_Slime', x: 2700, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 2705, y: 198, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 2495, y: 205, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3, vy: 0, jumpTimer: 0 },
-        
-        { type: 'Red_Slime', x: 4000, y: 200, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Red_Slime', x: 4005, y: 205, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Red_Slime', x: 4010, y: 200, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Red_Slime', x: 4015, y: 205, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 800, y: 200, hp: 1, speed: 1.2, attackRange: 30, 
 
-        { type: 'Blue_Slime', x: 5000, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 2495, y: 207, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3, vy: 0, jumpTimer: 0 }, 
-        { type: 'Blue_Slime', x: 5005, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 4995, y: 205, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 5000, y: 203, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Red_Slime', x: 5000, y: 200, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Red_Slime', x: 5000, y: 207, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 850, y: 205, hp: 1, speed: 1.1, attackRange: 30, 
+
+frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 910, y: 200, hp: 1, speed: 1.0, attackRange: 30, 
+
+frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 905, y: 207, hp: 1, speed: 0.9, attackRange: 30, 
+
+frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 907, y: 200, hp: 1, speed: 1.2, attackRange: 30, 
+
+frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         
-        { type: 'Enchantress', x: 6600, y: 100, hp: 3, speed: 2, attackRange: 60, idleFrames: 5, walkFrames: 8, attackFrames: 6, hurtFrames: 2, deadFrames: 5, dialogue: "", dialogueTimer: 0,}
+        { type: 'Blue_Slime', x: 2500, y: 200, hp: 1, speed: 1.8, attackRange: 30, 
+
+frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 2505, y: 203, hp: 1, speed: 1.7, attackRange: 30, 
+
+frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 2495, y: 206, hp: 1, speed: 1.6, attackRange: 30, 
+
+frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Blue_Slime', x: 2700, y: 200, hp: 1, speed: 1.7, attackRange: 30, 
+
+frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 2705, y: 198, hp: 1, speed: 1.5, attackRange: 30, 
+
+frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 2495, y: 205, hp: 1, speed: 1.9, attackRange: 30, 
+
+frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        
+        { type: 'Red_Slime', x: 4000, y: 200, hp: 1, speed: 2.5, attackRange: 30, 
+
+frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 4005, y: 205, hp: 1, speed: 2.4, attackRange: 30, 
+
+frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 4010, y: 200, hp: 1, speed: 2.3, attackRange: 30, 
+
+frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 4015, y: 205, hp: 1, speed: 2.1, attackRange: 30, 
+
+frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+
+        { type: 'Blue_Slime', x: 5000, y: 200, hp: 1, speed: 1.8, attackRange: 30, 
+
+frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 2495, y: 207, hp: 1, speed: 1.7, attackRange: 30, 
+
+frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 5005, y: 200, hp: 1, speed: 1.6, attackRange: 30, 
+
+frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 4995, y: 205, hp: 1, speed: 1.2, attackRange: 30, 
+
+frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 5000, y: 203, hp: 1, speed: 1.3, attackRange: 30, 
+
+frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 5000, y: 200, hp: 1, speed: 2.5, attackRange: 30, 
+
+frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 5000, y: 207, hp: 1, speed: 2.5, attackRange: 30, 
+
+frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        
+        { type: 'Enchantress', x: 6600, y: 100, hp: 3, speed: 2, attackRange: 60, 
+
+idleFrames: 5, walkFrames: 8, attackFrames: 6, hurtFrames: 2, deadFrames: 5, dialogue: "", 
+
+dialogueTimer: 0,}
     ];
 
     enemies.forEach(en => {
@@ -177,63 +227,25 @@ window.atacar = function() {
 };
 
 function checkMeleeHit() {
-    // 1. Defina o novo alcance (ex: 30 pixels em vez de 60)
-    let alcance = 10; 
-    
-    // 2. Ajuste a posição inicial
-    // Direita: Começa colado no player. Esquerda: Recua apenas o tamanho do alcance.
-    let hitboxX = player.facing === 'right' ? player.x + player.width : player.x - alcance;
+    // Alcance do ataque
+    let alcance = 10;
+
+    // Posição da hitbox conforme direção
+    let hitboxX = player.facing === 'right'
+        ? player.x + player.width
+        : player.x - alcance;
 
     enemies.forEach(en => {
         if (en.state === 'dead') return;
-        
-        if (en.type === 'Blue_Slime') {
-          en.vy = en.vy || 0;
-          en.jumpTimer = en.jumpTimer || 0;
 
-          en.vy += 0.6;
-          en.y += en.vy;
-
-          const groundY = (en.type === 'Blue_Slime') ? 200 : 300; 
-          if (en.y > groundY) {
-             en.y = groundY;
-             en.vy = 0;
-             en.jumpTimer++;
-           }
-
-          if (en.jumpTimer > 120) {
-            en.vy = -12;
-            en.jumpTimer = 0;
-        }
-
-    }
-
-        
-        if (en.state === 'dead') {
-    en.frameTimer++;
-    if (en.frameTimer >= en.frameInterval) {
-        if (en.currentFrame < en.deadFrames - 1) {
-            en.currentFrame++;
-        } else {
-            // Se for a Enchantress, ela pode sumir ou ficar caída
-            if (en.type === 'Enchantress') {
-                en.dialogue = "A energia... ";
-                en.dialogueTimer = 100;
-            }
-        }
-        en.frameTimer = 0;
-    }
-    return;
-}
-        
-
-        // 3. Use a variável 'alcance' na verificação de colisão
-        if (hitboxX < en.x + en.width && 
-            hitboxX + alcance > en.x && 
-            player.y < en.y + en.height && 
-            player.y + player.height > en.y) {
-            
-            en.hp -= 1;
+        // Verificação de colisão
+        if (
+            hitboxX < en.x + en.width &&
+            hitboxX + alcance > en.x &&
+            player.y < en.y + en.height &&
+            player.y + player.height > en.y
+        ) {
+            en.hp--;
 
             if (en.type !== 'Enchantress') {
                 en.state = 'hurt';
@@ -241,172 +253,202 @@ function checkMeleeHit() {
                 en.frameTimer = 0;
             }
 
-            if(en.hp <= 0) {
+            if (en.hp <= 0) {
                 en.state = 'dead';
                 en.currentFrame = 0;
+                en.frameTimer = 0;
             }
         }
     });
 }
 
+
 // --- LÓGICA (UPDATE) ---
 function update() {
-    // 1. CHECAGEM DE MORTE DO PLAYER
-    if (player.hp <= 0) { 
-        if (player.state !== 'dead') {
-            player.state = 'dead'; 
-            player.currentFrame = 0; 
-            
-            // MOSTRAR TELA DE FIM DE JOGO
-            const screen = document.getElementById('game-over-screen');
-            if (screen) {
-                screen.style.display = 'flex';
-                const vText = document.getElementById('victory-text');
-                if (vText) {
-                    vText.innerText = "Fim de Jogo!";
-                    vText.style.color = "red";
-                }
-            }
-        }
 
-        // Animação de morte (trava no último frame)
-        player.frameTimer++;
-        if (player.frameTimer >= player.frameInterval) {
-            if (player.currentFrame < player.deadFrames - 1) player.currentFrame++;
-            player.frameTimer = 0;
-        }
-        return; 
+    if (player.hp <= 0) {
+        player.state = 'dead';
+        return;
     }
 
     if (gameState !== 'playing' || isPaused) return;
 
-    // 2. MOVIMENTAÇÃO E FÍSICA
+    // PLAYER – FÍSICA
     player.velY += gravity;
     player.x += player.velX;
     player.y += player.velY;
-    
+
+    // INPUT (bloqueia só durante ataque)
+if (player.state !== 'attacking') {
     if (keys.left) player.velX = -player.speed;
     else if (keys.right) player.velX = player.speed;
     else player.velX *= 0.7;
+} else {
+    player.velX = 0;
+}
 
+    // COLISÃO PLAYER
     player.onGround = false;
     platforms.forEach(p => {
-        if (player.x + 40 < p.x + p.w && player.x + 60 > p.x && 
-            player.y + player.height >= p.y && player.y + player.height <= p.y + 10) {
-            player.y = p.y - player.height; player.velY = 0; player.onGround = true;
+        if (
+            player.x + 40 < p.x + p.w &&
+            player.x + 60 > p.x &&
+            player.y + player.height >= p.y &&
+            player.y + player.height <= p.y + 10
+        ) {
+            player.y = p.y - player.height;
+            player.velY = 0;
+            player.onGround = true;
         }
     });
-    if (player.onGround) {
-      player.canAirAttack = true;
-    }
 
-    // 3. ANIMAÇÃO DO PLAYER
+    // ANIMAÇÃO PLAYER
     player.frameTimer++;
-    if (player.frameTimer >= player.frameInterval) {
-        player.frameTimer = 0;
-        if (player.state === 'attacking') {
-            player.currentFrame++;
-            if (player.currentFrame >= player.attackFrames) { player.state = 'idle'; player.currentFrame = 0; }
-        } else if (!player.onGround) {
-            player.state = 'jumping';
-            player.currentFrame = (player.currentFrame + 1) % player.jumpFrames;
-        } else if (Math.abs(player.velX) > 0.5) {
-            player.state = 'walking';
-            player.currentFrame = (player.currentFrame + 1) % player.walkFrames;
-        } else {
-            player.state = 'idle';
-            player.currentFrame = (player.currentFrame + 1) % player.idleFrames;
-        }
-    }
+if (player.frameTimer >= player.frameInterval) {
+    player.frameTimer = 0;
 
-    // 4. CÂMERA
-    cameraX += ((player.x + player.width/2 - canvas.width/2) - cameraX) * 0.1;
+    // Ataque sempre tem prioridade
+    if (player.state === 'attacking') {
+        player.currentFrame++;
+        if (player.currentFrame >= player.attackFrames) {
+            // Depois de atacar, decide se está no ar ou no chão
+            if (!player.onGround) {
+                player.state = 'jumping';
+            } else if (Math.abs(player.velX) > 0.5) {
+                player.state = 'walking';
+            } else {
+                player.state = 'idle';
+            }
+            player.currentFrame = 0;
+        }
+    } 
+    // Só mudar para pulo se não estiver atacando
+    else if (!player.onGround) {
+        player.state = 'jumping';
+        player.currentFrame = (player.currentFrame + 1) % player.jumpFrames;
+    } 
+    else if (Math.abs(player.velX) > 0.5) {
+        player.state = 'walking';
+        player.currentFrame = (player.currentFrame + 1) % player.walkFrames;
+    } 
+    else {
+        player.state = 'idle';
+        player.currentFrame = (player.currentFrame + 1) % player.idleFrames;
+    }
+}
+
+
+    // CÂMERA
+    cameraX += ((player.x + player.width / 2) - (canvas.width / 2) - cameraX) * 0.1;
     cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width));
 
-    // 5. IA DOS INIMIGOS
-    enemies.forEach(en => {
+    // INIMIGOS
+enemies.forEach(en => {
+
+    if (en.patrolMinX === undefined) {
+        en.patrolMinX = en.x - 120;
+        en.patrolMaxX = en.x + 120;
+    }
+
+    if (en.facing === undefined) {
+        en.facing = 'left';
+    }
+
+    if (en.state === 'dead') {
+        en.frameTimer++;
+        if (en.frameTimer >= en.frameInterval && en.currentFrame < en.deadFrames - 1) {
+            en.currentFrame++;
+        }
+        return;
+    }
+
         let dist = Math.abs(player.x - en.x);
 
-       en.velY += gravity;
-       en.y += en.velY;
+        en.velY += gravity;
+        en.y += en.velY;
+        en.onGround = false;
 
-       en.onGround = false;
-       platforms.forEach(p => {
-        if (
-            en.x + 40 < p.x + p.w &&
-            en.x + 60 > p.x &&
-            en.y + en.height >= p.y &&
-            en.y + en.height <= p.y + 10
-        ) {
-            en.y = p.y - en.height;
-            en.velY = 0;
-            en.onGround = true;
-        }
-    });
-
-
-        if (en.state === 'dead') {
-            en.frameTimer++;
-            if (en.frameTimer >= en.frameInterval && en.currentFrame < en.deadFrames - 1) en.currentFrame++;
-            
-            // --- SE O BOSS MORRER, MOSTRA TELA DE VITÓRIA ---
-            if (en.type === 'Enchantress') {
-                const screen = document.getElementById('game-over-screen');
-                if (screen) {
-                    screen.style.display = 'flex';
-                    const vText = document.getElementById('victory-text');
-                    if (vText) {
-                        vText.innerText = "Uma história começa...";
-                        vText.style.color = "white";
-                    }
-                }
+        platforms.forEach(p => {
+            if (
+                en.x + 40 < p.x + p.w &&
+                en.x + 60 > p.x &&
+                en.y + en.height >= p.y &&
+                en.y + en.height <= p.y + 10
+            ) {
+                en.y = p.y - en.height;
+                en.velY = 0;
+                en.onGround = true;
             }
-            return;
-        }
+        });
 
-        // Lógica de Fala da Enchantress
-        if (en.type === 'Enchantress') {
-            if (dist < 400 && en.state === 'patrol') {
-                en.state = 'chase'; 
-                en.dialogue = "A energia foi corrompida";
-                en.dialogueTimer = 150; 
-            }
-            if (dist < 100 && en.state === 'chase' && Math.random() < 0.01) {
-                en.dialogue = "Sinta a energia fluir pelo seu corpo";
-                en.dialogueTimer = 90;
+        // BLUE SLIME – PULO
+        if (en.type === 'Blue_Slime') {
+            if (en.jumpTimer === undefined) en.jumpTimer = 0;
+            if (en.onGround) en.jumpTimer++;
+            if (en.onGround && en.jumpTimer > 120) {
+                en.velY = -12;
+                en.jumpTimer = 0;
             }
         }
 
-        // Estados de Dano e Movimento dos Inimigos
+        // ESTADOS
         if (en.state === 'hurt') {
             en.frameTimer++;
-            if (en.frameTimer % 10 === 0) en.currentFrame = (en.currentFrame + 1) % (en.hurtFrames || 2);
-            if (en.frameTimer >= 30) { en.state = 'patrol'; en.frameTimer = 0; en.currentFrame = 0; }
-        } else if (en.state === 'patrol') {
-            en.x += (en.facing === 'left' ? -en.speed : en.speed);
-            if (dist < 100) en.state = 'chase';
-        } else if (en.state === 'chase') {
-            if (player.x < en.x) { en.x -= en.speed * 1.2; en.facing = 'left'; }
-            else { en.x += en.speed * 1.2; en.facing = 'right'; }
-            if (dist > 50) en.state = 'patrol';
+            if (en.frameTimer >= 30) {
+                en.state = 'patrol';
+                en.frameTimer = 0;
+                en.currentFrame = 0;
+            }
+        }
+else if (en.state === 'patrol') {
+
+    if (en.facing === 'left') {
+        en.x -= en.speed;
+        if (en.x <= en.patrolMinX) {
+            en.facing = 'right';
+        }
+    } else {
+        en.x += en.speed;
+        if (en.x >= en.patrolMaxX) {
+            en.facing = 'left';
+        }
+    }
+
+    if (dist < 100) {
+        en.state = 'chase';
+    }
+}
+
+        else if (en.state === 'chase') {
+            if (player.x < en.x) {
+                en.x -= en.speed * 1.2;
+                en.facing = 'left';
+            } else {
+                en.x += en.speed * 1.2;
+                en.facing = 'right';
+            }
+            if (dist <= en.attackRange) en.state = 'attacking';
+            if (dist > 150) en.state = 'patrol';
+        }
+        else if (en.state === 'attacking') {
+            if (en.attackCooldown <= 0) {
+                player.hp -= 1;
+                en.attackCooldown = 80;
+            }
         }
 
-        // Animação dos Inimigos
+        if (en.attackCooldown > 0) en.attackCooldown--;
+
+        // ANIMAÇÃO INIMIGO
         en.frameTimer++;
         if (en.frameTimer >= en.frameInterval) {
             let totalF = (en.state === 'attacking') ? en.attackFrames : en.walkFrames;
             en.currentFrame = (en.currentFrame + 1) % totalF;
-            if (en.state === 'attacking' && en.currentFrame === 0) en.state = 'patrol';
             en.frameTimer = 0;
         }
-
-        // Inimigo ataca Player
-        if (dist < en.attackRange && en.attackCooldown <= 0 && player.state !== 'dead') {
-            en.state = 'attacking'; en.currentFrame = 0; player.hp -= 1; en.attackCooldown = 80;
-        }
-        if (en.attackCooldown > 0) en.attackCooldown--;
     });
 }
+
 
 // --- DESENHO (DRAW) ---
 function draw() {
@@ -425,9 +467,15 @@ function draw() {
         let img = obj.imgIdle;
         let totalF = obj.idleFrames || 8;
         if (obj.state === 'walking') { img = obj.imgWalk; totalF = obj.walkFrames; }
-        else if (obj.state === 'attacking') { img = obj.imgAttack; totalF = obj.attackFrames; }
-        else if (obj.state === 'jumping') { img = obj.imgJump; totalF = obj.jumpFrames || 8; }
-        else if (obj.state === 'hurt') { img = obj.imgHurt; totalF = (obj.type === 'Enchantress' ? 2 : obj.hurtFrames); }
+        else if (obj.state === 'attacking') { img = obj.imgAttack; totalF = 
+
+obj.attackFrames; }
+        else if (obj.state === 'jumping') { img = obj.imgJump; totalF = obj.jumpFrames || 
+
+8; }
+        else if (obj.state === 'hurt') { img = obj.imgHurt; totalF = (obj.type === 
+
+'Enchantress' ? 2 : obj.hurtFrames); }
         else if (obj.state === 'dead') { img = obj.imgDead; totalF = obj.deadFrames; }
 
         if (img.complete && img.width > 0) {
@@ -442,9 +490,13 @@ function draw() {
             ctx.save();
             if (obj.facing === 'left') {
                 ctx.translate(obj.x + obj.width, dY); ctx.scale(-1, 1);
-                ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, 0, 0, obj.width, dH);
+                ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, 0, 0, 
+
+obj.width, dH);
             } else {
-                ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, obj.x, dY, obj.width, dH);
+                ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, obj.x, dY, 
+
+obj.width, dH);
             }
             ctx.restore();
 
@@ -454,9 +506,13 @@ function draw() {
                 ctx.textAlign = "center";
                 let textWidth = ctx.measureText(obj.dialogue).width;
                 ctx.fillStyle = "white";
-                ctx.fillRect(obj.x + obj.width/2 - textWidth/2 - 5, obj.y - 35, textWidth + 10, 20);
+                ctx.fillRect(obj.x + obj.width/2 - textWidth/2 - 5, obj.y - 35, textWidth 
+
++ 10, 20);
                 ctx.strokeStyle = "black";
-                ctx.strokeRect(obj.x + obj.width/2 - textWidth/2 - 5, obj.y - 35, textWidth + 10, 20);
+                ctx.strokeRect(obj.x + obj.width/2 - textWidth/2 - 5, obj.y - 35, 
+
+textWidth + 10, 20);
                 ctx.fillStyle = "black";
                 ctx.fillText(obj.dialogue, obj.x + obj.width/2, obj.y - 20);
             }
