@@ -293,6 +293,26 @@ function update() {
 
 // --- DESENHO (DRAW) ---
 function draw() {
+
+    // --- TELA DE VITÓRIA ---
+// Checa se a Enchantress (último inimigo) está com estado 'dead'
+const boss = enemies.find(en => en.type === 'Enchantress');
+
+if (boss && boss.state === 'dead' && boss.currentFrame === boss.deadFrames - 1) {
+    ctx.fillStyle = "rgba(255, 255, 255, 0.8)"; // Fundo branco brilhante
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#2e7d32"; // Verde vitória
+    ctx.font = "bold 45px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("VILA SALVA!", canvas.width / 2, canvas.height / 2 - 20);
+
+    ctx.font = "20px Arial";
+    ctx.fillStyle = "#333";
+    ctx.fillText("Você derrotou a Enchantress e corrompeu a treva!", canvas.width / 2, canvas.height / 2 + 30);
+    ctx.fillText("Pressione 'K' para jogar novamente", canvas.width / 2, canvas.height / 2 + 70);
+}
+    
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (gameState === 'menu') return;
 
@@ -373,6 +393,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
