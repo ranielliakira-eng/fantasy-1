@@ -220,24 +220,32 @@ function update() {
     cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width));
 
     // IA Inimigos
-    enemies.forEach(en => {
+enemies.forEach(en => {
+        // 1. Cálculo da distância (essencial para os IFs abaixo funcionarem)
+        let dist = Math.abs(player.x - en.x);
+
         if (en.state === 'dead') {
             en.frameTimer++;
             if (en.frameTimer >= en.frameInterval && en.currentFrame < en.deadFrames - 1) en.currentFrame++;
             return;
         }
-        if (dist < 400 && en.state === 'patrol') {
-                en.state = 'chase'; // Ela começa a te perseguir
+
+        // 2. Lógica da Enchantress
+        if (en.type === 'Enchantress') {
+            if (dist < 400 && en.state === 'patrol') {
+                en.state = 'chase'; 
                 en.dialogue = "A enegia foi corrompida";
                 en.dialogueTimer = 150; 
             }
 
-            // Se ela já estiver te perseguindo e chegar bem perto (100px)
             if (dist < 100 && en.state === 'chase' && Math.random() < 0.01) {
                 en.dialogue = "Sinta o a energia fluir pelo seu corpo";
                 en.dialogueTimer = 90;
             }
         }
+        
+        // O resto da sua lógica de movimento (patrol/chase) continua aqui embaixo...
+    }); // Esta chave fecha o forEach corretamente
 
         if (en.state === 'hurt') {
             en.frameTimer++;
@@ -339,6 +347,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
