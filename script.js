@@ -40,7 +40,7 @@ function initEnemies() {
         
         { type: 'Blue_Slime', x: 2500, y: 300, hp: 1, speed: 1.8, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         { type: 'Red_Slime', x: 4000, y: 300, hp: 1, speed: 2.5, attackRange: 50, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Enchantress', x: 6600, y: 300, hp: 3, speed: 2, attackRange: 100, idleFrames: 5, walkFrames: 8, attackFrames: 6, hurtFrames: 2, deadFrames: 5 }
+        { type: 'Enchantress', x: 6600, y: 300, hp: 3, speed: 2, attackRange: 100, idleFrames: 5, walkFrames: 8, attackFrames: 6, hurtFrames: 2, deadFrames: 5, dialogue: "", dialogueTimer: 0,}
     ];
 
     enemies.forEach(en => {
@@ -226,6 +226,18 @@ function update() {
             if (en.frameTimer >= en.frameInterval && en.currentFrame < en.deadFrames - 1) en.currentFrame++;
             return;
         }
+        if (dist < 400 && en.state === 'patrol') {
+                en.state = 'chase'; // Ela começa a te perseguir
+                en.dialogue = "A enegia foi corrompida";
+                en.dialogueTimer = 150; 
+            }
+
+            // Se ela já estiver te perseguindo e chegar bem perto (100px)
+            if (dist < 100 && en.state === 'chase' && Math.random() < 0.01) {
+                en.dialogue = "Sinta o a energia fluir pelo seu corpo";
+                en.dialogueTimer = 90;
+            }
+        }
 
         if (en.state === 'hurt') {
             en.frameTimer++;
@@ -306,6 +318,12 @@ function draw() {
     }
 }
 
+function enemySay(en, type) {
+    const list = en.phrases[type];
+    en.dialogue = list[Math.floor(Math.random() * list.length)];
+    en.dialogueTimer = 120; // O balão fica por 2 segundos (60 frames por seg)
+}
+
 function gameLoop() { update(); draw(); requestAnimationFrame(gameLoop); }
 gameLoop();
 
@@ -321,6 +339,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
