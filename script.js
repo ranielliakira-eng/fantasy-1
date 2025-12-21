@@ -158,11 +158,11 @@ window.atacar = function() {
 
 // --- LÓGICA ---
 function update() {
-    // 1. Processamento de Morte (Trava aqui se o player morrer)
+    // 1. Processamento de Morte
     if (player.state === 'dead') {
         player.frameTimer++;
         if (player.frameTimer >= player.frameInterval) {
-            if (player.currentFrame < player.deadFrames - 1) {
+            if (player.currentFrame < (player.deadFrames || 4) - 1) {
                 player.currentFrame++;
             }
             player.frameTimer = 0;
@@ -180,9 +180,15 @@ function update() {
     }
 
     // 3. Movimentação e Física
-    if (keys.left) player.velX = -player.speed;
-    else if (keys.right) player.velX = player.speed;
-    else player.velX *= 0.7; 
+    if (keys.left) {
+        player.velX = -player.speed;
+        player.facing = 'left';
+    } else if (keys.right) {
+        player.velX = player.speed;
+        player.facing = 'right';
+    } else {
+        player.velX *= 0.7; // Desaceleração
+    }
 
     player.velY += gravity;
     player.x += player.velX;
@@ -197,31 +203,40 @@ function update() {
             player.velY = 0; 
             player.onGround = true;
         }
-    }); // AQUI você tinha fechado a função update por engano!
+    });
 
-    // 5. Máquina de Estados (Animação) - Agora DENTRO da função
+    // 5. Máquina de Estados (Animação)
     player.frameTimer++;
     if (player.frameTimer >= player.frameInterval) {
+        player.frameTimer = 0;
+
         if (player.state === 'attacking') {
             player.currentFrame++;
-            if (player.currentFrame >= player.attackFrames) player.state = 'idle'; // Volta para idle
+            // Quando acaba o ataque, volta para o estado neutro
+            if (player.currentFrame >= player.attackFrames) {
+                player.state = 'idle';
+                player.currentFrame = 0;
+            }
         } 
         else if (!player.onGround) {
             player.state = 'jumping';
-            player.currentFrame = (player.currentFrame + 1) % player.jumpFrames;
+            player.currentFrame = (player.currentFrame + 1) % (player.jumpFrames || 1);
         }
-        // Ajuste na sensibilidade do movimento (0.2 em vez de 0.5 para maior resposta)
-        else if (Math.abs(player.velX) > 0.2) { 
+        else if (Math.abs(player.velX) > 0.3) { 
             player.state = 'walking';
-            player.currentFrame = (player.currentFrame + 1) % player.walkFrames;
+            player.currentFrame = (player.currentFrame + 1) % (player.walkFrames || 1);
         } 
         else {
             player.state = 'idle';
             player.currentFrame = (player.currentFrame + 1) % (player.idleFrames || 1);
         }
-        player.frameTimer = 0;
     }
-} // Agora a função update() termina aqui corretamente.
+
+    // 6. Atualização da Câmera
+    let alvoX = (player.x + player.width / 2) - (canvas.width / 2) / zoom;
+    cameraX += (alvoX - cameraX) * 0.1;
+    cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width / zoom));
+}
     // 6. Câmera Suave
     let alvoX = (player.x + player.width / 2) - (canvas.width / 2) / zoom;
     cameraX += (alvoX - cameraX) * 0.1;
@@ -401,6 +416,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
