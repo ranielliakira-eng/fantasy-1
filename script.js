@@ -226,18 +226,31 @@ function checkMeleeHit() {
 
 // --- LÓGICA (UPDATE) ---
 function update() {
+    // 1. Lógica de Morte do Player
     if (player.state === 'dead') {
         player.frameTimer++;
         if (player.frameTimer >= player.frameInterval) {
             if (player.currentFrame < player.deadFrames - 1) player.currentFrame++;
             player.frameTimer = 0;
         }
+        
+        // MOSTRAR TELA DE DERROTA (MOBILE)
+        const screen = document.getElementById('game-over-screen');
+        if (screen && screen.style.display !== 'flex') {
+            screen.style.display = 'flex';
+            document.getElementById('victory-text').innerText = "Fim de Jogo!";
+            document.getElementById('victory-text').style.color = "#ff4444";
+        }
         return;
     }
 
     if (gameState !== 'playing' || isPaused) return;
 
-    if (player.hp <= 0) { player.state = 'dead'; player.currentFrame = 0; return; }
+    if (player.hp <= 0) { 
+        player.state = 'dead'; 
+        player.currentFrame = 0; 
+        return; 
+    }
 
     player.velY += gravity;
     player.x += player.velX;
@@ -283,6 +296,16 @@ function update() {
         if (en.state === 'dead') {
             en.frameTimer++;
             if (en.frameTimer >= en.frameInterval && en.currentFrame < en.deadFrames - 1) en.currentFrame++;
+            
+            // --- MOSTRAR TELA DE VITÓRIA (ENCHANTRESS) ---
+            if (en.type === 'Enchantress') {
+                const screen = document.getElementById('game-over-screen');
+                if (screen && screen.style.display !== 'flex') {
+                    screen.style.display = 'flex';
+                    document.getElementById('victory-text').innerText = "Uma história começa...";
+                    document.getElementById('victory-text').style.color = "#ffffff";
+                }
+            }
             return;
         }
 
@@ -443,6 +466,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
