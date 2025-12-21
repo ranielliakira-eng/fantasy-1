@@ -39,10 +39,10 @@ function initEnemies() {
     ];
 
     enemies.forEach(en => {
-        en.imgIdlealk = new Image(); en.imgIdle.src = `assets/${en.type}/Idle.png`;
+        en.imgIdle = new Image(); en.imgIdle.src = `assets/${en.type}/Idle.png`;
         en.imgWalk = new Image(); en.imgWalk.src = `assets/${en.type}/Walk.png`;
         en.imgAttack = new Image(); en.imgAttack.src = `assets/${en.type}/Attack_1.png`;
-        en.imgDead = new Image(); en.imgHurt.src = `assets/${en.type}/Hurt.png`;
+        en.imgHurt = new Image(); en.imgHurt.src = `assets/${en.type}/Hurt.png`;
         en.imgDead = new Image(); en.imgDead.src = `assets/${en.type}/Dead.png`;
                 
         en.width = 100; en.height = 100;
@@ -320,6 +320,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
