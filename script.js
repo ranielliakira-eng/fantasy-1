@@ -131,15 +131,27 @@ window.atacar = function() {
 
 function checkMeleeHit() {
     let hitboxX = player.facing === 'right' ? player.x + player.width : player.x - 50;
+
     enemies.forEach(en => {
         if (en.state === 'dead') return;
+
         if (hitboxX < en.x + en.width && hitboxX + 60 > en.x && 
             player.y < en.y + en.height && player.y + player.height > en.y) {
+            
             en.hp -= 1;
-            en.state = 'hurt';
-            en.currentFrame = 0;
-            en.frameTimer = 0;
-            if(en.hp <= 0) en.state = 'dead';
+
+            // ALTERAÇÃO AQUI:
+            // Só entra no estado 'hurt' se NÃO for a Enchantress
+            if (en.type !== 'Enchantress') {
+                en.state = 'hurt';
+                en.currentFrame = 0;
+                en.frameTimer = 0;
+            }
+
+            if(en.hp <= 0) {
+                en.state = 'dead';
+                en.currentFrame = 0;
+            }
         }
     });
 }
@@ -298,5 +310,6 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
