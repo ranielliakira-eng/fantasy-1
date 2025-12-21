@@ -158,7 +158,7 @@ window.atacar = function() {
 
 // --- LÓGICA ---
 function update() {
-    // Se estiver morto, apenas processa a animação de morte até o fim
+    // 1. Processamento de Morte (Trava aqui se o player morrer)
     if (player.state === 'dead') {
         player.frameTimer++;
         if (player.frameTimer >= player.frameInterval) {
@@ -167,29 +167,28 @@ function update() {
             }
             player.frameTimer = 0;
         }
-        return; // Impede qualquer movimento ou ataque se estiver morto
+        return; 
     }
 
     if (gameState !== 'playing' || isPaused) return;
 
-    // 1. Verificação de Morte
+    // 2. Verificação de Saúde
     if (player.hp <= 0) {
         player.state = 'dead';
         player.currentFrame = 0;
         return;
     }
 
-    // 2. Movimentação Horizontal
+    // 3. Movimentação e Física
     if (keys.left) player.velX = -player.speed;
     else if (keys.right) player.velX = player.speed;
-    else player.velX *= 0.7; // Atrito/Inércia
+    else player.velX *= 0.7; 
 
-    // 3. Física e Gravidade
     player.velY += gravity;
     player.x += player.velX;
     player.y += player.velY;
 
-    // 4. Colisão com Chão/Plataformas
+    // 4. Colisão com Plataformas
     player.onGround = false;
     platforms.forEach(p => {
         if (player.x + 40 < p.x + p.w && player.x + 60 > p.x && 
@@ -198,37 +197,31 @@ function update() {
             player.velY = 0; 
             player.onGround = true;
         }
-    });
-}
-    // 5. Máquina de Estados (Animação)
+    }); // AQUI você tinha fechado a função update por engano!
+
+    // 5. Máquina de Estados (Animação) - Agora DENTRO da função
     player.frameTimer++;
     if (player.frameTimer >= player.frameInterval) {
-        
         if (player.state === 'attacking') {
             player.currentFrame++;
-            // Quando acaba o ataque, volta para o estado normal (que será decidido abaixo)
-            if (player.currentFrame >= player.attackFrames) player.state = 'normal';
+            if (player.currentFrame >= player.attackFrames) player.state = 'idle'; // Volta para idle
         } 
         else if (!player.onGround) {
-            // Estado de Pulo (Geralmente frame fixo ou loop de pulo)
             player.state = 'jumping';
             player.currentFrame = (player.currentFrame + 1) % player.jumpFrames;
         }
-        else if (Math.abs(player.velX) > 0.5) {
-            // Estado de Caminhada
+        // Ajuste na sensibilidade do movimento (0.2 em vez de 0.5 para maior resposta)
+        else if (Math.abs(player.velX) > 0.2) { 
             player.state = 'walking';
             player.currentFrame = (player.currentFrame + 1) % player.walkFrames;
         } 
         else {
-            // ESTADO IDLE (Parado)
             player.state = 'idle';
             player.currentFrame = (player.currentFrame + 1) % (player.idleFrames || 1);
         }
-        
-        
         player.frameTimer = 0;
     }
-
+} // Agora a função update() termina aqui corretamente.
     // 6. Câmera Suave
     let alvoX = (player.x + player.width / 2) - (canvas.width / 2) / zoom;
     cameraX += (alvoX - cameraX) * 0.1;
@@ -408,6 +401,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
