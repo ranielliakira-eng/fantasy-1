@@ -86,7 +86,11 @@ window.escolherPersonagem = function(genero) {
     
     const folder = (genero === 'menina') ? 'Knight' : 'Swordsman';
     player.idleFrames = (genero === 'menina') ? 6 : 8;
+    player.walkFrames = (genero === 'menina') ? 8 : 8;
+    player.jumpFrames = (genero === 'menina') ? 6 : 8;
+    player.hurtFrames = (genero === 'menina') ? 3 : 3;
     player.deadFrames = (genero === 'menina') ? 4 : 3;
+    player.attackFrames = (genero === 'menina') ? 5 : 6;
 
     player.imgIdle.src = `assets/${folder}/Idle.png`;
     player.imgWalk.src = `assets/${folder}/Walk.png`;
@@ -294,4 +298,5 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
