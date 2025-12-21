@@ -21,7 +21,7 @@ const player = {
     x: 100, y: 100, width: 100, height: 100,
     velX: 0, velY: 0, speed: 5, jumpForce: -15,
     facing: 'right', onGround: false, state: 'idle',
-    hp: 3, maxHp: 3,
+    hp: 10, maxHp: 10,
     imgWalk: new Image(), imgDead: new Image(), imgJump: new Image(), imgHurt: new Image(),
     imgAttack: new Image(), imgIdle: new Image (),
     attackFrames: 6, walkFrames: 8, idleFrames: 8, jumpFrames: 8, deadFrames: 4,
@@ -312,26 +312,12 @@ function draw() {
 
     // --- TELA DE VITÓRIA ---
 // Checa se a Enchantress (último inimigo) está com estado 'dead'
-const boss = enemies.find(en => en.type === 'Enchantress');
-
-if (boss && boss.state === 'dead' && boss.currentFrame === boss.deadFrames - 1) {
-    ctx.fillStyle = "rgba(255, 255, 255, 0.8)"; // Fundo branco brilhante
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = "#2e7d32"; // Verde vitória
-    ctx.font = "bold 45px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText("Uma historia começa", canvas.width / 2, canvas.height / 2 - 20);
-
-    ctx.font = "20px Arial";
-    ctx.fillStyle = "#333";
-    ctx.fillText("Enchantress desmaia, mas sente que o que ela dizia significava algo...", canvas.width / 2, canvas.height / 2 + 30);
-    ctx.fillText("Pressione 'K' para jogar novamente", canvas.width / 2, canvas.height / 2 + 70);
-}
-    
+function draw() {
+    // 1. PRIMEIRO: Limpamos a tela
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (gameState === 'menu') return;
 
+    // 2. DEPOIS: Desenhamos o mundo (Câmera)
     ctx.save();
     ctx.translate(-Math.floor(cameraX), 0);
 
@@ -376,15 +362,35 @@ if (boss && boss.state === 'dead' && boss.currentFrame === boss.deadFrames - 1) 
                 ctx.strokeRect(obj.x + obj.width/2 - textWidth/2 - 5, obj.y - 35, textWidth + 10, 20);
                 ctx.fillStyle = "black";
                 ctx.fillText(obj.dialogue, obj.x + obj.width/2, obj.y - 20);
-                obj.dialogueTimer--;
             }
         }
     });
 
-    ctx.restore();
+    ctx.restore(); // Fecha a câmera
+
+    // 3. BARRA DE VIDA
     if (gameState === 'playing') {
         ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(20, 20, 150, 15);
         ctx.fillStyle = "red"; ctx.fillRect(20, 20, (player.hp / player.maxHp) * 150, 15);
+    }
+
+    // 4. POR ÚLTIMO: TELA DE VITÓRIA (Fica por cima de tudo)
+    const boss = enemies.find(en => en.type === 'Enchantress');
+    // Se ela estiver morta ou com 0 de HP, a tela aparece
+    if (boss && (boss.state === 'dead' || boss.hp <= 0)) {
+        ctx.fillStyle = "rgba(255, 255, 255, 0.9)"; 
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = "#2e7d32"; 
+        ctx.font = "bold 45px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("Uma historia começa", canvas.width / 2, canvas.height / 2 - 20);
+
+        ctx.font = "20px Arial";
+        ctx.fillStyle = "#333";
+        ctx.fillText("Enchantress desmaia, mas sente que o que ela dizia significava algo...", canvas.width / 2, canvas.height / 2 + 30);
+        ctx.font = "bold 18px Arial";
+        ctx.fillText("Pressione 'K' para jogar novamente", canvas.width / 2, canvas.height / 2 + 80);
     }
 }
 
@@ -409,17 +415,6 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
-
-
-
-
-
-
-
-
-
-
-
 
 
 
