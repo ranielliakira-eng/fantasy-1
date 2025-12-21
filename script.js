@@ -225,6 +225,7 @@ function update() {
             player.currentFrame = (player.currentFrame + 1) % (player.idleFrames || 1);
         }
         
+        
         player.frameTimer = 0;
     }
 
@@ -234,24 +235,60 @@ function update() {
     cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width / zoom));
 
     // 7. IA dos Inimigos
+    // 7. IA e Animação dos Inimigos
     enemies.forEach(en => {
-        if (en.state === 'dead') return; // Inimigo morto não ataca
+        // Se o inimigo estiver morto, processa apenas a animação de morte
+        if (en.state === 'dead') {
+            en.frameTimer++;
+            if (en.frameTimer >= en.frameInterval) {
+                if (en.currentFrame < (en.deadFrames || 4) - 1) {
+                    en.currentFrame++;
+                }
+                en.frameTimer = 0;
+            }
+            return; 
+        }
 
+        // Recuperação do estado de dano (Hurt)
+        if (en.state === 'hurt') {
+            en.frameTimer++;
+            if (en.frameTimer >= 20) { // Fica travado por 20 frames ao apanhar
+                en.state = 'patrol';
+                en.frameTimer = 0;
+            }
+        }
+
+        // Animação de movimento/ataque do inimigo
+        en.frameTimer++;
+        if (en.frameTimer >= en.frameInterval) {
+            let framesTotais = 8;
+            if (en.state === 'attacking') framesTotais = en.attackFrames || 6;
+            else framesTotais = en.walkFrames || 8;
+
+            en.currentFrame = (en.currentFrame + 1) % framesTotais;
+            
+            // Se terminou a animação de ataque, volta a patrulhar
+            if (en.state === 'attacking' && en.currentFrame === 0) {
+                en.state = 'patrol';
+            }
+            en.frameTimer = 0;
+        }
+
+        // Lógica de Ataque contra o Jogador
         let dist = Math.abs(player.x - en.x);
-        if (dist < en.attackRange && en.attackCooldown <= 0) {
+        if (dist < (en.attackRange || 100) && en.attackCooldown <= 0 && player.state !== 'dead') {
+            en.state = 'attacking';
+            en.currentFrame = 0;
+            
             if (en.attackType === 'melee') {
-                en.state = 'attacking';
-                if (dist < 60) player.hp -= 10; // Dano ao player
-            } 
-            else if (en.attackType === 'ranged') {
-                en.state = 'attacking';
+                if (dist < 60) player.hp -= 10; 
+            } else if (en.attackType === 'ranged') {
                 if (typeof dispararProjetil === "function") dispararProjetil(en); 
             }
-            en.attackCooldown = 100;
+            en.attackCooldown = 80; // Tempo entre ataques do inimigo
         }
         if (en.attackCooldown > 0) en.attackCooldown--;
     });
-}
 
 function checkMeleeHit() {
     // Cria uma caixa invisível na frente do jogador dependendo do lado que ele olha
@@ -371,6 +408,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
