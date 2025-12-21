@@ -220,8 +220,7 @@ function update() {
     cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width));
 
     // IA Inimigos
-enemies.forEach(en => {
-        // 1. Cálculo da distância (essencial para os IFs abaixo funcionarem)
+    enemies.forEach(en => {
         let dist = Math.abs(player.x - en.x);
 
         if (en.state === 'dead') {
@@ -230,32 +229,25 @@ enemies.forEach(en => {
             return;
         }
 
-        // 2. Lógica da Enchantress
+        // Lógica de Fala da Enchantress
         if (en.type === 'Enchantress') {
             if (dist < 400 && en.state === 'patrol') {
                 en.state = 'chase'; 
-                en.dialogue = "A enegia foi corrompida";
+                en.dialogue = "A energia foi corrompida";
                 en.dialogueTimer = 150; 
             }
-
             if (dist < 100 && en.state === 'chase' && Math.random() < 0.01) {
-                en.dialogue = "Sinta o a energia fluir pelo seu corpo";
+                en.dialogue = "Sinta a energia fluir pelo seu corpo";
                 en.dialogueTimer = 90;
             }
         }
-        
-        // O resto da sua lógica de movimento (patrol/chase) continua aqui embaixo...
-    }); // Esta chave fecha o forEach corretamente
 
+        // Estados de Dano e Movimento
         if (en.state === 'hurt') {
             en.frameTimer++;
             if (en.frameTimer % 10 === 0) en.currentFrame = (en.currentFrame + 1) % (en.hurtFrames || 2);
             if (en.frameTimer >= 30) { en.state = 'patrol'; en.frameTimer = 0; en.currentFrame = 0; }
-            return;
-        }
-
-        let dist = Math.abs(player.x - en.x);
-        if (en.state === 'patrol') {
+        } else if (en.state === 'patrol') {
             en.x += (en.facing === 'left' ? -en.speed : en.speed);
             if (dist < 300) en.state = 'chase';
         } else if (en.state === 'chase') {
@@ -264,6 +256,7 @@ enemies.forEach(en => {
             if (dist > 500) en.state = 'patrol';
         }
 
+        // Animação dos Inimigos
         en.frameTimer++;
         if (en.frameTimer >= en.frameInterval) {
             let totalF = (en.state === 'attacking') ? en.attackFrames : en.walkFrames;
@@ -272,6 +265,7 @@ enemies.forEach(en => {
             en.frameTimer = 0;
         }
 
+        // Ataque do Inimigo ao Player
         if (dist < en.attackRange && en.attackCooldown <= 0 && player.state !== 'dead') {
             en.state = 'attacking'; en.currentFrame = 0; player.hp -= 0.5; en.attackCooldown = 80;
         }
@@ -316,6 +310,20 @@ function draw() {
                 ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, obj.x, dY, obj.width, dH);
             }
             ctx.restore();
+
+            // DESENHO DO BALÃO DE FALA
+            if (obj.dialogue && obj.dialogueTimer > 0) {
+                ctx.font = "bold 14px Arial";
+                ctx.textAlign = "center";
+                let textWidth = ctx.measureText(obj.dialogue).width;
+                ctx.fillStyle = "white";
+                ctx.fillRect(obj.x + obj.width/2 - textWidth/2 - 5, obj.y - 35, textWidth + 10, 20);
+                ctx.strokeStyle = "black";
+                ctx.strokeRect(obj.x + obj.width/2 - textWidth/2 - 5, obj.y - 35, textWidth + 10, 20);
+                ctx.fillStyle = "black";
+                ctx.fillText(obj.dialogue, obj.x + obj.width/2, obj.y - 20);
+                obj.dialogueTimer--;
+            }
         }
     });
 
@@ -347,6 +355,7 @@ window.addEventListener('keyup', (e) => {
     if(k === 'a') window.mover('left', false);
     if(k === 'd') window.mover('right', false);
 });
+
 
 
 
