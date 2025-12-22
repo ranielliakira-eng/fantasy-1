@@ -559,16 +559,26 @@ function draw() {
     ctx.translate(-Math.floor(cameraX), 0);
 
 
-	platforms.forEach(p => {
-    if (!platformImg.complete) return; // garante que a imagem carregou
+platforms.forEach(p => {
+    if (!platformImg.complete) return;
 
-    if (p.type === 'pattern') {
-        ctx.fillStyle = platformPattern;  // usa a repetição
+    if (p.type === 'stretch') {
+        // Verifica se é a plataforma específica que você quer deixar transparente
+        if (p.x === 1970 && p.y === 270) {
+            ctx.save();
+            ctx.globalAlpha = 0.5; // 50% de opacidade
+            ctx.drawImage(platformImg, p.x, p.y, p.w, p.h);
+            ctx.restore();
+        } else {
+            // Outras plataformas stretch normais
+            ctx.drawImage(platformImg, p.x, p.y, p.w, p.h);
+        }
+    } else if (p.type === 'pattern') {
+        ctx.fillStyle = platformPattern;
         ctx.fillRect(p.x, p.y, p.w, p.h);
-    } else if (p.type === 'stretch') {
-        ctx.drawImage(platformImg, p.x, p.y, p.w, p.h);  // estica para preencher
     }
 });
+
 
 backgroundObjects.forEach(d => {
   if (d.img.complete) {
@@ -719,6 +729,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
