@@ -545,45 +545,6 @@ backgroundObjects.forEach(d => {
   }
 });
 
-// Dentro do draw(), depois de desenhar plataformas e backgroundObjects
-npcs.forEach(n => {
-    if (!n.imgIdle.complete) return;
-
-    // Sombra
-    ctx.fillStyle = "rgba(0,0,0,0.3)";
-    ctx.beginPath();
-    ctx.ellipse(n.x + n.width/2, n.y + n.height, n.width/2, 10, 0, 0, Math.PI*2);
-    ctx.fill();
-
-    // Sprite Idle
-    const fw = n.imgIdle.width / n.idleFrames;
-    const fh = n.imgIdle.height;
-    ctx.drawImage(n.imgIdle, n.currentFrame * fw, 0, fw, fh, n.x, n.y, n.width, n.height);
-
-    // Animação do Idle
-    n.frameTimer++;
-    if (n.frameTimer >= n.frameInterval) {
-        n.frameTimer = 0;
-        n.currentFrame = (n.currentFrame + 1) % n.idleFrames;
-    }
-
-    // Balão de fala
-    if (n.dialogueTimer > 0) {
-        const text = n.phrases[n.dialogueIndex];
-        ctx.font = "bold 14px Arial";
-        ctx.textAlign = "center";
-        const textWidth = ctx.measureText(text).width;
-        ctx.fillStyle = "white";
-        ctx.fillRect(n.x + n.width/2 - textWidth/2 - 5, n.y - 25, textWidth + 10, 20);
-        ctx.strokeStyle = "black";
-        ctx.strokeRect(n.x + n.width/2 - textWidth/2 - 5, n.y - 25, textWidth + 10, 20);
-        ctx.fillStyle = "black";
-        ctx.fillText(text, n.x + n.width/2, n.y - 10);
-        n.dialogueTimer--;
-    }
-});
-
-
     [...enemies, player].forEach(obj => {
         let img = obj.imgIdle;
         let totalF = obj.idleFrames || 8;
@@ -625,6 +586,43 @@ npcs.forEach(n => {
             }
         }
     });
+
+	npcs.forEach(n => {
+    if (!n.imgIdle.complete) return;
+
+    // Sombra
+    ctx.fillStyle = "rgba(0,0,0,0.3)";
+    ctx.beginPath();
+    ctx.ellipse(n.x + n.width/2, n.y + n.height, n.width/2, 10, 0, 0, Math.PI*2);
+    ctx.fill();
+
+    // Sprite Idle
+    const fw = n.imgIdle.width / n.idleFrames;
+    const fh = n.imgIdle.height;
+    ctx.drawImage(n.imgIdle, n.currentFrame * fw, 0, fw, fh, n.x, n.y, n.width, n.height);
+
+    // Animação do Idle
+    n.frameTimer++;
+    if (n.frameTimer >= n.frameInterval) {
+        n.frameTimer = 0;
+        n.currentFrame = (n.currentFrame + 1) % n.idleFrames;
+    }
+
+    // Balão de fala
+    if (n.dialogueTimer > 0) {
+        const text = n.phrases[n.dialogueIndex];
+        ctx.font = "bold 14px Arial";
+        ctx.textAlign = "center";
+        const textWidth = ctx.measureText(text).width;
+        ctx.fillStyle = "white";
+        ctx.fillRect(n.x + n.width/2 - textWidth/2 - 5, n.y - 25, textWidth + 10, 20);
+        ctx.strokeStyle = "black";
+        ctx.strokeRect(n.x + n.width/2 - textWidth/2 - 5, n.y - 25, textWidth + 10, 20);
+        ctx.fillStyle = "black";
+        ctx.fillText(text, n.x + n.width/2, n.y - 10);
+        n.dialogueTimer--;
+    }
+});
 
 foregroundObjects.forEach(d => {
   if (d.img.complete) {
@@ -690,6 +688,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
