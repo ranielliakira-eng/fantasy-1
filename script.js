@@ -25,8 +25,15 @@ const player = {
     imgWalk: new Image(), imgDead: new Image(), imgJump: new Image(), imgHurt: new Image(),
     imgAttack: new Image(), imgIdle: new Image (),
     attackFrames: 6, walkFrames: 8, idleFrames: 8, jumpFrames: 8, deadFrames: 4,
-    currentFrame: 0, frameTimer: 0, frameInterval: 6
+    currentFrame: 0, frameTimer: 0, frameInterval: 6, dialogue: "",dialogueTimer: 0,
 };
+
+const playerDialogTriggers = [
+    { x: 600, text: "Esses Slimes não estão deveriam estar aqui.", used: false },
+    { x: 1800, text: "A floresta está ficando mais densa.", used: false },
+    { x: 4800, text: "Slimes de cores direfentes juntos? Isso não pode ser normal...", used: false },
+	{ x: 6400, text: "Tenho um mau pressentimento.", used: false }
+];
 
 // --- INIMIGOS ---
 let enemies = [];
@@ -408,6 +415,10 @@ if (player.state !== 'attacking') {
 } else {
     player.velX = 0;
 }
+	
+	if (player.dialogueTimer > 0) {
+    player.dialogueTimer--;
+}
 
     // COLISÃO PLAYER
     player.onGround = false;
@@ -575,8 +586,17 @@ else if (en.state === 'patrol') {
             en.frameTimer = 0;
         }
     });
-}
 
+	// FALA DO PLAYER POR POSIÇÃO
+	playerDialogTriggers.forEach(trigger => {
+  	  if (!trigger.used && player.x > trigger.x) {
+        player.dialogue = trigger.text;
+        player.dialogueTimer = 180;
+        trigger.used = true;
+   	 }
+	});
+	
+}
 
 // --- DESENHO (DRAW) ---
 function draw() {
@@ -789,6 +809,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
