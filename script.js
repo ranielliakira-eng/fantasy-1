@@ -104,30 +104,6 @@ function initEnemies() {
     });
 }
 
-function createEnemy(data) {
-
-    if (data.type === 'Blue_Slime') {
-        return {
-            ...data,
-
-            width: 48,
-            height: 32,
-            vx: 0,
-            vy: 0,
-            onGround: false,
-
-            // 👇 ISSO QUEBRA A SINCRONIA
-            jumpCooldown: Math.floor(Math.random() * 120) + 30,
-            jumpInterval: Math.floor(Math.random() * 90) + 60,
-
-            state: 'idle',
-            dialogue: "",
-            dialogueTimer: 0
-        };
-    }
-
-    // outros inimigos aqui...
-}
 
 const platforms = [
     { x: 0, y: 300, w: 2000, h: 200, type: 'pattern' },
@@ -526,7 +502,11 @@ if (player.frameTimer >= player.frameInterval) {
 
     // INIMIGOS
 enemies.forEach(en => {
-
+	if (en.type === 'Blue_Slime') {
+    	en.jumpCooldown = Math.floor(Math.random() * 120) + 30;
+    	en.jumpInterval = Math.floor(Math.random() * 90) + 60;
+	}
+	
     if (en.patrolMinX === undefined) {
         en.patrolMinX = en.x - 120;
         en.patrolMaxX = en.x + 120;
@@ -569,16 +549,15 @@ if (en.state === 'dead') {
         return;
     }
 
-        // BLUE SLIME – PULO
-        if (en.type === 'Blue_Slime') {
-            if (en.jumpTimer === undefined) en.jumpTimer = 0;
-            if (en.onGround) en.jumpTimer++;
-            if (en.onGround && en.jumpTimer > 120) {
-                en.velY = -12;
-                en.jumpTimer = 0;
-            }
-        }
+if (en.type === 'Blue_Slime' && en.onGround) {
+    en.jumpCooldown--;
 
+    if (en.jumpCooldown <= 0) {
+        en.velY = -12;
+        en.onGround = false;
+        en.jumpCooldown = en.jumpInterval;
+    }
+}
         // ESTADOS
         if (en.state === 'hurt') {
             en.frameTimer++;
@@ -858,6 +837,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
