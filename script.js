@@ -356,6 +356,8 @@ function checkMeleeHit() {
 
             if (en.hp <= 0) {
                 en.state = 'dead';
+				en.dialogue = "";
+				en.dialogueTimer = 0;
                 en.currentFrame = 0;
                 en.frameTimer = 0;
             }
@@ -654,17 +656,35 @@ backgroundObjects.forEach(d => {
             ctx.restore();
 
             // DESENHO DO BALÃO DE FALA
-            if (obj.dialogue && obj.dialogueTimer > 0) {
-                ctx.font = "bold 16px Arial";
-                ctx.textAlign = "center";
-                let textWidth = ctx.measureText(obj.dialogue).width;
-                ctx.fillStyle = "white";
-                ctx.fillRect(obj.x + obj.width/2 - textWidth/2 - 5, obj.y -35, textWidth + 10, 20);
-                ctx.strokeStyle = "black";
-                ctx.strokeRect(obj.x + obj.width/2 - textWidth/2 - 5, obj.y -35, textWidth + 10, 20);
-                ctx.fillStyle = "black";
-                ctx.fillText(obj.dialogue, obj.x + obj.width/2, obj.y -20);
-            }
+if (obj.state !== 'dead' && obj.dialogue && obj.dialogueTimer > 0) {
+    ctx.font = "bold 16px Arial";
+    ctx.textAlign = "center";
+
+    let textWidth = ctx.measureText(obj.dialogue).width;
+
+    ctx.fillStyle = "white";
+    ctx.fillRect(
+        obj.x + obj.width / 2 - textWidth / 2 - 5,
+        obj.y - 35,
+        textWidth + 10,
+        20
+    );
+
+    ctx.strokeStyle = "black";
+    ctx.strokeRect(
+        obj.x + obj.width / 2 - textWidth / 2 - 5,
+        obj.y - 35,
+        textWidth + 10,
+        20
+    );
+
+    ctx.fillStyle = "black";
+    ctx.fillText(
+        obj.dialogue,
+        obj.x + obj.width / 2,
+        obj.y - 20
+    );
+}
         }
     });
 
@@ -769,6 +789,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
