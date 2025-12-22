@@ -491,7 +491,38 @@ trigger.used=true;}
 }
 
 // --- DRAW ---
-function draw(){ /* mantido igual ao seu código anterior */ }
+function draw(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.save();
+    ctx.translate(-cameraX, 0); // move a câmera
+
+    // PLATAFORMAS
+    platforms.forEach(p => {
+        ctx.fillStyle = platformPattern || 'green';
+        ctx.fillRect(p.x, p.y, p.w, p.h);
+    });
+
+    // PLAYER
+    ctx.fillStyle = 'red';
+    ctx.fillRect(player.x, player.y, player.width, player.height);
+
+    // INIMIGOS
+    enemies.forEach(en => {
+        ctx.fillStyle = en.type.includes('Slime') ? 'blue' : 'purple';
+        ctx.fillRect(en.x, en.y, en.width, en.height);
+    });
+
+    ctx.restore();
+
+    // PLAYER DIALOGUE
+    if(player.dialogueTimer>0){
+        ctx.fillStyle='white';
+        ctx.font='20px Arial';
+        ctx.fillText(player.dialogue, 50, 50);
+    }
+}
+ 
 
 // --- GAME LOOP ---
 function gameLoop(){ update(); draw(); requestAnimationFrame(gameLoop);}
