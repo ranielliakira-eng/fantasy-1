@@ -93,6 +93,12 @@ wellImg.src = 'assets/Battleground/Battleground1/summer_0/Environment/Well.png';
 const tree1Img = new Image();
 tree1Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree1.png';
 
+const tree2Img = new Image();
+tree2Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree2.png';
+
+const tree3Img = new Image();
+tree3Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree3.png';
+
 const Decor_CartImg = new Image();
 Decor_CartImg.src = 'assets/Battleground/Battleground1/summer_0/Environment/Decor_Cart.png';
 
@@ -113,12 +119,18 @@ const backgroundObjects = [
     { x: 30, y: 200, width: 100, height: 100, img: Decor_CartImg },
     { x: 600, y: 200, width: 100, height: 100, img: wellImg },
 	{ x: 1975, y: 195, width: 300, height: 300, img: tree1Img },
+	{ x: 2900, y: 205, width: 300, height: 300, img: tree2Img },
+	{ x: 2960, y: 205, width: 300, height: 300, img: tree2Img },
+	{ x: 3010, y: 205, width: 300, height: 300, img: tree2Img },
+	{ x: 3080, y: 205, width: 300, height: 300, img: tree2Img },
+
 ];
 
 const foregroundObjects = [
     { x: 400, y: 260, width: 50, height: 50, img: fence_01Img },
     { x: 450, y: 260, width: 50, height: 50, img: fence_02Img },
     { x: 500, y: 260, width: 50, height: 50, img: fence_03Img },
+	{ x: 3060, y: 260, width: 300, height: 300, img: tree3Img },
 ];
 
 
@@ -694,6 +706,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
