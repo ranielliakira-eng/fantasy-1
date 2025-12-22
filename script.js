@@ -150,7 +150,7 @@ function initEnemies() {
         
         { type: 'Enchantress', x: 6600, y: 100, hp: 3, speed: 2, attackRange: 
 
-60, idleFrames: 5, walkFrames: 8, attackFrames: 6, hurtFrames: 2, deadFrames: 5, 
+60, idleFrames: 8, walkFrames: 5, attackFrames: 6, hurtFrames: 2, deadFrames: 5, 
 
 dialogue: "", dialogueTimer: 0,}
     ];
@@ -663,3 +663,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
+
+
+
