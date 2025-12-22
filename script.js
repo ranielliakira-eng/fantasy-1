@@ -89,26 +89,35 @@ function initEnemies() {
 } 
 	
 	];
+	
+enemies.forEach(en => {
+    en.imgIdle = new Image(); en.imgIdle.src = `assets/${en.type}/Idle.png`;
+    en.imgWalk = new Image(); en.imgWalk.src = `assets/${en.type}/Walk.png`;
+    en.imgAttack = new Image(); en.imgAttack.src = `assets/${en.type}/Attack_1.png`;
+    en.imgHurt = new Image(); en.imgHurt.src = `assets/${en.type}/Hurt.png`;
+    en.imgDead = new Image(); en.imgDead.src = `assets/${en.type}/Dead.png`;
 
-    enemies.forEach(en => {
-        en.imgIdle = new Image(); en.imgIdle.src = `assets/${en.type}/Idle.png`;
-        en.imgWalk = new Image(); en.imgWalk.src = `assets/${en.type}/Walk.png`;
-        en.imgAttack = new Image(); en.imgAttack.src = `assets/${en.type}/Attack_1.png`;
-        en.imgHurt = new Image(); en.imgHurt.src = `assets/${en.type}/Hurt.png`;
-        en.imgDead = new Image(); en.imgDead.src = `assets/${en.type}/Dead.png`;
-        
-        en.width = 100; en.height = 100; en.currentFrame = 0; en.frameTimer = 0; en.state = 'patrol';
-		en.facing = 'left'; en.attackCooldown = 0; en.velY = 0; en.onGround = false;
+    en.width = 100;
+    en.height = 100;
+    en.currentFrame = 0;
+    en.frameTimer = 0;
 
-		if (en.frameInterval === undefined) {
-    		en.frameInterval = 8;
-		}
-		
-		 if (en.type === 'Blue_Slime') {
-            en.jumpCooldown = Math.floor(Math.random() * 120) + 30;
-            en.jumpInterval = Math.floor(Math.random() * 90) + 60;
-        }
-    });
+    // 👇 ESTE É O PONTO IMPORTANTE
+    if (en.frameInterval === undefined) {
+        en.frameInterval = 8;
+    }
+
+    en.state = 'patrol';
+    en.facing = 'left';
+    en.attackCooldown = 0;
+    en.velY = 0;
+    en.onGround = false;
+
+    if (en.type === 'Blue_Slime') {
+        en.jumpCooldown = Math.floor(Math.random() * 120) + 30;
+        en.jumpInterval = Math.floor(Math.random() * 90) + 60;
+    }
+});
 }
 
 
@@ -849,6 +858,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
