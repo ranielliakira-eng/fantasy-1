@@ -120,8 +120,8 @@ const foregroundObjects = [
 const oxNpc = {
     x: 120,
     y: 210,
-    width: 100,
-    height: 100,
+    width: 110,
+    height: 110,
     imgIdle: new Image(),
     idleFrames: 4,
     currentFrame: 0,
@@ -688,6 +688,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
