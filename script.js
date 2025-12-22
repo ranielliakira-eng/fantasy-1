@@ -182,6 +182,9 @@ const backgroundObjects = [
 	{ x: 2900, y: 5, width: 250, height: 300, img: tree2Img },
 	{ x: 3010, y: 5, width: 250, height: 300, img: tree2Img },
 	{ x: 3120, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 3180, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 3250, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 3120, y: 5, width: 250, height: 300, img: tree2Img },
 
 ];
 
@@ -191,6 +194,7 @@ const foregroundObjects = [
     { x: 500, y: 260, width: 50, height: 50, img: fence_03Img },
 	{ x: 1135, y: 5, width: 300, height: 300, img: tree11Img },
 	{ x: 3060, y: 5, width: 300, height: 300, img: tree3Img },
+	{ x: 3220, y: 5, width: 300, height: 300, img: tree3Img },
 ];
 
 
@@ -837,6 +841,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
