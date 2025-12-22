@@ -537,9 +537,6 @@ if (player.frameTimer >= player.frameInterval) {
     cameraX += ((player.x + player.width / 2) - (canvas.width / 2) - cameraX) * 0.1;
     cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width));
 
-    // INIMIGOS
-	
-    // INIMIGOS
 // INIMIGOS
 enemies.forEach(en => {
 
@@ -580,10 +577,10 @@ enemies.forEach(en => {
             en.currentFrame++;
             en.frameTimer = 0;
         }
-        return;
+        return; // Sai do loop atual para inimigo morto
     }
 
-    // 🟦 BLUE SLIME – PULO
+    // BLUE SLIME – PULO
     if (en.type === 'Blue_Slime' && en.onGround) {
         en.jumpCooldown--;
         if (en.jumpCooldown <= 0) {
@@ -629,7 +626,6 @@ enemies.forEach(en => {
         if (dist > 150) en.state = 'patrol';
     } 
     else if (en.state === 'attacking') {
-        // Define o frame que causa dano (ajuste se quiser)
         const attackFrame = 2; 
         en.frameTimer++;
         if (en.frameTimer >= en.frameInterval) {
@@ -641,7 +637,6 @@ enemies.forEach(en => {
                 en.attackCooldown = 80;
             }
 
-            // Fim da animação
             if (en.currentFrame >= en.attackFrames) {
                 en.currentFrame = 0;
                 en.state = 'chase';
@@ -649,12 +644,7 @@ enemies.forEach(en => {
         }
     }
 
-    if (en.attackCooldown > 0) en.attackCooldown--;
-});
-
-    if (en.attackCooldown > 0) en.attackCooldown--;
-}
-
+    // Reduz cooldown
     if (en.attackCooldown > 0) en.attackCooldown--;
 
     // ANIMAÇÃO
@@ -665,7 +655,8 @@ enemies.forEach(en => {
         en.frameTimer = 0;
     }
 
-});
+}); // Fim do enemies.forEach
+
 
 	// FALA DO PLAYER POR POSIÇÃO
 	playerDialogTriggers.forEach(trigger => {
@@ -878,6 +869,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
