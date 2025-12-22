@@ -477,9 +477,9 @@ enemies.forEach(en => {
     
 
         let dist = Math.abs(player.x - en.x);
-		if (en.type === 'Enchantress' && dist < 200 && en.dialogueTimer <= 0) {
-    		en.dialogue = en.phrases.idle[0];
-    		en.dialogueTimer = 180; // 3 segundos
+		if (en.type === 'Enchantress' && en.state !== 'dead' && dist < 200 && en.dialogueTimer <= 0) {
+		    en.dialogue = en.phrases.idle[0];
+    		en.dialogueTimer = 180;
 		}
 
         en.velY += gravity;
@@ -769,6 +769,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
