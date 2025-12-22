@@ -793,7 +793,6 @@ if (obj.state !== 'dead' && obj.dialogue && obj.dialogueTimer > 0) {
         ctx.strokeRect(n.x + n.width/2 - textWidth/2 - 5, n.y - 25, textWidth + 10, 20);
         ctx.fillStyle = "black";
         ctx.fillText(text, n.x + n.width/2, n.y - 10);
-        n.dialogueTimer--;
     }
 });
 
@@ -861,6 +860,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
