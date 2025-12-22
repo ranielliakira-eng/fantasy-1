@@ -207,8 +207,9 @@ ${en.type}/Attack_1.png`;
 
 // --- PLATAFORMAS ---
 const platforms = [
+    { x: 400, y: 270, w: 150, h: 50, type: 'pattern', alpha: 0 },
     { x: 0, y: 300, w: 2000, h: 200, type: 'pattern' },
-    { x: 620, y: 200, w: 80, h: 80, type: 'pattern', alpha: 1 },
+    { x: 612, y: 223, w: 70, h: 80, type: 'pattern', alpha: 0 },
     { x: 1970, y: 270, w: 210, h: 20, type: 'stretch' },
     { x: 2150, y: 300, w: 4800, h: 200, type: 'pattern' },  
 ];
@@ -217,18 +218,150 @@ const platformImg = new Image();
 platformImg.src = 
 
 'assets/Battleground/Battleground1/summer_0/Environment/Ground_11.png';
+
+// --- Cenário ---
+const wellImg = new Image();
+wellImg.src = 'assets/Battleground/Battleground1/summer_0/Environment/Well.png';
+
+const tree1Img = new Image();
+tree1Img.src = 
+
+'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree1.
+
+png';
+const tree2Img = new Image();
+tree2Img.src = 
+
+'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree2.
+
+png';
+const tree3Img = new Image();
+tree3Img.src = 
+
+'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree3.
+
+png';
+const tree4Img = new Image();
+tree4Img.src = 
+
+'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree4.
+
+png';
+const tree5Img = new Image();
+tree5Img.src = 
+
+'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree5.
+
+png';
+const tree6Img = new Image();
+tree6Img.src = 
+
+'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree6.
+
+png';
+const tree7Img = new Image();
+tree7Img.src = 
+
+'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree7.
+
+png';
+const tree8Img = new Image();
+tree8Img.src = 
+
+'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree8.
+
+png';
+const tree9Img = new Image();
+tree9Img.src = 
+
+'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree9.
+
+png';
+const tree10Img = new Image();
+tree10Img.src = 
+
+'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree10
+
+.png';
+const tree11Img = new Image();
+tree11Img.src = 
+
+'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree11
+
+.png';
+
+const house1Img = new Image();
+house1Img.src = 
+
+'assets/Battleground/Battleground1/summer_0/Environment/House1.png';
+
+const Decor_CartImg = new Image();
+Decor_CartImg.src = 
+
+'assets/Battleground/Battleground1/summer_0/Environment/Decor_Cart.png';
+
+const fence_01Img = new Image();
+fence_01Img.src = 
+
+'assets/Battleground/Battleground1/summer_0/Environment/Fence_01.png';
+
+const fence_02Img = new Image();
+fence_02Img.src = 
+
+'assets/Battleground/Battleground1/summer_0/Environment/Fence_02.png';
+
+const fence_03Img = new Image();
+fence_03Img.src = 
+
+'assets/Battleground/Battleground1/summer_0/Environment/Fence_03.png';
+
 let platformPattern = null;
-platformImg.onload = () => { platformPattern = ctx.createPattern(platformImg, 
 
-'repeat'); };
-
-// --- BACKGROUND ---
-const wellImg = new Image(); wellImg.src = 
-
-'assets/Battleground/Battleground1/summer_0/Environment/Well.png';
-// ... árvores, casas e outros objetos ...
+platformImg.onload = () => {
+    platformPattern = ctx.createPattern(platformImg, 'repeat');
+};
 
 let keys = { left: false, right: false };
+
+const backgroundObjects = [
+    { x: 30, y: 200, width: 100, height: 100, img: Decor_CartImg },
+	{ x: 270, y: 100, width: 250, height: 200, img: house1Img },
+    { x: 600, y: 200, width: 100, height: 100, img: wellImg },
+
+	{ x: 1000, y: 250, width: 50, height: 50, img: tree9Img },
+	{ x: 1110, y: 250, width: 50, height: 50, img: tree10Img },
+	{ x: 1330, y: 250, width: 50, height: 50, img: tree9Img },
+	{ x: 1440, y: 250, width: 50, height: 50, img: tree8Img },
+	
+	{ x: 1960, y: 100, width: 380, height: 200, img: tree1Img },
+	
+	{ x: 2470, y: 5, width: 250, height: 300, img: tree5Img },
+	
+	{ x: 2900, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 3010, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 3120, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 3230, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 3340, y: 5, width: 250, height: 300, img: tree2Img },
+	
+	{ x: 3450, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 3560, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 3570, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 3680, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 3790, y: 5, width: 250, height: 300, img: tree2Img },
+];
+
+const foregroundObjects = [
+    { x: 400, y: 260, width: 50, height: 50, img: fence_01Img },
+    { x: 450, y: 260, width: 50, height: 50, img: fence_02Img },
+    { x: 500, y: 260, width: 50, height: 50, img: fence_03Img },
+	
+	{ x: 1220, y: 250, width: 50, height: 50, img: tree11Img },
+	
+	{ x: 3060, y: 5, width: 300, height: 300, img: tree3Img },
+	{ x: 3220, y: 5, width: 300, height: 300, img: tree3Img },
+	{ x: 3560, y: 5, width: 300, height: 300, img: tree3Img },
+	{ x: 3720, y: 5, width: 300, height: 300, img: tree3Img },
+];
 
 // --- NPCs ---
 const oxNpc = {
@@ -490,38 +623,198 @@ trigger.used=true;}
     });
 }
 
-// --- DRAW ---
-function draw(){
+// --- DESENHO (DRAW) ---
+function draw() {
+    // 1. PRIMEIRO: Limpamos a tela
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (gameState === 'menu') return;
+
+    // 2. DEPOIS: Desenhamos o mundo (Câmera)
+    ctx.save();
+    ctx.translate(-Math.floor(cameraX), -Math.floor(cameraY));
+
+
+platforms.forEach(p => {
+    if (!platformImg.complete) return;
 
     ctx.save();
-    ctx.translate(-cameraX, 0); // move a câmera
 
-    // PLATAFORMAS
-    platforms.forEach(p => {
-        ctx.fillStyle = platformPattern || 'green';
-        ctx.fillRect(p.x, p.y, p.w, p.h);
-    });
+    // Transparência individual (opcional)
+    if (p.alpha !== undefined) ctx.globalAlpha = p.alpha;
 
-    // PLAYER
-    ctx.fillStyle = 'red';
-    ctx.fillRect(player.x, player.y, player.width, player.height);
+    if (p.type === 'stretch') {
 
-    // INIMIGOS
-    enemies.forEach(en => {
-        ctx.fillStyle = en.type.includes('Slime') ? 'blue' : 'purple';
-        ctx.fillRect(en.x, en.y, en.width, en.height);
-    });
+        // Stretch (use apenas para coisas que PODEM esticar)
+        ctx.drawImage(platformImg, p.x, p.y, p.w, p.h);
+
+    } else if (p.type === 'pattern') {
+
+        if (!platformPattern) {
+            ctx.restore();
+            return;
+        }
+
+        // Alinha o padrão ao topo da plataforma
+        ctx.translate(p.x, p.y);
+
+        ctx.fillStyle = platformPattern;
+        ctx.fillRect(0, 0, p.w, p.h);
+    }
 
     ctx.restore();
+});
 
-    // PLAYER DIALOGUE
-    if(player.dialogueTimer>0){
-        ctx.fillStyle='white';
-        ctx.font='20px Arial';
-        ctx.fillText(player.dialogue, 50, 50);
+
+backgroundObjects.forEach(d => {
+  if (d.img.complete) {
+    ctx.drawImage(d.img, d.x, d.y, d.width, d.height);
+  }
+});
+
+    [...enemies, player].forEach(obj => {
+        let img = obj.imgIdle;
+        let totalF = obj.idleFrames || 8;
+        if (obj.state === 'walking') { img = obj.imgWalk; totalF = 
+
+obj.walkFrames; }
+        else if (obj.state === 'attacking') { img = obj.imgAttack; totalF = 
+
+obj.attackFrames; }
+        else if (obj.state === 'jumping') { img = obj.imgJump; totalF = 
+
+obj.jumpFrames || 8; }
+        else if (obj.state === 'hurt') { img = obj.imgHurt; totalF = (obj.type 
+
+=== 'Enchantress' ? 2 : obj.hurtFrames); }
+        else if (obj.state === 'dead') { img = obj.imgDead; totalF = 
+
+obj.deadFrames; }
+
+        if (img.complete && img.width > 0) {
+            const fw = img.width / totalF;
+            const fh = img.height;
+            let dH = obj.height, dY = obj.y;
+
+            if (obj.type === 'Enchantress' && obj.state === 'hurt') {
+                dH = obj.height * 1.5; dY = obj.y - (obj.height * 0.5);
+            }
+
+            ctx.save();
+            if (obj.facing === 'left') {
+                ctx.translate(obj.x + obj.width, dY); ctx.scale(-1, 1);
+                ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, 
+
+0, 0, obj.width, dH);
+            } else {
+                ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, 
+
+obj.x, dY, obj.width, dH);
+            }
+            ctx.restore();
+
+            // DESENHO DO BALÃO DE FALA
+if (obj.state !== 'dead' && obj.dialogue && obj.dialogueTimer > 0) {
+    ctx.font = "bold 16px Arial";
+    ctx.textAlign = "center";
+
+    let textWidth = ctx.measureText(obj.dialogue).width;
+
+    ctx.fillStyle = "white";
+    ctx.fillRect(
+        obj.x + obj.width / 2 - textWidth / 2 - 5,
+        obj.y - 35,
+        textWidth + 10,
+        20
+    );
+
+    ctx.strokeStyle = "black";
+    ctx.strokeRect(
+        obj.x + obj.width / 2 - textWidth / 2 - 5,
+        obj.y - 35,
+        textWidth + 10,
+        20
+    );
+
+    ctx.fillStyle = "black";
+    ctx.fillText(
+        obj.dialogue,
+        obj.x + obj.width / 2,
+        obj.y - 20
+    );
+}
+        }
+    });
+
+	npcs.forEach(n => {
+    if (!n.imgIdle.complete) return;
+
+    // Sombra
+    ctx.fillStyle = "rgba(0,0,0,0.3)";
+    ctx.beginPath();
+    ctx.ellipse(n.x + n.width/2, n.y + n.height, n.width/2, 10, 0, 0, 
+
+Math.PI*2);
+    ctx.fill();
+
+    // Sprite Idle
+    const fw = n.imgIdle.width / n.idleFrames;
+    const fh = n.imgIdle.height;
+    ctx.drawImage(n.imgIdle, n.currentFrame * fw, 0, fw, fh, n.x, n.y, n.width, 
+
+n.height);
+
+    // Balão de fala
+    if (n.dialogueTimer > 0) {
+        const text = n.phrases[n.dialogueIndex];
+        ctx.font = "bold 14px Arial";
+        ctx.textAlign = "center";
+        const textWidth = ctx.measureText(text).width;
+        ctx.fillStyle = "white";
+        ctx.fillRect(n.x + n.width/2 - textWidth/2 - 5, n.y - 25, textWidth + 
+
+10, 20);
+        ctx.strokeStyle = "black";
+        ctx.strokeRect(n.x + n.width/2 - textWidth/2 - 5, n.y - 25, textWidth + 
+
+10, 20);
+        ctx.fillStyle = "black";
+        ctx.fillText(text, n.x + n.width/2, n.y - 10);
+    }
+});
+
+foregroundObjects.forEach(d => {
+  if (d.img.complete) {
+    ctx.drawImage(d.img, d.x, d.y, d.width, d.height);
+  }
+});
+
+    ctx.restore(); // Fecha a câmera
+
+    // 3. BARRA DE VIDA
+    if (gameState === 'playing') {
+        ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(20, 20, 150, 15);
+        ctx.fillStyle = "red"; ctx.fillRect(20, 20, (player.hp / player.maxHp) * 
+
+150, 15);
+    }
+
+    // 4. POR ÚLTIMO: TELA DE VITÓRIA (Fica por cima de tudo)
+    const boss = enemies.find(en => en.type === 'Enchantress');
+    // Se ela estiver morta ou com 0 de HP, a tela aparece
+    if (boss && boss.state === 'dead') {
+    const screen = document.getElementById('game-over-screen');
+    if (screen && screen.style.display !== 'flex') {
+        screen.style.display = 'flex'; // Aqui o JS apenas "liga" a tela HTML
+        }
     }
 }
+
+function enemySay(en, type) {
+    const list = en.phrases[type];
+    en.dialogue = list[Math.floor(Math.random() * list.length)];
+    en.dialogueTimer = 120; // O balão fica por 2 segundos (60 frames por seg)
+}
+
  
 
 // --- GAME LOOP ---
