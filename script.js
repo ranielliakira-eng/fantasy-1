@@ -31,8 +31,8 @@ const player = {
 const playerDialogTriggers = [
     { x: 600, text: "Esses Slimes não deveriam estar aqui.", used: false },
     { x: 1800, text: "A floresta está ficando mais densa.", used: false },
-    { x: 4800, text: "Slimes de cores diferentes juntos? Isso não pode ser normal...", used: false },
-	{ x: 6200, text: "Tenho um mau pressentimento.", used: false }
+    { x: 4800, text: "Slimes de cores diferentes juntos?", used: false },
+	{ x: 6200, text: "Acho que sei o que juntou aqueles Slimes...", used: false }
 ];
 
 // --- INIMIGOS ---
@@ -84,6 +84,7 @@ function initEnemies() {
   phrases: {
       idle: [
           "O equilíbrio foi quebrado"
+		  "A energia da terra foi corrompida!"
       ]
   }
 } 
@@ -201,8 +202,12 @@ const backgroundObjects = [
 	{ x: 3120, y: 5, width: 250, height: 300, img: tree2Img },
 	{ x: 3230, y: 5, width: 250, height: 300, img: tree2Img },
 	{ x: 3340, y: 5, width: 250, height: 300, img: tree2Img },
+	
 	{ x: 3450, y: 5, width: 250, height: 300, img: tree2Img },
-
+	{ x: 3560, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 3570, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 3680, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 3790, y: 5, width: 250, height: 300, img: tree2Img },
 ];
 
 const foregroundObjects = [
@@ -215,6 +220,7 @@ const foregroundObjects = [
 	{ x: 3060, y: 5, width: 300, height: 300, img: tree3Img },
 	{ x: 3220, y: 5, width: 300, height: 300, img: tree3Img },
 	{ x: 3560, y: 5, width: 300, height: 300, img: tree3Img },
+	{ x: 3720, y: 5, width: 300, height: 300, img: tree3Img },
 ];
 
 
@@ -230,7 +236,7 @@ const oxNpc = {
     frameTimer: 0,
     frameInterval: 20,
     phrases: [
-        "Muuu!",
+        "Muuu!", "","",
     ],
     dialogueIndex: 0,
     dialogueTimer: 0
@@ -249,10 +255,9 @@ const satyrNpc = {
     frameTimer: 0,
     frameInterval: 16,
     phrases: [
-        "Que bom que você chegou!",
-	"Cuidado com os Slimes!",
-	"Os Slimes estão vindo da floresta.",
-	"Minha colheita está sendo destruída pelos Slimes",
+    	"Que bom que você chegou!",
+		"Cuidado com os Slimes!",
+		"Os Slimes estão vindo da floresta.",
     ],
     dialogueIndex: 0,
     dialogueTimer: 0
@@ -857,6 +862,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
