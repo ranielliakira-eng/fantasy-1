@@ -8,7 +8,7 @@ bgMusic.loop = true;
 bgMusic.volume = 0.5;
 
 const gravity = 0.8;
-const zoom = 2; 
+const zoom = 1.6; 
 const mapWidth = 7000; 
 let cameraX = 0;
 let cameraY = 0;
@@ -77,7 +77,7 @@ function initEnemies() {
 
 const platforms = [
     { x: 0, y: 300, w: 2000, h: 200 },
-	{ x: 1990, y: 295, w: 220, h: 15 },
+	{ x: 1995, y: 280, w: 220, h: 20 },
 	{ x: 2200, y: 300, w: 4800, h: 200 },	
     { x: 3000, y: 180, w: 300, h: 20 },
     { x: 3070, y: 60, w: 100, h: 20 },
@@ -690,6 +690,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
