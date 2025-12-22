@@ -74,7 +74,7 @@ function initEnemies() {
   dialogueTimer: 0,
   phrases: {
       idle: [
-          "Você ousa entrar na minha floresta?"
+          "O equilíbrio foi quebrado"
       ]
   }
 } 
@@ -765,6 +765,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
