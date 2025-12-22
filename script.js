@@ -505,15 +505,7 @@ enemies.forEach(en => {
         en.facing = 'left';
     }
 
-    if (en.state === 'dead') {
-        en.frameTimer++;
-        if (en.frameTimer >= en.frameInterval && en.currentFrame < en.deadFrames 
-
-- 1) {
-            en.currentFrame++;
-        }
-        return;
-    }
+    
 
         let dist = Math.abs(player.x - en.x);
 
@@ -533,6 +525,16 @@ enemies.forEach(en => {
                 en.onGround = true;
             }
         });
+
+if (en.state === 'dead') {
+        en.frameTimer++;
+        if (en.frameTimer >= en.frameInterval && en.currentFrame < en.deadFrames 
+
+- 1) {
+            en.currentFrame++;
+        }
+        return;
+    }
 
         // BLUE SLIME – PULO
         if (en.type === 'Blue_Slime') {
