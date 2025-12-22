@@ -267,7 +267,10 @@ const satyrNpc = {
 
 satyrNpc.imgIdle.src = 'assets/Satyr_3/Idle.png';
 
-
+function playerSay(text, duration = 120) {
+    player.dialogue = text;
+    player.dialogueTimer = duration;
+}
 
 const npcs = [oxNpc, satyrNpc];
 
@@ -869,6 +872,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
