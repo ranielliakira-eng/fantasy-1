@@ -97,8 +97,13 @@ function initEnemies() {
         en.imgHurt = new Image(); en.imgHurt.src = `assets/${en.type}/Hurt.png`;
         en.imgDead = new Image(); en.imgDead.src = `assets/${en.type}/Dead.png`;
         
-        en.width = 100; en.height = 100; en.currentFrame = 0; en.frameTimer = 0; en.frameInterval = 8; en.state = 'patrol'; en.facing = 'left'; en.attackCooldown = 0; en.velY = 0; en.onGround = false;
+        en.width = 100; en.height = 100; en.currentFrame = 0; en.frameTimer = 0; en.state = 'patrol';
+		en.facing = 'left'; en.attackCooldown = 0; en.velY = 0; en.onGround = false;
 
+		if (en.frameInterval === undefined) {
+    		en.frameInterval = 8;
+		}
+		
 		 if (en.type === 'Blue_Slime') {
             en.jumpCooldown = Math.floor(Math.random() * 120) + 30;
             en.jumpInterval = Math.floor(Math.random() * 90) + 60;
@@ -513,6 +518,9 @@ if (player.frameTimer >= player.frameInterval) {
 
     // INIMIGOS
 	
+    // INIMIGOS
+enemies.forEach(en => {
+
     if (en.patrolMinX === undefined) {
         en.patrolMinX = en.x - 120;
         en.patrolMaxX = en.x + 120;
@@ -522,32 +530,33 @@ if (player.frameTimer >= player.frameInterval) {
         en.facing = 'left';
     }
 
-    
+    let dist = Math.abs(player.x - en.x);
 
-        let dist = Math.abs(player.x - en.x);
-		if (en.type === 'Enchantress' && en.state !== 'dead' && dist < 200 && en.dialogueTimer <= 0) {
-		    en.dialogue = en.phrases.idle[0];
-    		en.dialogueTimer = 180;
-		}
+    if (en.type === 'Enchantress' && en.state !== 'dead' && dist < 200 && en.dialogueTimer <= 0) {
+        en.dialogue = en.phrases.idle[0];
+        en.dialogueTimer = 180;
+    }
 
-        en.velY += gravity;
-        en.y += en.velY;
-        en.onGround = false;
+    // FÍSICA
+    en.velY += gravity;
+    en.y += en.velY;
+    en.onGround = false;
 
-        platforms.forEach(p => {
-            if (
-                en.x + 40 < p.x + p.w &&
-                en.x + 60 > p.x &&
-                en.y + en.height >= p.y &&
-                en.y + en.height <= p.y + 10
-            ) {
-                en.y = p.y - en.height;
-                en.velY = 0;
-                en.onGround = true;
-            }
-        });
+    platforms.forEach(p => {
+        if (
+            en.x + 40 < p.x + p.w &&
+            en.x + 60 > p.x &&
+            en.y + en.height >= p.y &&
+            en.y + en.height <= p.y + 10
+        ) {
+            en.y = p.y - en.height;
+            en.velY = 0;
+            en.onGround = true;
+        }
+    });
 
-if (en.state === 'dead') {
+    // MORTE
+    if (en.state === 'dead') {
         en.frameTimer++;
         if (en.frameTimer >= en.frameInterval && en.currentFrame < en.deadFrames - 1) {
             en.currentFrame++;
@@ -555,71 +564,70 @@ if (en.state === 'dead') {
         return;
     }
 
-if (en.type === 'Blue_Slime' && en.onGround) {
-    en.jumpCooldown--;
+    // 🟦 BLUE SLIME – PULO
+    if (en.type === 'Blue_Slime' && en.onGround) {
+        en.jumpCooldown--;
 
-    if (en.jumpCooldown <= 0) {
-        en.velY = -12;
-        en.onGround = false;
-        en.jumpCooldown = en.jumpInterval;
-    }
-}
-        // ESTADOS
-        if (en.state === 'hurt') {
-            en.frameTimer++;
-            if (en.frameTimer >= 30) {
-                en.state = 'patrol';
-                en.frameTimer = 0;
-                en.currentFrame = 0;
-            }
+        if (en.jumpCooldown <= 0) {
+            en.velY = -12;
+            en.onGround = false;
+            en.jumpCooldown = en.jumpInterval;
         }
-else if (en.state === 'patrol') {
+    }
 
-    if (en.facing === 'left') {
-        en.x -= en.speed;
-        if (en.x <= en.patrolMinX) {
+    // ESTADOS
+    if (en.state === 'hurt') {
+        en.frameTimer++;
+        if (en.frameTimer >= 30) {
+            en.state = 'patrol';
+            en.frameTimer = 0;
+            en.currentFrame = 0;
+        }
+    }
+    else if (en.state === 'patrol') {
+
+        if (en.facing === 'left') {
+            en.x -= en.speed;
+            if (en.x <= en.patrolMinX) en.facing = 'right';
+        } else {
+            en.x += en.speed;
+            if (en.x >= en.patrolMaxX) en.facing = 'left';
+        }
+
+        if (dist < 100) en.state = 'chase';
+    }
+    else if (en.state === 'chase') {
+
+        if (player.x < en.x) {
+            en.x -= en.speed * 1.2;
+            en.facing = 'left';
+        } else {
+            en.x += en.speed * 1.2;
             en.facing = 'right';
         }
-    } else {
-        en.x += en.speed;
-        if (en.x >= en.patrolMaxX) {
-            en.facing = 'left';
+
+        if (dist <= en.attackRange) en.state = 'attacking';
+        if (dist > 150) en.state = 'patrol';
+    }
+    else if (en.state === 'attacking') {
+
+        if (en.attackCooldown <= 0) {
+            player.hp -= 1;
+            en.attackCooldown = 80;
         }
     }
 
-    if (dist < 100) {
-        en.state = 'chase';
+    if (en.attackCooldown > 0) en.attackCooldown--;
+
+    // ANIMAÇÃO
+    en.frameTimer++;
+    if (en.frameTimer >= en.frameInterval) {
+        let totalF = (en.state === 'attacking') ? en.attackFrames : en.walkFrames;
+        en.currentFrame = (en.currentFrame + 1) % totalF;
+        en.frameTimer = 0;
     }
-}
 
-        else if (en.state === 'chase') {
-            if (player.x < en.x) {
-                en.x -= en.speed * 1.2;
-                en.facing = 'left';
-            } else {
-                en.x += en.speed * 1.2;
-                en.facing = 'right';
-            }
-            if (dist <= en.attackRange) en.state = 'attacking';
-            if (dist > 150) en.state = 'patrol';
-        }
-        else if (en.state === 'attacking') {
-            if (en.attackCooldown <= 0) {
-                player.hp -= 1;
-                en.attackCooldown = 80;
-            }
-        }
-
-        if (en.attackCooldown > 0) en.attackCooldown--;
-
-        // ANIMAÇÃO INIMIGO
-        en.frameTimer++;
-        if (en.frameTimer >= en.frameInterval) {
-            let totalF = (en.state === 'attacking') ? en.attackFrames : en.walkFrames;
-            en.currentFrame = (en.currentFrame + 1) % totalF;
-            en.frameTimer = 0;
-        }
-    });
+});
 
 	// FALA DO PLAYER POR POSIÇÃO
 	playerDialogTriggers.forEach(trigger => {
@@ -841,6 +849,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
