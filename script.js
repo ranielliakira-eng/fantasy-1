@@ -230,7 +230,7 @@ const oxNpc = {
     idleFrames: 4,
     currentFrame: 0,
     frameTimer: 0,
-    frameInterval: 8,
+    frameInterval: 20,
     phrases: [
         "Muuu!",
     ],
@@ -239,7 +239,32 @@ const oxNpc = {
 };
 oxNpc.imgIdle.src = 'assets/Animals/Without_shadow/Bull_Idle.png';
 
-const npcs = [oxNpc];
+// NPC Satyr
+const satyrNpc = {
+    x: 300,           // posição X inicial
+    y: 190,            // posição Y inicial
+    width: 120,
+    height: 120,
+    imgIdle: new Image(),
+    idleFrames: 6,
+    currentFrame: 0,
+    frameTimer: 0,
+    frameInterval: 16,
+    phrases: [
+        "Que bom que você chegou!",
+        "Cuidado com os Slimes!",
+	"Os Slimes estão vindo da floresta.",
+	"Minha colhei está sendo destruida por Slimes",
+    ],
+    dialogueIndex: 0,
+    dialogueTimer: 0
+};
+
+satyrNpc.imgIdle.src = 'assets/Satyr_3/Idle.png';
+
+
+
+const npcs = [oxNpc, satyrNpc];
 
 // --- SISTEMA ---
 window.togglePause = function() {
@@ -352,6 +377,12 @@ function updateNPCs() {
             n.dialogueIndex = Math.floor(Math.random() * n.phrases.length);
             n.dialogueTimer = 180 + Math.floor(Math.random() * 120); // 3-5s
         }
+ 	n.frameTimer++;
+        if (n.frameTimer >= n.frameInterval) {
+            n.frameTimer = 0;
+            n.currentFrame = (n.currentFrame + 1) % n.idleFrames;
+        }
+
     });
 }
 
