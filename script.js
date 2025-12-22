@@ -76,18 +76,16 @@ function initEnemies() {
 }
 
 const platforms = [
-    { x: 0, y: 300, w: 2000, h: 200 },
+    { x: 0, y: 300, w: 2000, h: 200, type: 'pattern' },
 	
-	{ x: 1970, y: 270, w: 210, h: 20 },
+	{ x: 1970, y: 270, w: 210, h: 20, type: 'stretch' },
 	
-	{ x: 2150, y: 300, w: 4800, h: 200 },	
+	{ x: 2150, y: 300, w: 4800, h: 200, type: 'pattern' },	
     
-	{ x: 2900, y: 200, w: 30, h: 20 },
-	{ x: 2960, y: 190, w: 30, h: 20 },
-	{ x: 3010, y: 205, w: 30, h: 20 },
-	{ x: 3080, y: 180, w: 30, h: 20 },
 ];
 
+const platformImg = new Image();
+platformImg.src = 'assets/Battleground/Battleground1/summer_0/Environment/Ground_11.png';
 
 // --- Cenário ---
 const wellImg = new Image();
@@ -114,14 +112,18 @@ fence_02Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/Fence_
 const fence_03Img = new Image();
 fence_03Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/Fence_03.png';
 
+let platformPattern;
 
+platformImg.onload = () => {
+    platformPattern = ctx.createPattern(platformImg, 'repeat');
+};
 
 let keys = { left: false, right: false };
 
 const backgroundObjects = [
     { x: 30, y: 200, width: 100, height: 100, img: Decor_CartImg },
     { x: 600, y: 200, width: 100, height: 100, img: wellImg },
-	{ x: 1975, y: 100, width: 350, height: 200, img: tree1Img },
+	{ x: 1965, y: 100, width: 380, height: 200, img: tree1Img },
 	{ x: 2900, y: 105, width: 250, height: 300, img: tree2Img },
 	{ x: 3010, y: 105, width: 250, height: 300, img: tree2Img },
 	{ x: 3080, y: 005, width: 250, height: 300, img: tree2Img },
@@ -556,8 +558,17 @@ function draw() {
     ctx.save();
     ctx.translate(-Math.floor(cameraX), 0);
 
-    ctx.fillStyle = "#4CAF50";
-    platforms.forEach(p => ctx.fillRect(p.x, p.y, p.w, p.h));
+
+	platforms.forEach(p => {
+    if (!platformImg.complete) return; // garante que a imagem carregou
+
+    if (p.type === 'pattern') {
+        ctx.fillStyle = platformPattern;  // usa a repetição
+        ctx.fillRect(p.x, p.y, p.w, p.h);
+    } else if (p.type === 'stretch') {
+        ctx.drawImage(platformImg, p.x, p.y, p.w, p.h);  // estica para preencher
+    }
+});
 
 backgroundObjects.forEach(d => {
   if (d.img.complete) {
@@ -708,6 +719,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
