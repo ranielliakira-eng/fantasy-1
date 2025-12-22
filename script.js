@@ -88,6 +88,9 @@ const platforms = [
 const wellImg = new Image();
 wellImg.src = 'assets/Battleground/Battleground1/summer_0/Environment/Well.png';
 
+const tree1Img = new Image();
+tree1Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree1.png';
+
 const Decor_CartImg = new Image();
 Decor_CartImg.src = 'assets/Battleground/Battleground1/summer_0/Environment/Decor_Cart.png';
 
@@ -107,6 +110,7 @@ let keys = { left: false, right: false };
 const backgroundObjects = [
     { x: 30, y: 200, width: 100, height: 100, img: Decor_CartImg },
     { x: 600, y: 200, width: 100, height: 100, img: wellImg },
+	{ x: 1975, y: 195, width: 100, height: 100, img: tree1Img },
 ];
 
 const foregroundObjects = [
@@ -688,6 +692,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
