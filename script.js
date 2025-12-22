@@ -8,7 +8,7 @@ bgMusic.loop = true;
 bgMusic.volume = 0.5;
 
 const gravity = 0.8;
-const zoom = 1.6; 
+const zoom = 2; 
 const mapWidth = 7000; 
 let cameraX = 0;
 let cameraY = 0;
@@ -175,18 +175,72 @@ ${en.type}/Attack_1.png`;
 
 const platforms = [
     { x: 0, y: 300, w: mapWidth, h: 200 },
-    { x: 6400, y: 180, w: 500, h: 20 }
+    { x: 3000, y: 180, w: 300, h: 20 },
+    { x: 3070, y: 60, w: 100, h: 20 },
 ];
 
 
 // --- Cenário ---
 const wellImg = new Image();
 wellImg.src = 'assets/Battleground/Battleground1/summer_0/Environment/Well.png';
+
+const Decor_CartImg = new Image();
+Decor_CartImg.src = 
+
+'assets/Battleground/Battleground1/summer_0/Environment/Decor_Cart.png';
+
+const fence_01Img = new Image();
+fence_01Img.src = 
+
+'assets/Battleground/Battleground1/summer_0/Environment/Fence_01.png';
+
+const fence_02Img = new Image();
+fence_02Img.src = 
+
+'assets/Battleground/Battleground1/summer_0/Environment/Fence_02.png';
+
+const fence_03Img = new Image();
+fence_03Img.src = 
+
+'assets/Battleground/Battleground1/summer_0/Environment/Fence_03.png';
+
+
+
 let keys = { left: false, right: false };
 
-const decorations = [
+const backgroundObjects = [
+    { x: 30, y: 200, width: 100, height: 100, img: Decor_CartImg },
     { x: 600, y: 200, width: 100, height: 100, img: wellImg },
 ];
+
+const foregroundObjects = [
+    { x: 400, y: 250, width: 50, height: 50, img: fence_01Img },
+    { x: 450, y: 250, width: 50, height: 50, img: fence_02Img },
+    { x: 500, y: 250, width: 50, height: 50, img: fence_03Img },
+];
+
+
+// Boi
+const oxNpc = {
+    x: 120,
+    y: 210,
+    width: 100,
+    height: 100,
+    imgIdle: new Image(),
+    idleFrames: 4,
+    currentFrame: 0,
+    frameTimer: 0,
+    frameInterval: 8,
+    phrases: [
+        "Muuu!",
+    ],
+    dialogueIndex: 0,
+    dialogueTimer: 0
+};
+oxNpc.imgIdle.src = 'assets/Animals/Without_shadow/Bull_Idle.png';
+
+const npcs = [oxNpc];
+
 // --- SISTEMA ---
 window.togglePause = function() {
     if (gameState !== 'playing') return;
@@ -207,9 +261,9 @@ window.resetGame = function() {
     const screen = document.getElementById('game-over-screen');
     if (screen) screen.style.display = 'none';
 
-    // 2. Reseta o Player (Com os 10 de HP para teste!)
+    // 2. Reseta o Player 
     player.hp = player.maxHp; 
-    player.x = 100; 
+    player.x = 200; 
     player.y = 100;
     player.velX = 0; 
     player.velY = 0; 
@@ -281,6 +335,27 @@ window.atacar = function() {
     checkMeleeHit();
 };
 
+function npcSay(npc, index = 0, duration = 120) {
+    npc.dialogueIndex = index;      // índice da frase na lista
+    npc.dialogueTimer = duration;   // tempo em frames (ex: 120 frames = 2s se 
+
+60 FPS)
+}
+
+function updateNPCs() {
+    npcs.forEach(n => {
+        // Reduz timer de fala se estiver ativo
+        if (n.dialogueTimer > 0) {
+            n.dialogueTimer--;
+        } else {
+            // Se o timer zerou, troca de frase aleatoriamente
+            n.dialogueIndex = Math.floor(Math.random() * n.phrases.length);
+            n.dialogueTimer = 180 + Math.floor(Math.random() * 120); // 3-5s
+        }
+    });
+}
+
+
 function checkMeleeHit() {
     // Alcance do ataque
     let alcance = 1;
@@ -328,10 +403,23 @@ function update() {
 
     if (gameState !== 'playing' || isPaused) return;
 
+    // Atualiza NPCs (fala e animação)
+    updateNPCs();
+
     // PLAYER – FÍSICA
     player.velY += gravity;
     player.x += player.velX;
+
+// Limita player dentro do mapa
+if (player.x < 0) player.x = 0;
+if (player.x + player.width > mapWidth) player.x = mapWidth - player.width;
+
+
     player.y += player.velY;
+
+if (Math.abs(player.x - oxNpc.x) < 150 && oxNpc.dialogueTimer <= 0) {
+    npcSay(oxNpc, 0, 120); // exibe "Muuu!" por 2 segundos
+}
 
 if (player.y >= 450) {  // limite do canvas
         player.hp = 0;       // player morre
@@ -527,14 +615,61 @@ function draw() {
     ctx.save();
     ctx.translate(-Math.floor(cameraX), 0);
 
-    ctx.fillStyle = "#4e342e";
+    ctx.fillStyle = "#4CAF50";
     platforms.forEach(p => ctx.fillRect(p.x, p.y, p.w, p.h));
 
-    decorations.forEach(d => {
-      if (d.img.complete && d.img.width > 0) {
-        ctx.drawImage(d.img, d.x, d.y, d.width, d.height);
-      }
-    });
+backgroundObjects.forEach(d => {
+  if (d.img.complete) {
+    ctx.drawImage(d.img, d.x, d.y, d.width, d.height);
+  }
+});
+
+// Dentro do draw(), depois de desenhar plataformas e backgroundObjects
+npcs.forEach(n => {
+    if (!n.imgIdle.complete) return;
+
+    // Sombra
+    ctx.fillStyle = "rgba(0,0,0,0.3)";
+    ctx.beginPath();
+    ctx.ellipse(n.x + n.width/2, n.y + n.height, n.width/2, 10, 0, 0, 
+
+Math.PI*2);
+    ctx.fill();
+
+    // Sprite Idle
+    const fw = n.imgIdle.width / n.idleFrames;
+    const fh = n.imgIdle.height;
+    ctx.drawImage(n.imgIdle, n.currentFrame * fw, 0, fw, fh, n.x, n.y, n.width, 
+
+n.height);
+
+    // Animação do Idle
+    n.frameTimer++;
+    if (n.frameTimer >= n.frameInterval) {
+        n.frameTimer = 0;
+        n.currentFrame = (n.currentFrame + 1) % n.idleFrames;
+    }
+
+    // Balão de fala
+    if (n.dialogueTimer > 0) {
+        const text = n.phrases[n.dialogueIndex];
+        ctx.font = "bold 14px Arial";
+        ctx.textAlign = "center";
+        const textWidth = ctx.measureText(text).width;
+        ctx.fillStyle = "white";
+        ctx.fillRect(n.x + n.width/2 - textWidth/2 - 5, n.y - 25, textWidth + 
+
+10, 20);
+        ctx.strokeStyle = "black";
+        ctx.strokeRect(n.x + n.width/2 - textWidth/2 - 5, n.y - 25, textWidth + 
+
+10, 20);
+        ctx.fillStyle = "black";
+        ctx.fillText(text, n.x + n.width/2, n.y - 10);
+        n.dialogueTimer--;
+    }
+});
+
 
     [...enemies, player].forEach(obj => {
         let img = obj.imgIdle;
@@ -579,22 +714,28 @@ obj.x, dY, obj.width, dH);
 
             // DESENHO DO BALÃO DE FALA
             if (obj.dialogue && obj.dialogueTimer > 0) {
-                ctx.font = "bold 14px Arial";
+                ctx.font = "bold 16px Arial";
                 ctx.textAlign = "center";
                 let textWidth = ctx.measureText(obj.dialogue).width;
                 ctx.fillStyle = "white";
-                ctx.fillRect(obj.x + obj.width/2 - textWidth/2 - 5, obj.y - 35, 
+                ctx.fillRect(obj.x + obj.width/2 - textWidth/2 - 5, obj.y -35, 
 
 textWidth + 10, 20);
                 ctx.strokeStyle = "black";
-                ctx.strokeRect(obj.x + obj.width/2 - textWidth/2 - 5, obj.y - 
+                ctx.strokeRect(obj.x + obj.width/2 - textWidth/2 - 5, obj.y -35, 
 
-35, textWidth + 10, 20);
+textWidth + 10, 20);
                 ctx.fillStyle = "black";
-                ctx.fillText(obj.dialogue, obj.x + obj.width/2, obj.y - 20);
+                ctx.fillText(obj.dialogue, obj.x + obj.width/2, obj.y -20);
             }
         }
     });
+
+foregroundObjects.forEach(d => {
+  if (d.img.complete) {
+    ctx.drawImage(d.img, d.x, d.y, d.width, d.height);
+  }
+});
 
     ctx.restore(); // Fecha a câmera
 
