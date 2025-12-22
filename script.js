@@ -33,22 +33,22 @@ let enemies = [];
 function initEnemies() {
     enemies = [
         { type: 'Green_Slime', x: 800, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 850, y: 205, hp: 1, speed: 1.1, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 850, y: 200, hp: 1, speed: 1.1, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         { type: 'Green_Slime', x: 910, y: 200, hp: 1, speed: 1.0, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 905, y: 207, hp: 1, speed: 0.9, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 905, y: 200, hp: 1, speed: 0.9, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         { type: 'Green_Slime', x: 907, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         
-        { type: 'Blue_Slime', x: 3500, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 3505, y: 203, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 3495, y: 206, hp: 1, speed: 1.6, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Blue_Slime', x: 3700, y: 200, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 3705, y: 198, hp: 1, speed: 1.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 3495, y: 205, hp: 1, speed: 1.9, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Blue_Slime', x: 2995, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 3000, y: 200, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 3005, y: 200, hp: 1, speed: 1.6, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Blue_Slime', x: 3010, y: 200, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 3015, y: 200, hp: 1, speed: 1.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 3020, y: 200, hp: 1, speed: 1.9, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         
         { type: 'Red_Slime', x: 4000, y: 200, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Red_Slime', x: 4005, y: 205, hp: 1, speed: 2.4, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 4005, y: 200, hp: 1, speed: 2.4, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         { type: 'Red_Slime', x: 4010, y: 200, hp: 1, speed: 2.3, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Red_Slime', x: 4015, y: 205, hp: 1, speed: 2.1, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 4015, y: 200, hp: 1, speed: 2.1, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
 
         { type: 'Blue_Slime', x: 5000, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
         { type: 'Blue_Slime', x: 2495, y: 207, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
@@ -692,6 +692,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
