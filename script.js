@@ -124,7 +124,7 @@ enemies.forEach(en => {
 const platforms = [
     { x: 0, y: 300, w: 2000, h: 200, type: 'pattern' },
 
-	{ x: 600, y: 200, w: 100, h: 100, type: 'pattern', alpha: 1 },
+	{ x: 620, y: 200, w: 80, h: 80, type: 'pattern', alpha: 1 },
 	
 	{ x: 1970, y: 270, w: 210, h: 20, type: 'stretch' },
 	
@@ -872,6 +872,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
