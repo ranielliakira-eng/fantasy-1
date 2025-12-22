@@ -1,16 +1,17 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Fantasy 2D</title>
+    <title>Fantasy 2D - Mobile Optimized</title>
     <style>
         body {
             margin: 0; padding: 0;
             display: flex; justify-content: center; align-items: center;
             height: 100vh; background-color: #111;
             font-family: 'Segoe UI', Arial, sans-serif; 
-            overflow: hidden; touch-action: none;
+            overflow: hidden; 
+	touch-action: manipulation;
         }
 
         #game-container {
@@ -45,6 +46,8 @@
             touch-action: manipulation;
         }
 
+
+
         /* Container de Controles */
         .controls {
             position: absolute; bottom: 15px; left: 15px; right: 15px;
@@ -78,6 +81,11 @@
         }
 
         .btn:active { background: rgba(255, 255, 255, 0.4); transform: scale(0.95); }
+
+#btn-reset {
+    position: relative; /* ou absolute se quiser */
+    z-index: 2000;      /* garante que fique acima de tudo */
+}
 
         .btn-small {
             padding: 8px 12px; background: rgba(0, 0, 0, 0.6);

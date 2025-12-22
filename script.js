@@ -1,4 +1,4 @@
-const canvas = document.getElementById('gameCanvas');
+﻿const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 canvas.width = 800; canvas.height = 450;
 
@@ -22,9 +22,7 @@ const player = {
     velX: 0, velY: 0, speed: 5, jumpForce: -15,
     facing: 'right', onGround: false, state: 'idle',
     hp: 3, maxHp: 3, canAirAttack: true,
-    imgWalk: new Image(), imgDead: new Image(), imgJump: new Image(), imgHurt: 
-
-new Image(),
+    imgWalk: new Image(), imgDead: new Image(), imgJump: new Image(), imgHurt: new Image(),
     imgAttack: new Image(), imgIdle: new Image (),
     attackFrames: 6, walkFrames: 8, idleFrames: 8, jumpFrames: 8, deadFrames: 4,
     currentFrame: 0, frameTimer: 0, frameInterval: 6
@@ -34,141 +32,45 @@ new Image(),
 let enemies = [];
 function initEnemies() {
     enemies = [
-        { type: 'Green_Slime', x: 800, y: 200, hp: 1, speed: 1.2, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-        { type: 'Green_Slime', x: 850, y: 205, hp: 1, speed: 1.1, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-        { type: 'Green_Slime', x: 910, y: 200, hp: 1, speed: 1.0, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-        { type: 'Green_Slime', x: 905, y: 207, hp: 1, speed: 0.9, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-        { type: 'Green_Slime', x: 907, y: 200, hp: 1, speed: 1.2, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
+        { type: 'Green_Slime', x: 800, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 850, y: 205, hp: 1, speed: 1.1, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 910, y: 200, hp: 1, speed: 1.0, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 905, y: 207, hp: 1, speed: 0.9, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 907, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         
-        { type: 'Blue_Slime', x: 2500, y: 200, hp: 1, speed: 1.8, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 }, 
-        { type: 'Blue_Slime', x: 2505, y: 203, hp: 1, speed: 1.7, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 }, 
-        { type: 'Blue_Slime', x: 2495, y: 206, hp: 1, speed: 1.6, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-        { type: 'Blue_Slime', x: 2700, y: 200, hp: 1, speed: 1.7, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 }, 
-        { type: 'Blue_Slime', x: 2705, y: 198, hp: 1, speed: 1.5, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 }, 
-        { type: 'Blue_Slime', x: 2495, y: 205, hp: 1, speed: 1.9, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
+        { type: 'Blue_Slime', x: 2500, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 2505, y: 203, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 2495, y: 206, hp: 1, speed: 1.6, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Blue_Slime', x: 2700, y: 200, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 2705, y: 198, hp: 1, speed: 1.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 2495, y: 205, hp: 1, speed: 1.9, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         
-        { type: 'Red_Slime', x: 4000, y: 200, hp: 1, speed: 2.5, attackRange: 
+        { type: 'Red_Slime', x: 4000, y: 200, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 4005, y: 205, hp: 1, speed: 2.4, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 4010, y: 200, hp: 1, speed: 2.3, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 4015, y: 205, hp: 1, speed: 2.1, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
 
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-        { type: 'Red_Slime', x: 4005, y: 205, hp: 1, speed: 2.4, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-        { type: 'Red_Slime', x: 4010, y: 200, hp: 1, speed: 2.3, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-        { type: 'Red_Slime', x: 4015, y: 205, hp: 1, speed: 2.1, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-
-        { type: 'Blue_Slime', x: 5000, y: 200, hp: 1, speed: 1.8, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 }, 
-        { type: 'Blue_Slime', x: 2495, y: 207, hp: 1, speed: 1.7, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 }, 
-        { type: 'Blue_Slime', x: 5005, y: 200, hp: 1, speed: 1.6, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-        { type: 'Green_Slime', x: 4995, y: 205, hp: 1, speed: 1.2, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-        { type: 'Green_Slime', x: 5000, y: 203, hp: 1, speed: 1.3, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-        { type: 'Red_Slime', x: 5000, y: 200, hp: 1, speed: 2.5, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-        { type: 'Red_Slime', x: 5000, y: 207, hp: 1, speed: 2.5, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
+        { type: 'Blue_Slime', x: 5000, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 2495, y: 207, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 5005, y: 200, hp: 1, speed: 1.6, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 4995, y: 205, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 5000, y: 203, hp: 1, speed: 1.3, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 5000, y: 200, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 5000, y: 207, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         
-        { type: 'Enchantress', x: 6600, y: 100, hp: 3, speed: 2, attackRange: 
-
-60, idleFrames: 8, walkFrames: 5, attackFrames: 6, hurtFrames: 2, deadFrames: 5, 
-
-dialogue: "", dialogueTimer: 0,}
+        { type: 'Enchantress', x: 6600, y: 100, hp: 3, speed: 2, attackRange: 60, idleFrames: 8, walkFrames: 5, attackFrames: 6, hurtFrames: 2, deadFrames: 5, dialogue: "", dialogueTimer: 0,}
     ];
 
     enemies.forEach(en => {
         en.imgIdle = new Image(); en.imgIdle.src = `assets/${en.type}/Idle.png`;
         en.imgWalk = new Image(); en.imgWalk.src = `assets/${en.type}/Walk.png`;
-        en.imgAttack = new Image(); en.imgAttack.src = `assets/
-
-${en.type}/Attack_1.png`;
+        en.imgAttack = new Image(); en.imgAttack.src = `assets/${en.type}/Attack_1.png`;
         en.imgHurt = new Image(); en.imgHurt.src = `assets/${en.type}/Hurt.png`;
         en.imgDead = new Image(); en.imgDead.src = `assets/${en.type}/Dead.png`;
         
         en.width = 100; en.height = 100;
         en.currentFrame = 0; en.frameTimer = 0; en.frameInterval = 8;
-        en.state = 'patrol'; en.facing = 'left'; en.attackCooldown = 0; en.velY 
-
-= 0;
+        en.state = 'patrol'; en.facing = 'left'; en.attackCooldown = 0; en.velY = 0;
     en.onGround = false;
     });
 }
@@ -185,24 +87,16 @@ const wellImg = new Image();
 wellImg.src = 'assets/Battleground/Battleground1/summer_0/Environment/Well.png';
 
 const Decor_CartImg = new Image();
-Decor_CartImg.src = 
-
-'assets/Battleground/Battleground1/summer_0/Environment/Decor_Cart.png';
+Decor_CartImg.src = 'assets/Battleground/Battleground1/summer_0/Environment/Decor_Cart.png';
 
 const fence_01Img = new Image();
-fence_01Img.src = 
-
-'assets/Battleground/Battleground1/summer_0/Environment/Fence_01.png';
+fence_01Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/Fence_01.png';
 
 const fence_02Img = new Image();
-fence_02Img.src = 
-
-'assets/Battleground/Battleground1/summer_0/Environment/Fence_02.png';
+fence_02Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/Fence_02.png';
 
 const fence_03Img = new Image();
-fence_03Img.src = 
-
-'assets/Battleground/Battleground1/summer_0/Environment/Fence_03.png';
+fence_03Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/Fence_03.png';
 
 
 
@@ -252,9 +146,9 @@ const satyrNpc = {
     frameInterval: 16,
     phrases: [
         "Que bom que você chegou!",
-        "Cuidado com os Slimes!",
+	"Cuidado com os Slimes!",
 	"Os Slimes estão vindo da floresta.",
-	"Minha colhei está sendo destruida por Slimes",
+	"Minha colheita está sendo destruída pelos Slimes",
     ],
     dialogueIndex: 0,
     dialogueTimer: 0
@@ -362,9 +256,7 @@ window.atacar = function() {
 
 function npcSay(npc, index = 0, duration = 120) {
     npc.dialogueIndex = index;      // índice da frase na lista
-    npc.dialogueTimer = duration;   // tempo em frames (ex: 120 frames = 2s se 
-
-60 FPS)
+    npc.dialogueTimer = duration;   // tempo em frames (ex: 120 frames = 2s se 60 FPS)
 }
 
 function updateNPCs() {
@@ -519,9 +411,7 @@ if (player.frameTimer >= player.frameInterval) {
 
 
     // CÂMERA
-    cameraX += ((player.x + player.width / 2) - (canvas.width / 2) - cameraX) * 
-
-0.1;
+    cameraX += ((player.x + player.width / 2) - (canvas.width / 2) - cameraX) * 0.1;
     cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width));
 
     // INIMIGOS
@@ -559,9 +449,7 @@ enemies.forEach(en => {
 
 if (en.state === 'dead') {
         en.frameTimer++;
-        if (en.frameTimer >= en.frameInterval && en.currentFrame < en.deadFrames 
-
-- 1) {
+        if (en.frameTimer >= en.frameInterval && en.currentFrame < en.deadFrames - 1) {
             en.currentFrame++;
         }
         return;
@@ -628,9 +516,7 @@ else if (en.state === 'patrol') {
         // ANIMAÇÃO INIMIGO
         en.frameTimer++;
         if (en.frameTimer >= en.frameInterval) {
-            let totalF = (en.state === 'attacking') ? en.attackFrames : 
-
-en.walkFrames;
+            let totalF = (en.state === 'attacking') ? en.attackFrames : en.walkFrames;
             en.currentFrame = (en.currentFrame + 1) % totalF;
             en.frameTimer = 0;
         }
@@ -664,17 +550,13 @@ npcs.forEach(n => {
     // Sombra
     ctx.fillStyle = "rgba(0,0,0,0.3)";
     ctx.beginPath();
-    ctx.ellipse(n.x + n.width/2, n.y + n.height, n.width/2, 10, 0, 0, 
-
-Math.PI*2);
+    ctx.ellipse(n.x + n.width/2, n.y + n.height, n.width/2, 10, 0, 0, Math.PI*2);
     ctx.fill();
 
     // Sprite Idle
     const fw = n.imgIdle.width / n.idleFrames;
     const fh = n.imgIdle.height;
-    ctx.drawImage(n.imgIdle, n.currentFrame * fw, 0, fw, fh, n.x, n.y, n.width, 
-
-n.height);
+    ctx.drawImage(n.imgIdle, n.currentFrame * fw, 0, fw, fh, n.x, n.y, n.width, n.height);
 
     // Animação do Idle
     n.frameTimer++;
@@ -690,13 +572,9 @@ n.height);
         ctx.textAlign = "center";
         const textWidth = ctx.measureText(text).width;
         ctx.fillStyle = "white";
-        ctx.fillRect(n.x + n.width/2 - textWidth/2 - 5, n.y - 25, textWidth + 
-
-10, 20);
+        ctx.fillRect(n.x + n.width/2 - textWidth/2 - 5, n.y - 25, textWidth + 10, 20);
         ctx.strokeStyle = "black";
-        ctx.strokeRect(n.x + n.width/2 - textWidth/2 - 5, n.y - 25, textWidth + 
-
-10, 20);
+        ctx.strokeRect(n.x + n.width/2 - textWidth/2 - 5, n.y - 25, textWidth + 10, 20);
         ctx.fillStyle = "black";
         ctx.fillText(text, n.x + n.width/2, n.y - 10);
         n.dialogueTimer--;
@@ -707,21 +585,11 @@ n.height);
     [...enemies, player].forEach(obj => {
         let img = obj.imgIdle;
         let totalF = obj.idleFrames || 8;
-        if (obj.state === 'walking') { img = obj.imgWalk; totalF = 
-
-obj.walkFrames; }
-        else if (obj.state === 'attacking') { img = obj.imgAttack; totalF = 
-
-obj.attackFrames; }
-        else if (obj.state === 'jumping') { img = obj.imgJump; totalF = 
-
-obj.jumpFrames || 8; }
-        else if (obj.state === 'hurt') { img = obj.imgHurt; totalF = (obj.type 
-
-=== 'Enchantress' ? 2 : obj.hurtFrames); }
-        else if (obj.state === 'dead') { img = obj.imgDead; totalF = 
-
-obj.deadFrames; }
+        if (obj.state === 'walking') { img = obj.imgWalk; totalF = obj.walkFrames; }
+        else if (obj.state === 'attacking') { img = obj.imgAttack; totalF = obj.attackFrames; }
+        else if (obj.state === 'jumping') { img = obj.imgJump; totalF = obj.jumpFrames || 8; }
+        else if (obj.state === 'hurt') { img = obj.imgHurt; totalF = (obj.type === 'Enchantress' ? 2 : obj.hurtFrames); }
+        else if (obj.state === 'dead') { img = obj.imgDead; totalF = obj.deadFrames; }
 
         if (img.complete && img.width > 0) {
             const fw = img.width / totalF;
@@ -735,13 +603,9 @@ obj.deadFrames; }
             ctx.save();
             if (obj.facing === 'left') {
                 ctx.translate(obj.x + obj.width, dY); ctx.scale(-1, 1);
-                ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, 
-
-0, 0, obj.width, dH);
+                ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, 0, 0, obj.width, dH);
             } else {
-                ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, 
-
-obj.x, dY, obj.width, dH);
+                ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, obj.x, dY, obj.width, dH);
             }
             ctx.restore();
 
@@ -751,13 +615,9 @@ obj.x, dY, obj.width, dH);
                 ctx.textAlign = "center";
                 let textWidth = ctx.measureText(obj.dialogue).width;
                 ctx.fillStyle = "white";
-                ctx.fillRect(obj.x + obj.width/2 - textWidth/2 - 5, obj.y -35, 
-
-textWidth + 10, 20);
+                ctx.fillRect(obj.x + obj.width/2 - textWidth/2 - 5, obj.y -35, textWidth + 10, 20);
                 ctx.strokeStyle = "black";
-                ctx.strokeRect(obj.x + obj.width/2 - textWidth/2 - 5, obj.y -35, 
-
-textWidth + 10, 20);
+                ctx.strokeRect(obj.x + obj.width/2 - textWidth/2 - 5, obj.y -35, textWidth + 10, 20);
                 ctx.fillStyle = "black";
                 ctx.fillText(obj.dialogue, obj.x + obj.width/2, obj.y -20);
             }
@@ -775,9 +635,7 @@ foregroundObjects.forEach(d => {
     // 3. BARRA DE VIDA
     if (gameState === 'playing') {
         ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(20, 20, 150, 15);
-        ctx.fillStyle = "red"; ctx.fillRect(20, 20, (player.hp / player.maxHp) * 
-
-150, 15);
+        ctx.fillStyle = "red"; ctx.fillRect(20, 20, (player.hp / player.maxHp) * 150, 15);
     }
 
     // 4. POR ÚLTIMO: TELA DE VITÓRIA (Fica por cima de tudo)
@@ -824,16 +682,9 @@ window.addEventListener('keyup', (e) => {
 
 // Localiza o botão que criamos no HTML
 const btnReset = document.getElementById('btn-reset');
-
 if (btnReset) {
-    // Para funcionar quando clicar com o mouse (PC)
-    btnReset.addEventListener('click', () => {
-        window.resetGame();
-    });
-
-    // Para funcionar instantaneamente com o toque (Celular)
-    btnReset.addEventListener('touchstart', (e) => {
-        e.preventDefault(); // Evita bugs de duplo clique no mobile
+    btnReset.addEventListener('pointerdown', (e) => {
+        e.preventDefault(); // garante que não dê duplo clique ou scroll
         window.resetGame();
     });
 }
