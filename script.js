@@ -114,8 +114,6 @@ fence_03Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/Fence_
 
 let platformPattern;
 
-let platformPattern;
-
 platformImg.onload = () => {
     platformPattern = ctx.createPattern(platformImg, 'repeat-x');
 };
@@ -743,6 +741,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
