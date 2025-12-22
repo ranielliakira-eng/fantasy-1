@@ -123,10 +123,10 @@ let keys = { left: false, right: false };
 const backgroundObjects = [
     { x: 30, y: 200, width: 100, height: 100, img: Decor_CartImg },
     { x: 600, y: 200, width: 100, height: 100, img: wellImg },
-	{ x: 1965, y: 100, width: 380, height: 200, img: tree1Img },
-	{ x: 2900, y: 105, width: 250, height: 300, img: tree2Img },
-	{ x: 3010, y: 105, width: 250, height: 300, img: tree2Img },
-	{ x: 3080, y: 005, width: 250, height: 300, img: tree2Img },
+	{ x: 1960, y: 100, width: 380, height: 200, img: tree1Img },
+	{ x: 2900, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 3010, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 3080, y: 5, width: 250, height: 300, img: tree2Img },
 
 ];
 
@@ -570,8 +570,13 @@ platforms.forEach(p => {
             ctx.drawImage(platformImg, p.x, p.y, p.w, p.h);
             ctx.restore();
         } else {
-            // Outras plataformas stretch normais
-            ctx.drawImage(platformImg, p.x, p.y, p.w, p.h);
+     	ctx.drawImage(
+    	platformImg,      // imagem
+    	p.x,              // x destino
+   		p.y + p.h - platformImg.height, // y destino ajustado
+    	p.w,              // largura esticada
+    	platformImg.height // altura da imagem
+);
         }
     } else if (p.type === 'pattern') {
         ctx.fillStyle = platformPattern;
@@ -729,6 +734,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
