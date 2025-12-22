@@ -178,7 +178,7 @@ const backgroundObjects = [
 	{ x: 1240, y: 100, width: 100, height: 100, img: tree8Img },
 	
 	{ x: 1960, y: 100, width: 380, height: 200, img: tree1Img },
-	{ x: 2470, y: 100, width: 200, height: 200, img: tree2Img },
+	{ x: 2470, y: 100, width: 250, height: 200, img: tree2Img },
 	{ x: 2900, y: 5, width: 250, height: 300, img: tree2Img },
 	{ x: 3010, y: 5, width: 250, height: 300, img: tree2Img },
 	{ x: 3120, y: 5, width: 250, height: 300, img: tree2Img },
@@ -841,6 +841,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
