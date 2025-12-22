@@ -100,6 +100,9 @@ tree2Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/mid
 const tree3Img = new Image();
 tree3Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree3.png';
 
+const house1Img = new Image();
+house1Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/House1.png';
+
 const Decor_CartImg = new Image();
 Decor_CartImg.src = 'assets/Battleground/Battleground1/summer_0/Environment/Decor_Cart.png';
 
@@ -122,6 +125,7 @@ let keys = { left: false, right: false };
 
 const backgroundObjects = [
     { x: 30, y: 200, width: 100, height: 100, img: Decor_CartImg },
+	{ x: 100, y: 200, width: 100, height: 100, img: house1Img },
     { x: 600, y: 200, width: 100, height: 100, img: wellImg },
 	{ x: 1960, y: 100, width: 380, height: 200, img: tree1Img },
 	{ x: 2900, y: 5, width: 250, height: 300, img: tree2Img },
@@ -741,6 +745,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
