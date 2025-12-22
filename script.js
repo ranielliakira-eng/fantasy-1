@@ -472,7 +472,7 @@ if (player.state !== 'attacking') {
 	
 	if (player.dialogueTimer > 0) {
     	player.dialogueTimer--;
-    	if (player.dialogueTimer <= 0) {
+    		if (player.dialogueTimer <= 0) {
         	player.dialogue = "";
     	}
 	}
@@ -652,8 +652,7 @@ enemies.forEach(en => {
 	// FALA DO PLAYER POR POSIÇÃO
 	playerDialogTriggers.forEach(trigger => {
   	  if (!trigger.used && player.x > trigger.x) {
-        player.dialogue = trigger.text;
-        player.dialogueTimer = 180;
+playerSay(trigger.text, 180);
         trigger.used = true;
    	 }
 	});
@@ -782,13 +781,6 @@ if (obj.state !== 'dead' && obj.dialogue && obj.dialogueTimer > 0) {
     const fh = n.imgIdle.height;
     ctx.drawImage(n.imgIdle, n.currentFrame * fw, 0, fw, fh, n.x, n.y, n.width, n.height);
 
-    // Animação do Idle
-    n.frameTimer++;
-    if (n.frameTimer >= n.frameInterval) {
-        n.frameTimer = 0;
-        n.currentFrame = (n.currentFrame + 1) % n.idleFrames;
-    }
-
     // Balão de fala
     if (n.dialogueTimer > 0) {
         const text = n.phrases[n.dialogueIndex];
@@ -869,6 +861,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
