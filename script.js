@@ -32,7 +32,7 @@ const playerDialogTriggers = [
     { x: 600, text: "Esses Slimes não deveriam estar aqui.", used: false },
     { x: 1800, text: "A floresta está ficando mais densa.", used: false },
     { x: 4800, text: "Slimes de cores diferentes juntos? Isso não pode ser normal...", used: false },
-	{ x: 6400, text: "Tenho um mau pressentimento.", used: false }
+	{ x: 6200, text: "Tenho um mau pressentimento.", used: false }
 ];
 
 // --- INIMIGOS ---
@@ -179,7 +179,7 @@ const backgroundObjects = [
 	
 	{ x: 1960, y: 100, width: 380, height: 200, img: tree1Img },
 	
-	{ x: 2470, y: 5, width: 250, height: 200, img: tree2Img },
+	{ x: 2470, y: 5, width: 250, height: 300, img: tree5Img },
 	
 	{ x: 2900, y: 5, width: 250, height: 300, img: tree2Img },
 	{ x: 3010, y: 5, width: 250, height: 300, img: tree2Img },
@@ -846,6 +846,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
