@@ -180,12 +180,13 @@ const backgroundObjects = [
 	{ x: 1960, y: 100, width: 380, height: 200, img: tree1Img },
 	
 	{ x: 2470, y: 5, width: 250, height: 200, img: tree2Img },
+	
 	{ x: 2900, y: 5, width: 250, height: 300, img: tree2Img },
 	{ x: 3010, y: 5, width: 250, height: 300, img: tree2Img },
 	{ x: 3120, y: 5, width: 250, height: 300, img: tree2Img },
-	{ x: 3180, y: 5, width: 250, height: 300, img: tree2Img },
-	{ x: 3250, y: 5, width: 250, height: 300, img: tree2Img },
-	{ x: 3120, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 3230, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 3340, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 3450, y: 5, width: 250, height: 300, img: tree2Img },
 
 ];
 
@@ -198,6 +199,7 @@ const foregroundObjects = [
 	
 	{ x: 3060, y: 5, width: 300, height: 300, img: tree3Img },
 	{ x: 3220, y: 5, width: 300, height: 300, img: tree3Img },
+	{ x: 3560, y: 5, width: 300, height: 300, img: tree3Img },
 ];
 
 
@@ -844,6 +846,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
