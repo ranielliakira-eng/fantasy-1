@@ -236,7 +236,7 @@ const oxNpc = {
     frameTimer: 0,
     frameInterval: 20,
     phrases: [
-        "Muuu!", "","",
+        "Muuu!",
     ],
     dialogueIndex: 0,
     dialogueTimer: 0
@@ -390,7 +390,7 @@ function updateNPCs() {
 
 function checkMeleeHit() {
     // Alcance do ataque
-    let alcance = 1;
+    let alcance = player.width * 0.4;
 
     // Posição da hitbox conforme direção
     let hitboxX = player.facing === 'right'
@@ -471,8 +471,11 @@ if (player.state !== 'attacking') {
 }
 	
 	if (player.dialogueTimer > 0) {
-    player.dialogueTimer--;
-}
+    	player.dialogueTimer--;
+    	if (player.dialogueTimer <= 0) {
+        	player.dialogue = "";
+    	}
+	}
 
     // COLISÃO PLAYER
     player.onGround = false;
@@ -488,6 +491,9 @@ if (player.state !== 'attacking') {
             player.onGround = true;
         }
     });
+	if (player.onGround) {
+    	player.canAirAttack = true;
+	}
 
     // ANIMAÇÃO PLAYER
     player.frameTimer++;
@@ -569,13 +575,13 @@ enemies.forEach(en => {
     });
 
     // MORTE
-    if (en.state === 'dead') {
-        en.frameTimer++;
-        if (en.frameTimer >= en.frameInterval && en.currentFrame < en.deadFrames - 1) {
-            en.currentFrame++;
-        }
-        return;
-    }
+	if (en.state === 'dead') {
+    	if (en.frameTimer >= en.frameInterval && en.currentFrame < en.deadFrames - 1) {
+       	 en.currentFrame++;
+       	 en.frameTimer = 0;
+    	}
+    	return;
+	}
 
     // 🟦 BLUE SLIME – PULO
     if (en.type === 'Blue_Slime' && en.onGround) {
@@ -623,12 +629,13 @@ enemies.forEach(en => {
         if (dist > 150) en.state = 'patrol';
     }
     else if (en.state === 'attacking') {
-
-        if (en.attackCooldown <= 0) {
-            player.hp -= 1;
-            en.attackCooldown = 80;
-        }
-    }
+    	if (en.attackCooldown <= 0) {
+        	player.hp -= 1;
+       		en.attackCooldown = 80;
+        	en.state = 'chase';
+        	en.currentFrame = 0;
+    	}
+	}
 
     if (en.attackCooldown > 0) en.attackCooldown--;
 
@@ -661,7 +668,7 @@ function draw() {
 
     // 2. DEPOIS: Desenhamos o mundo (Câmera)
     ctx.save();
-    ctx.translate(-Math.floor(cameraX), 0);
+    ctx.translate(-Math.floor(cameraX), -Math.floor(cameraY));
 
 
 platforms.forEach(p => {
@@ -862,6 +869,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
