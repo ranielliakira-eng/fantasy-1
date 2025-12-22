@@ -114,9 +114,9 @@ const backgroundObjects = [
 ];
 
 const foregroundObjects = [
-    { x: 400, y: 250, width: 50, height: 50, img: fence_01Img },
-    { x: 450, y: 250, width: 50, height: 50, img: fence_02Img },
-    { x: 500, y: 250, width: 50, height: 50, img: fence_03Img },
+    { x: 400, y: 260, width: 50, height: 50, img: fence_01Img },
+    { x: 450, y: 260, width: 50, height: 50, img: fence_02Img },
+    { x: 500, y: 260, width: 50, height: 50, img: fence_03Img },
 ];
 
 
@@ -692,6 +692,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
