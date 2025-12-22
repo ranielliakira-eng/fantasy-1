@@ -104,6 +104,20 @@ function initEnemies() {
     });
 }
 
+function createBlueSlime(x, y) {
+    return {
+        x, y,
+        width: 48,
+        height: 32,
+        vx: 0,
+        vy: 0,
+        onGround: false,
+
+        jumpCooldown: Math.floor(Math.random() * 120) + 30, // 👈 aqui
+        jumpInterval: Math.floor(Math.random() * 90) + 60   // 👈 aqui
+    };
+}
+
 const platforms = [
     { x: 0, y: 300, w: 2000, h: 200, type: 'pattern' },
 	
@@ -833,6 +847,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
