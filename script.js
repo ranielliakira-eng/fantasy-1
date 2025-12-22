@@ -156,7 +156,7 @@ tree4Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/mid
 const tree5Img = new Image();
 tree5Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree5.png';
 const tree6Img = new Image();
-tree56Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree6.png';
+tree6Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree6.png';
 const tree7Img = new Image();
 tree7Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree7.png';
 const tree8Img = new Image();
@@ -858,6 +858,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
