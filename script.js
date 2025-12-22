@@ -97,10 +97,12 @@ function initEnemies() {
         en.imgHurt = new Image(); en.imgHurt.src = `assets/${en.type}/Hurt.png`;
         en.imgDead = new Image(); en.imgDead.src = `assets/${en.type}/Dead.png`;
         
-        en.width = 100; en.height = 100;
-        en.currentFrame = 0; en.frameTimer = 0; en.frameInterval = 8;
-        en.state = 'patrol'; en.facing = 'left'; en.attackCooldown = 0; en.velY = 0;
-    en.onGround = false;
+        en.width = 100; en.height = 100; en.currentFrame = 0; en.frameTimer = 0; en.frameInterval = 8; en.state = 'patrol'; en.facing = 'left'; en.attackCooldown = 0; en.velY = 0; en.onGround = false;
+
+		 if (en.type === 'Blue_Slime') {
+            en.jumpCooldown = Math.floor(Math.random() * 120) + 30;
+            en.jumpInterval = Math.floor(Math.random() * 90) + 60;
+        }
     });
 }
 
@@ -510,11 +512,6 @@ if (player.frameTimer >= player.frameInterval) {
     cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width));
 
     // INIMIGOS
-enemies.forEach(en => {
-	if (en.type === 'Blue_Slime') {
-    	en.jumpCooldown = Math.floor(Math.random() * 120) + 30;
-    	en.jumpInterval = Math.floor(Math.random() * 90) + 60;
-	}
 	
     if (en.patrolMinX === undefined) {
         en.patrolMinX = en.x - 120;
@@ -844,6 +841,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
