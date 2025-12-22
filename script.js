@@ -173,9 +173,9 @@ const backgroundObjects = [
     { x: 600, y: 200, width: 100, height: 100, img: wellImg },
 
 	{ x: 1000, y: 200, width: 180, height: 100, img: tree9Img },
-	{ x: 1100, y: 200, width: 100, height: 100, img: tree10Img },
-	{ x: 1170, y: 200, width: 100, height: 100, img: tree9Img },
-	{ x: 1240, y: 200, width: 100, height: 100, img: tree8Img },
+	{ x: 1110, y: 200, width: 100, height: 100, img: tree10Img },
+	{ x: 1330, y: 200, width: 100, height: 100, img: tree9Img },
+	{ x: 1440, y: 200, width: 100, height: 100, img: tree8Img },
 	
 	{ x: 1960, y: 100, width: 380, height: 200, img: tree1Img },
 	
@@ -195,7 +195,7 @@ const foregroundObjects = [
     { x: 450, y: 260, width: 50, height: 50, img: fence_02Img },
     { x: 500, y: 260, width: 50, height: 50, img: fence_03Img },
 	
-	{ x: 1135, y: 200, width: 100, height: 100, img: tree11Img },
+	{ x: 1220, y: 200, width: 100, height: 100, img: tree11Img },
 	
 	{ x: 3060, y: 5, width: 300, height: 300, img: tree3Img },
 	{ x: 3220, y: 5, width: 300, height: 300, img: tree3Img },
@@ -846,6 +846,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
