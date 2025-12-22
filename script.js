@@ -58,8 +58,28 @@ function initEnemies() {
         { type: 'Red_Slime', x: 5000, y: 200, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         { type: 'Red_Slime', x: 5000, y: 207, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         
-        { type: 'Enchantress', x: 6600, y: 100, hp: 3, speed: 2, attackRange: 60, idleFrames: 8, walkFrames: 5, attackFrames: 6, hurtFrames: 2, deadFrames: 5, dialogue: "", dialogueTimer: 0,}
-    ];
+   { 
+  type: 'Enchantress',
+  x: 6600,
+  y: 100,
+  hp: 3,
+  speed: 2,
+  attackRange: 60,
+  idleFrames: 8,
+  walkFrames: 5,
+  attackFrames: 6,
+  hurtFrames: 2,
+  deadFrames: 5,
+  dialogue: "",
+  dialogueTimer: 0,
+  phrases: {
+      idle: [
+          "Você ousa entrar na minha floresta?"
+      ]
+  }
+} 
+	
+	];
 
     enemies.forEach(en => {
         en.imgIdle = new Image(); en.imgIdle.src = `assets/${en.type}/Idle.png`;
@@ -745,6 +765,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
