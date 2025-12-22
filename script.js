@@ -104,18 +104,29 @@ function initEnemies() {
     });
 }
 
-function createBlueSlime(x, y) {
-    return {
-        x, y,
-        width: 48,
-        height: 32,
-        vx: 0,
-        vy: 0,
-        onGround: false,
+function createEnemy(data) {
 
-        jumpCooldown: Math.floor(Math.random() * 120) + 30, // 👈 aqui
-        jumpInterval: Math.floor(Math.random() * 90) + 60   // 👈 aqui
-    };
+    if (data.type === 'Blue_Slime') {
+        return {
+            ...data,
+
+            width: 48,
+            height: 32,
+            vx: 0,
+            vy: 0,
+            onGround: false,
+
+            // 👇 ISSO QUEBRA A SINCRONIA
+            jumpCooldown: Math.floor(Math.random() * 120) + 30,
+            jumpInterval: Math.floor(Math.random() * 90) + 60,
+
+            state: 'idle',
+            dialogue: "",
+            dialogueTimer: 0
+        };
+    }
+
+    // outros inimigos aqui...
 }
 
 const platforms = [
@@ -847,6 +858,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
