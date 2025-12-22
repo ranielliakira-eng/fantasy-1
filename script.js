@@ -102,7 +102,6 @@ enemies.forEach(en => {
     en.currentFrame = 0;
     en.frameTimer = 0;
 
-    // 👇 ESTE É O PONTO IMPORTANTE
     if (en.frameInterval === undefined) {
         en.frameInterval = 8;
     }
@@ -211,7 +210,7 @@ const foregroundObjects = [
     { x: 450, y: 260, width: 50, height: 50, img: fence_02Img },
     { x: 500, y: 260, width: 50, height: 50, img: fence_03Img },
 	
-	{ x: 1220, y: 200, width: 100, height: 100, img: tree11Img },
+	{ x: 1220, y: 250, width: 50, height: 50, img: tree11Img },
 	
 	{ x: 3060, y: 5, width: 300, height: 300, img: tree3Img },
 	{ x: 3220, y: 5, width: 300, height: 300, img: tree3Img },
@@ -858,6 +857,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
