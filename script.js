@@ -538,19 +538,19 @@ if (player.frameTimer >= player.frameInterval) {
     // INIMIGOS
 	
     // INIMIGOS
+// INIMIGOS
 enemies.forEach(en => {
 
+    // Inicialização de patrulha
     if (en.patrolMinX === undefined) {
         en.patrolMinX = en.x - 120;
         en.patrolMaxX = en.x + 120;
     }
-
-    if (en.facing === undefined) {
-        en.facing = 'left';
-    }
+    if (en.facing === undefined) en.facing = 'left';
 
     let dist = Math.abs(player.x - en.x);
 
+    // Diálogo da Enchantress
     if (en.type === 'Enchantress' && en.state !== 'dead' && dist < 200 && en.dialogueTimer <= 0) {
         en.dialogue = en.phrases.idle[0];
         en.dialogueTimer = 180;
@@ -562,12 +562,10 @@ enemies.forEach(en => {
     en.onGround = false;
 
     platforms.forEach(p => {
-        if (
-            en.x + 40 < p.x + p.w &&
+        if (en.x + 40 < p.x + p.w &&
             en.x + 60 > p.x &&
             en.y + en.height >= p.y &&
-            en.y + en.height <= p.y + 10
-        ) {
+            en.y + en.height <= p.y + 10) {
             en.y = p.y - en.height;
             en.velY = 0;
             en.onGround = true;
@@ -575,18 +573,17 @@ enemies.forEach(en => {
     });
 
     // MORTE
-	if (en.state === 'dead') {
-    	if (en.frameTimer >= en.frameInterval && en.currentFrame < en.deadFrames - 1) {
-       	 en.currentFrame++;
-       	 en.frameTimer = 0;
-    	}
-    	return;
-	}
+    if (en.state === 'dead') {
+        if (en.frameTimer >= en.frameInterval && en.currentFrame < en.deadFrames - 1) {
+            en.currentFrame++;
+            en.frameTimer = 0;
+        }
+        return;
+    }
 
     // 🟦 BLUE SLIME – PULO
     if (en.type === 'Blue_Slime' && en.onGround) {
         en.jumpCooldown--;
-
         if (en.jumpCooldown <= 0) {
             en.velY = -12;
             en.onGround = false;
@@ -602,9 +599,8 @@ enemies.forEach(en => {
             en.frameTimer = 0;
             en.currentFrame = 0;
         }
-    }
+    } 
     else if (en.state === 'patrol') {
-
         if (en.facing === 'left') {
             en.x -= en.speed;
             if (en.x <= en.patrolMinX) en.facing = 'right';
@@ -614,9 +610,8 @@ enemies.forEach(en => {
         }
 
         if (dist < 100) en.state = 'chase';
-    }
+    } 
     else if (en.state === 'chase') {
-
         if (player.x < en.x) {
             en.x -= en.speed * 1.2;
             en.facing = 'left';
@@ -625,17 +620,38 @@ enemies.forEach(en => {
             en.facing = 'right';
         }
 
-        if (dist <= en.attackRange) en.state = 'attacking';
+        if (dist <= en.attackRange && en.attackCooldown <= 0) {
+            en.state = 'attacking';
+            en.currentFrame = 0;
+        }
         if (dist > 150) en.state = 'patrol';
-    }
+    } 
     else if (en.state === 'attacking') {
-    	if (en.attackCooldown <= 0) {
-        	player.hp -= 1;
-       		en.attackCooldown = 80;
-        	en.state = 'chase';
-        	en.currentFrame = 0;
-    	}
-	}
+        // Define o frame que causa dano (ajuste se quiser)
+        const attackFrame = 2; 
+        en.frameTimer++;
+        if (en.frameTimer >= en.frameInterval) {
+            en.frameTimer = 0;
+            en.currentFrame++;
+
+            if (en.currentFrame === attackFrame && dist <= en.attackRange) {
+                player.hp -= 1;
+                en.attackCooldown = 80;
+            }
+
+            // Fim da animação
+            if (en.currentFrame >= en.attackFrames) {
+                en.currentFrame = 0;
+                en.state = 'chase';
+            }
+        }
+    }
+
+    if (en.attackCooldown > 0) en.attackCooldown--;
+});
+
+    if (en.attackCooldown > 0) en.attackCooldown--;
+}
 
     if (en.attackCooldown > 0) en.attackCooldown--;
 
@@ -860,6 +876,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
