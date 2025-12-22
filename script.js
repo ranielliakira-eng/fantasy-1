@@ -370,15 +370,15 @@ function npcSay(npc, index = 0, duration = 120) {
 
 function updateNPCs() {
     npcs.forEach(n => {
-        // Reduz timer de fala se estiver ativo
+
         if (n.dialogueTimer > 0) {
             n.dialogueTimer--;
         } else {
-            // Se o timer zerou, troca de frase aleatoriamente
             n.dialogueIndex = Math.floor(Math.random() * n.phrases.length);
-            n.dialogueTimer = 180 + Math.floor(Math.random() * 120); // 3-5s
+            n.dialogueTimer = 180 + Math.floor(Math.random() * 120);
         }
- 	n.frameTimer++;
+
+        n.frameTimer++;
         if (n.frameTimer >= n.frameInterval) {
             n.frameTimer = 0;
             n.currentFrame = (n.currentFrame + 1) % n.idleFrames;
@@ -386,6 +386,7 @@ function updateNPCs() {
 
     });
 }
+
 
 
 function checkMeleeHit() {
@@ -437,9 +438,8 @@ function update() {
 
     if (gameState !== 'playing' || isPaused) return;
 
-    // Atualiza NPCs (fala e animação)
-    updateNPCs();
-
+updateNPCs();
+	
     // PLAYER – FÍSICA
     player.velY += gravity;
     player.x += player.velX;
@@ -861,6 +861,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
