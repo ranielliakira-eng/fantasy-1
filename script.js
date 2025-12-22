@@ -126,7 +126,7 @@ const backgroundObjects = [
 	{ x: 1960, y: 100, width: 380, height: 200, img: tree1Img },
 	{ x: 2900, y: 5, width: 250, height: 300, img: tree2Img },
 	{ x: 3010, y: 5, width: 250, height: 300, img: tree2Img },
-	{ x: 3080, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 3120, y: 5, width: 250, height: 300, img: tree2Img },
 
 ];
 
@@ -134,7 +134,7 @@ const foregroundObjects = [
     { x: 400, y: 260, width: 50, height: 50, img: fence_01Img },
     { x: 450, y: 260, width: 50, height: 50, img: fence_02Img },
     { x: 500, y: 260, width: 50, height: 50, img: fence_03Img },
-	{ x: 3060, y: 260, width: 300, height: 300, img: tree3Img },
+	{ x: 3060, y: 5, width: 300, height: 300, img: tree3Img },
 ];
 
 
@@ -562,26 +562,33 @@ function draw() {
 platforms.forEach(p => {
     if (!platformImg.complete) return;
 
+    ctx.save(); // salvamos o estado
+
+    // Transparência individual (opcional)
+    if (p.alpha !== undefined) ctx.globalAlpha = p.alpha;
+
     if (p.type === 'stretch') {
-        // Verifica se é a plataforma específica que você quer deixar transparente
-        if (p.x === 1970 && p.y === 270) {
-            ctx.save();
-            ctx.globalAlpha = 0.5; // 50% de opacidade
-            ctx.drawImage(platformImg, p.x, p.y, p.w, p.h);
-            ctx.restore();
-        } else {
-     	ctx.drawImage(
-    	platformImg,      // imagem
-    	p.x,              // x destino
-   		p.y + p.h - platformImg.height, // y destino ajustado
-    	p.w,              // largura esticada
-    	platformImg.height // altura da imagem
-);
-        }
+        // Stretch: estica a imagem na largura e altura da plataforma
+        ctx.drawImage(platformImg, p.x, p.y, p.w, p.h);
     } else if (p.type === 'pattern') {
-        ctx.fillStyle = platformPattern;
-        ctx.fillRect(p.x, p.y, p.w, p.h);
+        if (!platformPattern) return;
+
+        // Alinha a imagem ao topo da plataforma
+        const patternHeight = platformImg.height;
+        const repetitions = Math.ceil(p.h / patternHeight);
+
+        for (let i = 0; i < repetitions; i++) {
+            let drawHeight = (i === repetitions - 1) ? p.h - i * patternHeight : patternHeight;
+            ctx.drawImage(
+                platformImg,
+                0, 0, platformImg.width, drawHeight, // recorta apenas o que cabe
+                p.x, p.y + i * patternHeight,       // posição correta
+                p.w, drawHeight                     // tamanho desenhado
+            );
+        }
     }
+
+    ctx.restore(); // restauramos estado (transparência, etc)
 });
 
 
@@ -734,6 +741,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
