@@ -32,7 +32,7 @@ const playerDialogTriggers = [
     { x: 600, text: "Esses Slimes não deveriam estar aqui.", used: false },
     { x: 1800, text: "A floresta está ficando mais densa.", used: false },
     { x: 4800, text: "Slimes de cores diferentes juntos?", used: false },
-	{ x: 6200, text: "Acho que sei o que juntou aqueles Slimes...", used: false }
+	{ x: 6200, text: "Acho que sei o que juntou aqueles Slimes...", used: false },
 ];
 
 // --- INIMIGOS ---
@@ -83,8 +83,8 @@ function initEnemies() {
   dialogueTimer: 0,
   phrases: {
       idle: [
-          "O equilíbrio foi quebrado"
-		  "A energia da terra foi corrompida!"
+          "O equilíbrio foi quebrado",
+		  "A energia da terra foi corrompida!",
       ]
   }
 } 
@@ -862,6 +862,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
