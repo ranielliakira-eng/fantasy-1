@@ -159,10 +159,10 @@ fence_02Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/Fence_
 const fence_03Img = new Image();
 fence_03Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/Fence_03.png';
 
-let platformPattern;
+let platformPattern = null;
 
 platformImg.onload = () => {
-    platformPattern = ctx.createPattern(platformImg, 'repeat-x');
+    platformPattern = ctx.createPattern(platformImg, 'repeat');
 };
 
 let keys = { left: false, right: false };
@@ -649,33 +649,31 @@ function draw() {
 platforms.forEach(p => {
     if (!platformImg.complete) return;
 
-    ctx.save(); // salvamos o estado
+    ctx.save();
 
     // Transparência individual (opcional)
     if (p.alpha !== undefined) ctx.globalAlpha = p.alpha;
 
     if (p.type === 'stretch') {
-        // Stretch: estica a imagem na largura e altura da plataforma
+
+        // Stretch (use apenas para coisas que PODEM esticar)
         ctx.drawImage(platformImg, p.x, p.y, p.w, p.h);
+
     } else if (p.type === 'pattern') {
-        if (!platformPattern) return;
 
-        // Alinha a imagem ao topo da plataforma
-        const patternHeight = platformImg.height;
-        const repetitions = Math.ceil(p.h / patternHeight);
-
-        for (let i = 0; i < repetitions; i++) {
-            let drawHeight = (i === repetitions - 1) ? p.h - i * patternHeight : patternHeight;
-            ctx.drawImage(
-                platformImg,
-                0, 0, platformImg.width, drawHeight, // recorta apenas o que cabe
-                p.x, p.y + i * patternHeight,       // posição correta
-                p.w, drawHeight                     // tamanho desenhado
-            );
+        if (!platformPattern) {
+            ctx.restore();
+            return;
         }
+
+        // Alinha o padrão ao topo da plataforma
+        ctx.translate(p.x, p.y);
+
+        ctx.fillStyle = platformPattern;
+        ctx.fillRect(0, 0, p.w, p.h);
     }
 
-    ctx.restore(); // restauramos estado (transparência, etc)
+    ctx.restore();
 });
 
 
@@ -846,6 +844,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
