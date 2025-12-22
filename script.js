@@ -29,9 +29,9 @@ const player = {
 };
 
 const playerDialogTriggers = [
-    { x: 600, text: "Esses Slimes não estão deveriam estar aqui.", used: false },
+    { x: 600, text: "Esses Slimes não deveriam estar aqui.", used: false },
     { x: 1800, text: "A floresta está ficando mais densa.", used: false },
-    { x: 4800, text: "Slimes de cores direfentes juntos? Isso não pode ser normal...", used: false },
+    { x: 4800, text: "Slimes de cores diferentes juntos? Isso não pode ser normal...", used: false },
 	{ x: 6400, text: "Tenho um mau pressentimento.", used: false }
 ];
 
@@ -809,6 +809,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
