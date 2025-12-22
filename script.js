@@ -38,12 +38,12 @@ function initEnemies() {
         { type: 'Green_Slime', x: 905, y: 207, hp: 1, speed: 0.9, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         { type: 'Green_Slime', x: 907, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         
-        { type: 'Blue_Slime', x: 2500, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 2505, y: 203, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 2495, y: 206, hp: 1, speed: 1.6, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Blue_Slime', x: 2700, y: 200, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 2705, y: 198, hp: 1, speed: 1.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 2495, y: 205, hp: 1, speed: 1.9, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Blue_Slime', x: 3500, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 3505, y: 203, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 3495, y: 206, hp: 1, speed: 1.6, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Blue_Slime', x: 3700, y: 200, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 3705, y: 198, hp: 1, speed: 1.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 3495, y: 205, hp: 1, speed: 1.9, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         
         { type: 'Red_Slime', x: 4000, y: 200, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         { type: 'Red_Slime', x: 4005, y: 205, hp: 1, speed: 2.4, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
@@ -76,7 +76,8 @@ function initEnemies() {
 }
 
 const platforms = [
-    { x: 0, y: 300, w: mapWidth, h: 200 },
+    { x: 0, y: 300, w: 2000, h: 200 },
+	{ x: 3200, y: 300, w: 4800, h: 200 },
     { x: 3000, y: 180, w: 300, h: 20 },
     { x: 3070, y: 60, w: 100, h: 20 },
 ];
@@ -688,6 +689,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
