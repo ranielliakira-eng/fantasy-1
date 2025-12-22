@@ -77,7 +77,9 @@ function initEnemies() {
 
 const platforms = [
     { x: 0, y: 300, w: 2000, h: 200 },
+	
 	{ x: 1970, y: 270, w: 210, h: 20 },
+	
 	{ x: 2150, y: 300, w: 4800, h: 200 },	
     
 	{ x: 2900, y: 200, w: 30, h: 20 },
@@ -119,11 +121,10 @@ let keys = { left: false, right: false };
 const backgroundObjects = [
     { x: 30, y: 200, width: 100, height: 100, img: Decor_CartImg },
     { x: 600, y: 200, width: 100, height: 100, img: wellImg },
-	{ x: 1975, y: 160, width: 300, height: 250, img: tree1Img },
-	{ x: 2900, y: 205, width: 300, height: 300, img: tree2Img },
-	{ x: 2960, y: 205, width: 300, height: 300, img: tree2Img },
-	{ x: 3010, y: 205, width: 300, height: 300, img: tree2Img },
-	{ x: 3080, y: 205, width: 300, height: 300, img: tree2Img },
+	{ x: 1975, y: 100, width: 350, height: 200, img: tree1Img },
+	{ x: 2900, y: 105, width: 250, height: 300, img: tree2Img },
+	{ x: 3010, y: 105, width: 250, height: 300, img: tree2Img },
+	{ x: 3080, y: 005, width: 250, height: 300, img: tree2Img },
 
 ];
 
@@ -707,6 +708,7 @@ if (btnReset) {
         window.resetGame();
     });
 }
+
 
 
 
