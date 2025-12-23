@@ -404,6 +404,8 @@ platforms.forEach(p => {
 let targetX = (player.x + player.width / 2) - (canvas.width / (2 * zoom));
 let targetY = (player.y + player.height / 2) - (canvas.height / (2 * zoom));
 
+if(targetY > 450) targetY = 450;
+
 // Suavização
 cameraX += (targetX - cameraX) * 0.1;
 cameraY += (targetY - cameraY) * 0.1;
@@ -684,6 +686,7 @@ window.addEventListener('keyup',(e)=>{
 
 const btnReset = document.getElementById('btn-reset');
 if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); window.resetGame(); }); }
+
 
 
 
