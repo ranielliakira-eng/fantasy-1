@@ -12,7 +12,7 @@ const gravity = 0.8;
 const zoom = 2; 
 const mapWidth = 7000;
 const mapHeight = 2000;
-let cameraX = 0, cameraY = -100;
+let cameraX = 0, cameraY = 0;
 let gameState = 'menu';
 let isPaused = false;
 let isMuted = false;
@@ -399,10 +399,15 @@ function update(){
         else{ player.state='idle'; player.currentFrame=(player.currentFrame+1)%player.idleFrames;}
     }
 
-// --- CÂMERA DINÂMICA CORRIGIDA ---
+// --- DESLOCAMENTO VERTICAL DA CÂMERA ---
+let cameraYOffset = -100; // ajusta para subir ou descer a câmera
+	
+// --- CÂMERA DINÂMICA ---
 let targetX = (player.x + player.width / 2) - (canvas.width / 2) / zoom;
 let targetY = (player.y + player.height / 2) - (canvas.height / 2) / zoom;
 
+// aplica o deslocamento vertical
+targetY += cameraYOffset;
 // Suavização
 cameraX += (targetX - cameraX) * 0.1;
 cameraY += (targetY - cameraY) * 0.1;
@@ -683,6 +688,7 @@ window.addEventListener('keyup',(e)=>{
 
 const btnReset = document.getElementById('btn-reset');
 if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); window.resetGame(); }); }
+
 
 
 
