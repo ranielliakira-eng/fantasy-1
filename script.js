@@ -525,23 +525,42 @@ function update(){
 			} 
 			if(dist > 150) en.state='patrol'; 
 		} 
-        else if(en.state==='attacking'){
-			const attackFrame=2; en.frameTimer++; 
-			if(en.frameTimer>=en.frameInterval){ 
-				en.frameTimer=0; en.currentFrame++;
-				if(en.currentFrame===attackFrame && dist<=en.attackRange){ 
-					player.hp-=1; en.attackCooldown=80;
-				} 
-				if(en.currentFrame>=en.attackFrames){
-					en.currentFrame=0; en.state='chase'; 
-				} 
-			} 
-		}
+        else if(en.state==='attacking'){ 
+    const attackFrame = 2; // frame que o ataque realmente acerta
+    en.frameTimer++; 
+    if(en.frameTimer >= en.frameInterval){ 
+        en.frameTimer = 0; 
+        en.currentFrame++;
 
-        if(en.attackCooldown>0) en.attackCooldown--; en.frameTimer++;
-		if(en.frameTimer>=en.frameInterval){ 
-			let totalF=(en.state==='attacking')?en.attackFrames:en.walkFrames; en.currentFrame=(en.currentFrame+1)%totalF; en.frameTimer=0; 
-		}
+        // dano só no frame do ataque e com hitbox
+        if(en.currentFrame === attackFrame){ 
+            let hitX = en.facing === 'right' ? en.x + en.width : en.x - en.attackRange;
+            if(player.x + player.width > hitX && player.x < hitX + en.attackRange &&
+               player.y + player.height > en.y && player.y < en.y + en.height) {
+                player.hp -= 1;
+                en.attackCooldown = 80;
+            }
+        }
+
+        // final da animação de ataque
+        if(en.currentFrame >= en.attackFrames){ 
+            en.currentFrame = 0; 
+            en.state = 'chase'; 
+        } 
+    } 
+}
+
+// cooldown do ataque
+if(en.attackCooldown > 0) en.attackCooldown--;
+
+// animação geral
+en.frameTimer++; 
+if(en.frameTimer >= en.frameInterval){ 
+    let totalF = (en.state === 'attacking') ? en.attackFrames : en.walkFrames; 
+    en.currentFrame = (en.currentFrame + 1) % totalF; 
+    en.frameTimer = 0; 
+}
+
 	}
 				   );
 
@@ -756,5 +775,6 @@ if(btnReset){
 	}
 							 );
 }
+
 
 
