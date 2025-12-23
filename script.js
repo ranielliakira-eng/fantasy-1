@@ -100,19 +100,19 @@ function initEnemies() {
 const platforms = [
 
 // ---Telhado esquerdo ---
-    { x: 300, y: 275, w: 50, h: 20, type: 'pattern', type: 'sloped', slope: -0.5, alpha: 0 },
+    { x: 300, y: 275, w: 50, h: 20, type: 'sloped', slope: -0.5, alpha: 0 },
 // --- Telhado direito ---
-    { x: 420, y: 235, w: 50, h: 20, type: 'pattern', type: 'sloped', slope: 0.5,alpha: 0 },
+    { x: 420, y: 235, w: 50, h: 20, type: 'sloped', slope: 0.5,alpha: 0 },
 // --- Cerca ---
     { x: 400, y: 370, w: 150, h: 50, type: 'pattern', alpha: 0 },
 // --- Chão parte 1 ---
-    { x: 0, y: 400, w: 2000, h: 200, type: 'pattern' },
+    { x: 0, y: 500, w: 2000, h: 200, type: 'pattern' },
 // --- Poço ---
     { x: 612, y: 323, w: 70, h: 80, type: 'pattern', alpha: 0 },
 // --- Árvore ---
     { x: 1970, y: 370, w: 210, h: 20, type: 'stretch', alpha: 0 },
 // --- Chão parte 2 ---
-    { x: 2150, y: 400, w: 4800, h: 200, type: 'pattern' }, 
+    { x: 2150, y: 500, w: 4800, h: 200, type: 'pattern' }, 
 ];
 
 // --- Cenário ---
@@ -678,6 +678,7 @@ window.addEventListener('keyup',(e)=>{
 
 const btnReset = document.getElementById('btn-reset');
 if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); window.resetGame(); }); }
+
 
 
 
