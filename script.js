@@ -12,7 +12,8 @@ const gravity = 0.8;
 const zoom = 2; 
 const mapWidth = 7000;
 const mapHeight = 2000;
-let cameraX = 0, cameraY = 0;
+let cameraX = 0;
+let cameraY = 0;
 let gameState = 'menu';
 let isPaused = false;
 let isMuted = false;
@@ -106,13 +107,13 @@ const platforms = [
 // --- Cerca ---
     { x: 400, y: 370, w: 150, h: 50, type: 'pattern', alpha: 0 },
 // --- Chão parte 1 ---
-    { x: 0, y: 500, w: 2000, h: 200, type: 'pattern' },
+    { x: 0, y: 300, w: 2000, h: 200, type: 'pattern' },
 // --- Poço ---
     { x: 612, y: 323, w: 70, h: 80, type: 'pattern', alpha: 0 },
 // --- Árvore ---
     { x: 1970, y: 370, w: 210, h: 20, type: 'stretch', alpha: 0 },
 // --- Chão parte 2 ---
-    { x: 2150, y: 500, w: 4800, h: 200, type: 'pattern' }, 
+    { x: 2150, y: 300, w: 4800, h: 200, type: 'pattern' }, 
 ];
 
 // --- Cenário ---
@@ -169,8 +170,8 @@ platformImg.onload = () => {
 let keys = { left: false, right: false };
 
 const backgroundObjects = [
-    { x: 30, y: 300, width: 100, height: 100, img: Decor_CartImg },
-	{ x: 270, y: 300, width: 250, height: 200, img: house1Img },
+    { x: 30, y: 200, width: 100, height: 100, img: Decor_CartImg },
+	{ x: 270, y: 100, width: 250, height: 200, img: house1Img },
     { x: 600, y: 300, width: 100, height: 100, img: wellImg },
 
 	{ x: 1000, y: 350, width: 50, height: 50, img: tree9Img },
@@ -429,15 +430,16 @@ cameraY = Math.max(0, Math.min(cameraY, mapHeight - canvas.height / zoom));
 
         if(en.state==='hurt'){ en.frameTimer++; if(en.frameTimer>=30){ en.state='patrol'; en.frameTimer=0; en.currentFrame=0;} }
         else if(en.state==='patrol'){ if(en.facing==='left'){ en.x-=en.speed; if(en.x<=en.patrolMinX) en.facing='right'; } else{ en.x+=en.speed; if(en.x>=en.patrolMaxX) en.facing='left'; } if(dist<100) en.state='chase'; }
-else if(en.state==='chase'){ 
-const minDist = 30; 
-if(dist > minDist) { 
-if(player.x < en.x){ 
-            en.x -= en.speed*1.2; 
-            en.facing='left'; 
-        } else { 
-            en.x += en.speed*1.2; 
-            en.facing='right'; 
+		else if(en.state==='chase'){ 
+			const minDist = 30; 
+			if(dist > minDist) { 
+				if(player.x < en.x){ 
+            		en.x -= en.speed*1.2; 
+            		en.facing='left'; 
+        		} 
+				else { 
+            		en.x += en.speed*1.2; 
+            		en.facing='right'; 
         }
     }
     if(dist <= en.attackRange && en.attackCooldown<=0){ 
@@ -678,4 +680,5 @@ window.addEventListener('keyup',(e)=>{
 
 const btnReset = document.getElementById('btn-reset');
 if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); window.resetGame(); }); }
+
 
