@@ -40,47 +40,47 @@ const playerDialogTriggers = [
 let enemies = [];
 function initEnemies() {
     enemies = [
-        { type: 'Green_Slime', x: 800, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 850, y: 200, hp: 1, speed: 1.1, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 910, y: 200, hp: 1, speed: 1.0, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 905, y: 200, hp: 1, speed: 0.9, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 907, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 1050, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-		{ type: 'Green_Slime', x: 1120, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 800, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 20, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 850, y: 200, hp: 1, speed: 1.1, attackRange: 30, frameInterval: 20, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 910, y: 200, hp: 1, speed: 1.0, attackRange: 30, frameInterval: 20, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 905, y: 200, hp: 1, speed: 0.9, attackRange: 30, frameInterval: 20, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 907, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 20, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 1050, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 20, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+	{ type: 'Green_Slime', x: 1120, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 20, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         
-        { type: 'Blue_Slime', x: 2995, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 3000, y: 200, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 3005, y: 200, hp: 1, speed: 1.6, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Blue_Slime', x: 3010, y: 200, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 3015, y: 200, hp: 1, speed: 1.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 3020, y: 200, hp: 1, speed: 1.9, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Blue_Slime', x: 2995, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 20, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 3000, y: 200, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 20, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 3005, y: 200, hp: 1, speed: 1.6, attackRange: 30, frameInterval: 20, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Blue_Slime', x: 3010, y: 200, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 20, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 3015, y: 200, hp: 1, speed: 1.5, attackRange: 30, frameInterval: 20, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 3020, y: 200, hp: 1, speed: 1.9, attackRange: 30, frameInterval: 20, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         
-        { type: 'Red_Slime', x: 4000, y: 200, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Red_Slime', x: 4005, y: 200, hp: 1, speed: 2.4, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Red_Slime', x: 4010, y: 200, hp: 1, speed: 2.3, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Red_Slime', x: 4015, y: 200, hp: 1, speed: 2.1, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 4000, y: 200, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 20, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 4005, y: 200, hp: 1, speed: 2.4, attackRange: 30, frameInterval: 20, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 4010, y: 200, hp: 1, speed: 2.3, attackRange: 30, frameInterval: 20, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 4015, y: 200, hp: 1, speed: 2.1, attackRange: 30, frameInterval: 20, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
 
-        { type: 'Blue_Slime', x: 5000, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 2495, y: 207, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 5005, y: 200, hp: 1, speed: 1.6, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 4995, y: 205, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 5000, y: 203, hp: 1, speed: 1.3, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Red_Slime', x: 5000, y: 200, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Red_Slime', x: 5000, y: 207, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Blue_Slime', x: 5000, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 20, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 2495, y: 207, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 20, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 5005, y: 200, hp: 1, speed: 1.6, attackRange: 30, frameInterval: 20, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 4995, y: 205, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 20, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 5000, y: 203, hp: 1, speed: 1.3, attackRange: 30, frameInterval: 20, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 5000, y: 200, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 20, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 5000, y: 207, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 20, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
    
-        { type: 'Enchantress', x: 6600, y: 100, hp: 3, speed: 2, attackRange: 60, idleFrames: 8, walkFrames: 5, attackFrames: 6, hurtFrames: 2, deadFrames: 5, dialogue: "", dialogueTimer: 0, phrases: { idle: [
+        { type: 'Enchantress', x: 6600, y: 100, hp: 3, speed: 2, attackRange: 60, idleFrames: 8, walkFrames: 5, attackFrames: 6, hurtFrames: 2, deadFrames: 5, dialogue: "", dialogueTimer: 0,
+            phrases: { idle: [
 		"O equilíbrio foi quebrado",
-		"A energia da terra foi corrompida!"]
-		}
+		"A energia da terra foi corrompida!",
+			     ]
+		     }
         }
     ];
 
     enemies.forEach(en => {
         en.imgIdle = new Image(); en.imgIdle.src = `assets/${en.type}/Idle.png`;
         en.imgWalk = new Image(); en.imgWalk.src = `assets/${en.type}/Walk.png`;
-        en.imgAttack = new Image(); en.imgAttack.src = `assets/
-
-${en.type}/Attack_1.png`;
+        en.imgAttack = new Image(); en.imgAttack.src = `assets/${en.type}/Attack_1.png`;
         en.imgHurt = new Image(); en.imgHurt.src = `assets/${en.type}/Hurt.png`;
         en.imgDead = new Image(); en.imgDead.src = `assets/${en.type}/Dead.png`;
 
@@ -101,13 +101,9 @@ ${en.type}/Attack_1.png`;
 const platforms = [
 
 // ---Telhado esquerdo ---
-    { x: 300, y: 175, w: 50, h: 20, type: 'sloped', slope: -
-
-0.5, alpha: 0 },
+    { x: 300, y: 175, w: 50, h: 20, type: 'pattern', type: 'sloped', slope: -0.5, alpha: 0 },
 // --- Telhado direito ---
-    { x: 420, y: 135, w: 50, h: 20, type: 'sloped', slope: 
-
-0.5,alpha: 0 },
+    { x: 420, y: 135, w: 50, h: 20, type: 'pattern', type: 'sloped', slope: 0.5,alpha: 0 },
 // --- Cerca ---
     { x: 400, y: 270, w: 150, h: 50, type: 'pattern', alpha: 0 },
 
@@ -179,9 +175,9 @@ platformImg.onload = () => {
 let keys = { left: false, right: false };
 
 const backgroundObjects = [
-    { x: 30, y: 200, width: 100, height: 100, img: Decor_CartImg },
+        { x: 30, y: 200, width: 100, height: 100, img: Decor_CartImg },
 	{ x: 270, y: 100, width: 250, height: 200, img: house1Img },
-    { x: 600, y: 200, width: 100, height: 100, img: wellImg },
+        { x: 600, y: 200, width: 100, height: 100, img: wellImg },
 
 	{ x: 1000, y: 250, width: 50, height: 50, img: tree9Img },
 	{ x: 1110, y: 250, width: 50, height: 50, img: tree10Img },
@@ -270,31 +266,18 @@ window.playerSay = function(text, duration = 120) {
 };
 
 // --- FUNÇÕES DO SISTEMA ---
-window.togglePause = function() { 
-	if (gameState !== 'playing') return; isPaused = !isPaused; if (isPaused) bgMusic.pause(); 
-	else if (!isMuted) bgMusic.play().catch(() => {}
-		); 
-								};
-window.toggleSom = function() {
-	isMuted = !isMuted; bgMusic.muted = isMuted;const btn = document.getElementById('btn-audio');
-	if(btn) btn.innerText = isMuted ? "Mudo" : "Som"; 
-							};
+window.togglePause = function() { if (gameState !== 'playing') return; isPaused = !isPaused; if (isPaused) bgMusic.pause(); else if (!isMuted) bgMusic.play().catch(() => {}); };
+window.toggleSom = function() { isMuted = !isMuted; bgMusic.muted = isMuted; const btn = document.getElementById('btn-audio'); if(btn) btn.innerText = isMuted ? "Mudo" : "Som"; };
 window.resetGame = function() {
-    const screen = document.getElementById('game-over-screen'); if(screen) 
-
-screen.style.display='none';
-    player.hp = player.maxHp; player.x = 200; player.y = 100; player.velX = 0; 
-
-player.velY = 0; player.state='idle';
+    const screen = document.getElementById('game-over-screen'); if(screen) screen.style.display='none';
+    player.hp = player.maxHp; player.x = 200; player.y = 100; player.velX = 0; player.velY = 0; player.state='idle';
     cameraX=0; isPaused=false; gameState='playing';
     initEnemies();
 };
 
 // Escolher personagem
 window.escolherPersonagem = function(genero) {
-    const menu = document.getElementById('selection-menu'); if(menu) 
-
-menu.style.display='none';
+    const menu = document.getElementById('selection-menu'); if(menu) menu.style.display='none';
     const folder = (genero==='menina')?'Knight':'Swordsman';
     player.idleFrames = (genero==='menina')?6:8;
     player.walkFrames = (genero==='menina')?8:8;
@@ -313,42 +296,13 @@ menu.style.display='none';
 };
 
 // Movimentação
-window.mover = function(dir, estado) { 
-	if(gameState!=='playing'|| player.state==='dead'||isPaused) return;
-	if(dir==='left') keys.left=estado;
-	if(dir==='right') keys.right=estado; if(estado) player.facing=dir; 
-};
-
-window.pular = function() { if(gameState==='playing' && player.onGround && ! isPaused){
-	player.velY=player.jumpForce; player.onGround=false;
-} 
-						  };
-
-window.atacar = function() { 
-	if(player.state==='dead'){window.resetGame(); 
-							  return;
-							 } 
-	if(gameState!=='playing'||isPaused)return; 
-	if(player.state==='attacking')return; 
-	if(!player.onGround && ! player.canAirAttack)return;
-	player.state='attacking'; player.currentFrame=0;
-	if(!player.onGround) player.canAirAttack=false; checkMeleeHit(); 
-};
+window.mover = function(dir, estado) { if(gameState!=='playing'||player.state==='dead'||isPaused) return; if(dir==='left') keys.left=estado; if(dir==='right') keys.right=estado; if(estado) player.facing=dir; };
+window.pular = function() { if(gameState==='playing' && player.onGround && !isPaused){player.velY=player.jumpForce; player.onGround=false;} };
+window.atacar = function() { if(player.state==='dead'){window.resetGame(); return;} if(gameState!=='playing'||isPaused)return; if(player.state==='attacking')return; if(!player.onGround && !player.canAirAttack)return; player.state='attacking'; player.currentFrame=0; if(!player.onGround) player.canAirAttack=false; checkMeleeHit(); };
 
 // NPCs
-function npcSay(npc, index=0, duration=120){ 
-	npc.dialogueIndex=index;
-	npc.dialogueTimer=duration;
-}
-function updateNPCs(){
-	npcs.forEach(n=>{ if(n.dialogueTimer>0)n.dialogueTimer--; 
-	else{ n.dialogueIndex=Math.floor(Math.random()*n.phrases.length); 
-		 n.dialogueTimer=180+Math.floor(Math.random()*120);} n.frameTimer++;
-					 if(n.frameTimer>=n.frameInterval){ n.frameTimer=0; n.currentFrame=(n.currentFrame+1)%n.idleFrames; 
-													  } 
-					}
-				);
-}
+function npcSay(npc, index=0, duration=120){ npc.dialogueIndex=index; npc.dialogueTimer=duration; }
+function updateNPCs(){ npcs.forEach(n=>{ if(n.dialogueTimer>0)n.dialogueTimer--; else{ n.dialogueIndex=Math.floor(Math.random()*n.phrases.length); n.dialogueTimer=180+Math.floor(Math.random()*120);} n.frameTimer++; if(n.frameTimer>=n.frameInterval){ n.frameTimer=0; n.currentFrame=(n.currentFrame+1)%n.idleFrames; } }); }
 
 // HIT MELEE
 function checkMeleeHit(){
@@ -387,28 +341,20 @@ function checkMeleeHit(){
 
 // --- UPDATE ---
 function update(){
-    if(player.hp<=0){
-		player.state='dead'; return;
-	}
+    if(player.hp<=0){player.state='dead'; return;}
     if(gameState!=='playing'||isPaused) return;
-    updateNPCs(); player.velY+=gravity; player.x+=player.velX;
-    if(player.x<0)player.x=0; 
-	if(player.x+player.width>mapWidth)player.x=mapWidth-player.width;
+    updateNPCs();
+
+    player.velY+=gravity; player.x+=player.velX;
+    if(player.x<0)player.x=0; if(player.x+player.width>mapWidth)player.x=mapWidth-player.width;
     player.y+=player.velY;
-    if(Math.abs(player.x-oxNpc.x)<150 && oxNpc.dialogueTimer<=0){
-		npcSay(oxNpc,0,120); 
-	}
-    if(player.y>=450){ 
-		player.hp=0; player.state='dead'; return;
-	}
-    if(player.state!=='attacking'){ 
-		if(keys.left) player.velX=-player.speed;else if(keys.right) player.velX=player.speed; else player.velX*=0.7;
-	}
-	else player.velX=0;
-    if(player.dialogueTimer>0){ 
-		player.dialogueTimer--; 
-		if(player.dialogueTimer<=0) player.dialogue=""; 
-							  }
+
+    if(Math.abs(player.x-oxNpc.x)<150 && oxNpc.dialogueTimer<=0){ npcSay(oxNpc,0,120); }
+    if(player.y>=450){ player.hp=0; player.state='dead'; return;}
+
+    if(player.state!=='attacking'){ if(keys.left) player.velX=-player.speed; else if(keys.right) player.velX=player.speed; else player.velX*=0.7; } else player.velX=0;
+
+    if(player.dialogueTimer>0){ player.dialogueTimer--; if(player.dialogueTimer<=0) player.dialogue=""; }
 
     // COLISÃO PLATAFORMAS
     player.onGround=false;
@@ -425,8 +371,11 @@ function update(){
         }
     } else {
         // Plataforma normal
-        if (player.x + 40 < p.x + p.w && player.x + 60 > p.x && player.y + player.height >= p.y && player.y + player.height <= p.y + 10) {
-            player.y = p.y - player.height; player.velY = 0;player.onGround = true;
+        if (player.x + 40 < p.x + p.w && player.x + 60 > p.x &&
+            player.y + player.height >= p.y && player.y + player.height <= p.y + 10) {
+            player.y = p.y - player.height;
+            player.velY = 0;
+            player.onGround = true;
         }
     }
 });
@@ -445,16 +394,9 @@ function update(){
                 else player.state='idle';
                 player.currentFrame=0;
             }
-        } 
-		else if(!player.onGround){ 
-			player.state='jumping'; player.currentFrame=(player.currentFrame+1)%player.jumpFrames; 
-								 }
-        else if(Math.abs(player.velX)>0.5){ 
-			player.state='walking'; player.currentFrame=(player.currentFrame+1)%player.walkFrames; 
-		}
-        else{ 
-			player.state='idle'; player.currentFrame=(player.currentFrame+1)%player.idleFrames;
-		}
+        } else if(!player.onGround){ player.state='jumping'; player.currentFrame=(player.currentFrame+1)%player.jumpFrames; }
+        else if(Math.abs(player.velX)>0.5){ player.state='walking'; player.currentFrame=(player.currentFrame+1)%player.walkFrames; }
+        else{ player.state='idle'; player.currentFrame=(player.currentFrame+1)%player.idleFrames;}
     }
 
     cameraX += ((player.x + player.width/2) - (canvas.width/2) - cameraX)*0.1;
@@ -462,69 +404,45 @@ function update(){
 
     // INIMIGOS
     enemies.forEach(en=>{
-        if(en.patrolMinX===undefined){ en.patrolMinX=en.x-120; en.patrolMaxX=en.x+120;
-									 }
+        if(en.patrolMinX===undefined){ en.patrolMinX=en.x-120; en.patrolMaxX=en.x+120;}
         if(en.facing===undefined) en.facing='left';
         let dist=Math.abs(player.x-en.x);
+
         if(en.type==='Enchantress' && en.state!=='dead' && dist<200 && en.dialogueTimer<=0){
             en.dialogue=en.phrases.idle[0]; en.dialogueTimer=180;
         }
 
-		en.velY+=gravity; en.y+=en.velY; en.onGround=false;
+        en.velY+=gravity; en.y+=en.velY; en.onGround=false;
 
         platforms.forEach(p=>{
-            if(en.x+40<p.x+p.w && en.x+60>p.x && en.y+en.height>=p.y && en.y+en.height<=p.y+10){ 
-				en.y=p.y-en.height; en.velY=0; en.onGround=true; 
-			}
-		}
-						 );
+            if(en.x+40<p.x+p.w && en.x+60>p.x && en.y+en.height>=p.y && en.y+en.height<=p.y+10){ en.y=p.y-en.height; en.velY=0; en.onGround=true; }
+        });
 
-        if(en.state==='dead'){ 
-			if(en.frameTimer>=en.frameInterval && en.currentFrame<en.deadFrames-1){ 
-				en.currentFrame++; en.frameTimer=0;
-			} return; 
-		}
+        if(en.state==='dead'){ if(en.frameTimer>=en.frameInterval && en.currentFrame<en.deadFrames-1){ en.currentFrame++; en.frameTimer=0;} return; }
 
-        if(en.type==='Blue_Slime' && en.onGround){ 
-			en.jumpCooldown--; if(en.jumpCooldown<=0){ 
-				en.velY=-12; en.onGround=false; en.jumpCooldown=en.jumpInterval; 
-			} 
-		}
+        if(en.type==='Blue_Slime' && en.onGround){ en.jumpCooldown--; if(en.jumpCooldown<=0){ en.velY=-12; en.onGround=false; en.jumpCooldown=en.jumpInterval; } }
 
-        if(en.state==='hurt'){ en.frameTimer++; 
-							  if(en.frameTimer>=30){ 
-			en.state='patrol'; en.frameTimer=0; en.currentFrame=0;
-							  }
-							 }
-        else if(en.state==='patrol'){ 
-			if(en.facing==='left'){
-				en.x-=en.speed; 
-				if(en.x<=en.patrolMinX) en.facing='right'; 
-			} 
-			else{ 
-				en.x+=en.speed; 
-				if(en.x>=en.patrolMaxX) en.facing='left'; 
-			} 
-			if(dist<100) en.state='chase'; 
-		}	
-		else if(en.state==='chase'){ 
-			const minDist = 30; 
-			if(dist > minDist) { 
-				if(player.x < en.x){ 
-					en.x -= en.speed*1.2; 
-					en.facing='left'; 
-				} 
-				else { 
-					en.x += en.speed*1.2; 
-					en.facing='right'; 
-				}
-			}
-			if(dist <= en.attackRange && en.attackCooldown<=0){ 
-				en.state='attacking'; 
-				en.currentFrame=0; 
-			} 
-			if(dist > 150) en.state='patrol'; 
-		} 
+        if(en.state==='hurt'){ en.frameTimer++; if(en.frameTimer>=30){ en.state='patrol'; en.frameTimer=0; en.currentFrame=0;} }
+        else if(en.state==='patrol'){ if(en.facing==='left'){ en.x-=en.speed; if(en.x<=en.patrolMinX) en.facing='right'; } else{ en.x+=en.speed; if(en.x>=en.patrolMaxX) en.facing='left'; } if(dist<100) en.state='chase'; }
+else if(en.state==='chase'){ 
+const minDist = 30; 
+if(dist > minDist) { 
+if(player.x < en.x){ 
+            en.x -= en.speed*1.2; 
+            en.facing='left'; 
+        } else { 
+            en.x += en.speed*1.2; 
+            en.facing='right'; 
+        }
+    }
+    if(dist <= en.attackRange && en.attackCooldown<=0){ 
+        en.state='attacking'; 
+        en.currentFrame=0; 
+    } 
+    if(dist > 150) en.state='patrol'; 
+}        
+else if(en.state==='attacking'){ const attackFrame=2; en.frameTimer++; if(en.frameTimer>=en.frameInterval){ en.frameTimer=0; en.currentFrame++; if(en.currentFrame===attackFrame && dist<=en.attackRange){ player.hp-=1; en.attackCooldown=80;} if(en.currentFrame>=en.attackFrames){ en.currentFrame=0; en.state='chase'; } } }
+
         else if(en.state==='attacking'){ 
     const attackFrame = 2; // frame que o ataque realmente acerta
     en.frameTimer++; 
@@ -560,19 +478,15 @@ if(en.frameTimer >= en.frameInterval){
     en.currentFrame = (en.currentFrame + 1) % totalF; 
     en.frameTimer = 0; 
 }
-
-	}
-				   );
+});
 
     // PLAYER DIALOG
     playerDialogTriggers.forEach(trigger=>{
-        if(!trigger.used && player.x>trigger.x){ 
-			playerSay(trigger.text,180); trigger.used=true;
-											   }
+        if(!trigger.used && player.x>trigger.x){ playerSay(trigger.text,180); trigger.used=true;}
     });
 }
 
-// --- DESENHO (DRAW) ---
+
 function draw() {
     // 1. PRIMEIRO: Limpamos a tela
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -589,6 +503,7 @@ function draw() {
 	    ctx.drawImage(d.img, d.x, d.y, d.width, d.height);
   	}
     });
+
 platforms.forEach(p => {
     ctx.save();
     if (p.alpha !== undefined) ctx.globalAlpha = p.alpha;
@@ -618,21 +533,11 @@ platforms.forEach(p => {
     [...enemies, player].forEach(obj => {
         let img = obj.imgIdle;
         let totalF = obj.idleFrames || 8;
-        if (obj.state === 'walking') { 
-			img = obj.imgWalk; totalF = obj.walkFrames; 
-		}
-        else if (obj.state === 'attacking') {
-			img = obj.imgAttack; totalF = obj.attackFrames; 
-		}
-        else if (obj.state === 'jumping') { 
-			img = obj.imgJump; totalF = obj.jumpFrames || 8; 
-		}
-        else if (obj.state === 'hurt') { 
-			img = obj.imgHurt; totalF = (obj.type === 'Enchantress' ? 2 : obj.hurtFrames); 
-		}
-        else if (obj.state === 'dead') { 
-			img = obj.imgDead; totalF = obj.deadFrames; 
-		}
+        if (obj.state === 'walking') { img = obj.imgWalk; totalF = obj.walkFrames; }
+        else if (obj.state === 'attacking') { img = obj.imgAttack; totalF = obj.attackFrames; }
+        else if (obj.state === 'jumping') { img = obj.imgJump; totalF = obj.jumpFrames || 8; }
+        else if (obj.state === 'hurt') { img = obj.imgHurt; totalF = (obj.type === 'Enchantress' ? 2 : obj.hurtFrames); }
+        else if (obj.state === 'dead') { img = obj.imgDead; totalF = obj.deadFrames; }
 
         if (img.complete && img.width > 0) {
             const fw = img.width / totalF;
@@ -758,9 +663,7 @@ window.addEventListener('keydown',(e)=>{
     if(k==='d') window.mover('right',true);
     if(k==='w'||k===' ') window.pular();
     if(k==='k') window.atacar();
-    if(k==='r'){ const boss = enemies.find(en=>en.type==='Enchantress'); if
-
-(player.state==='dead'||(boss&&boss.state==='dead')) window.resetGame(); }
+    if(k==='r'){ const boss = enemies.find(en=>en.type==='Enchantress'); if(player.state==='dead'||(boss&&boss.state==='dead')) window.resetGame(); }
 });
 window.addEventListener('keyup',(e)=>{
     const k=e.key.toLowerCase();
@@ -769,12 +672,4 @@ window.addEventListener('keyup',(e)=>{
 });
 
 const btnReset = document.getElementById('btn-reset');
-if(btnReset){ 
-	btnReset.addEventListener('pointerdown',(e)=>{ 
-		e.preventDefault(); window.resetGame(); 
-	}
-							 );
-}
-
-
-
+if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); window.resetGame(); }); }
