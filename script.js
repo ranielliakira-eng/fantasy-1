@@ -11,7 +11,7 @@ bgMusic.volume = 0.5;
 const gravity = 0.8;
 const zoom = 2; 
 const mapWidth = 7000;
-const mapHeight = 450;
+const mapHeight = 2000;
 let cameraX = 0, cameraY = 0;
 let gameState = 'menu';
 let isPaused = false;
@@ -106,13 +106,13 @@ const platforms = [
 // --- Cerca ---
     { x: 400, y: 370, w: 150, h: 50, type: 'pattern', alpha: 0 },
 // --- Chão parte 1 ---
-    { x: 0, y: 400, w: 2000, h: 50, type: 'pattern' },
+    { x: 0, y: 500, w: 2000, h: 200, type: 'pattern' },
 // --- Poço ---
     { x: 612, y: 323, w: 70, h: 80, type: 'pattern', alpha: 0 },
 // --- Árvore ---
     { x: 1970, y: 370, w: 210, h: 20, type: 'stretch', alpha: 0 },
 // --- Chão parte 2 ---
-    { x: 2150, y: 400, w: 4800, h: 50, type: 'pattern' }, 
+    { x: 2150, y: 500, w: 4800, h: 200, type: 'pattern' }, 
 ];
 
 // --- Cenário ---
@@ -169,7 +169,7 @@ platformImg.onload = () => {
 let keys = { left: false, right: false };
 
 const backgroundObjects = [
-    { x: 30, y: 400, width: 100, height: 100, img: Decor_CartImg },
+    { x: 30, y: 300, width: 100, height: 100, img: Decor_CartImg },
 	{ x: 270, y: 300, width: 250, height: 200, img: house1Img },
     { x: 600, y: 300, width: 100, height: 100, img: wellImg },
 
@@ -345,7 +345,7 @@ function update(){
     player.y+=player.velY;
 
     if(Math.abs(player.x-oxNpc.x)<150 && oxNpc.dialogueTimer<=0){ npcSay(oxNpc,0,120); }
-    if(player.y>=mapHeight){ player.hp=0; player.state='dead'; return;}
+    if(player.y>=450){ player.hp=0; player.state='dead'; return;}
 
     if(player.state!=='attacking'){ if(keys.left) player.velX=-player.speed; else if(keys.right) player.velX=player.speed; else player.velX*=0.7; } else player.velX=0;
 
@@ -354,29 +354,23 @@ function update(){
     // COLISÃO PLATAFORMAS
     player.onGround=false;
 
-platforms.forEach(p => {
-    let nextY = player.y + player.velY;
-
-    if (p.type === 'sloped') {
-        let leftY = p.y + (player.x - p.x) * p.slope;
-        let rightY = p.y + (player.x + player.width - p.x) * p.slope;
-        let topY = Math.min(leftY, rightY);
-
-        if (player.x + player.width > p.x && player.x < p.x + p.w) {
-            if (player.y + player.height <= topY && nextY + player.height >= topY) {
-                player.y = topY - player.height;
-                player.velY = 0;
-                player.onGround = true;
-            }
+    platforms.forEach(p=>{
+        if (p.type === 'sloped') {
+        // Calcula Y do topo da plataforma naquela posição X do jogador (centro do jogador)
+        let topY = p.y + (player.x + player.width/2 - p.x) * p.slope;
+        if (player.x + player.width > p.x && player.x < p.x + p.w &&
+            player.y + player.height >= topY && player.y + player.height <= topY + 10) {
+            player.y = topY - player.height;
+            player.velY = 0;
+            player.onGround = true;
         }
-
     } else {
-        if (player.x + player.width > p.x && player.x < p.x + p.w) {
-            if (player.y + player.height <= p.y && nextY + player.height >= p.y) {
-                player.y = p.y - player.height;
-                player.velY = 0;
-                player.onGround = true;
-            }
+        // Plataforma normal
+        if (player.x + 40 < p.x + p.w && player.x + 60 > p.x &&
+            player.y + player.height >= p.y && player.y + player.height <= p.y + 10) {
+            player.y = p.y - player.height;
+            player.velY = 0;
+            player.onGround = true;
         }
     }
 });
@@ -403,8 +397,6 @@ platforms.forEach(p => {
 // --- CÂMERA DINÂMICA ---
 let targetX = (player.x + player.width / 2) - (canvas.width / (2 * zoom));
 let targetY = (player.y + player.height / 2) - (canvas.height / (2 * zoom));
-
-if(targetY > 450) targetY = 450;
 
 // Suavização
 cameraX += (targetX - cameraX) * 0.1;
@@ -686,28 +678,4 @@ window.addEventListener('keyup',(e)=>{
 
 const btnReset = document.getElementById('btn-reset');
 if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); window.resetGame(); }); }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
