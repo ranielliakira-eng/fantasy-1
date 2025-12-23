@@ -399,7 +399,15 @@ function update(){
         else{ player.state='idle'; player.currentFrame=(player.currentFrame+1)%player.idleFrames;}
     }
 
-    cameraX += ((player.x + player.width/2) - (canvas.width/2) - cameraX)*0.1;
+// --- CÂMERA DINÂMICA (CORREÇÃO PARA SEGUIR Y) ---
+    let targetX = (player.x + player.width / 2) - (canvas.width / 2) / zoom;
+    let targetY = (player.y + player.height / 2) - (canvas.height / 2) / zoom;
+
+    cameraX += (targetX - cameraX) * 0.1;
+    cameraY += (targetY - cameraY) * 0.1;
+
+    if (cameraX < 0) cameraX = 0;
+    if (cameraX > mapWidth - (canvas.width / zoom)) cameraX = mapWidth - (canvas.width / zoom);    cameraX += ((player.x + player.width/2) - (canvas.width/2) - cameraX)*0.1;
     cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width));
 
     // INIMIGOS
@@ -444,7 +452,7 @@ if(player.x < en.x){
 else if(en.state==='attacking'){ const attackFrame=2; en.frameTimer++; if(en.frameTimer>=en.frameInterval){ en.frameTimer=0; en.currentFrame++; if(en.currentFrame===attackFrame && dist<=en.attackRange){ player.hp-=1; en.attackCooldown=80;} if(en.currentFrame>=en.attackFrames){ en.currentFrame=0; en.state='chase'; } } }
 
         else if(en.state==='attacking'){ 
-    const attackFrame = 2; // frame que o ataque realmente acerta
+    const attackFrame = 3; // frame que o ataque realmente acerta
     en.frameTimer++; 
     if(en.frameTimer >= en.frameInterval){ 
         en.frameTimer = 0; 
@@ -673,3 +681,4 @@ window.addEventListener('keyup',(e)=>{
 
 const btnReset = document.getElementById('btn-reset');
 if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); window.resetGame(); }); }
+
