@@ -415,9 +415,11 @@ oxNpc.imgIdle.src = 'assets/Animals/Without_shadow/Bull_Idle.png';
 const satyrNpc = {
     x: 300, y: 190, width: 120, height: 120, imgIdle: new Image(),
     idleFrames: 6, currentFrame: 0, frameTimer: 0, frameInterval: 16,
-    phrases: ["Que bom que você chegou!", "Cuidado com os Slimes!", "Os Slimes 
-
-estão vindo da floresta."],
+    phrases: [
+		"Que bom que você chegou!", 
+		"Cuidado com os Slimes!", 
+		"Os Slimes estão vindo da floresta."
+	],
     dialogueIndex: 0, dialogueTimer: 0
 };
 satyrNpc.imgIdle.src = 'assets/Satyr_3/Idle.png';
