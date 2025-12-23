@@ -352,31 +352,33 @@ function update(){
 
     if(player.dialogueTimer>0){ player.dialogueTimer--; if(player.dialogueTimer<=0) player.dialogue=""; }
 
-    // COLISÃO PLATAFORMAS
+// ===== FÍSICA VERTICAL =====
 player.velY += gravity;
 player.velY = Math.min(player.velY, 20);
-	
-    player.onGround=false;
+
+let nextY = player.y + player.velY;
+player.onGround = false;
 
 platforms.forEach(p => {
 
-    if (p.type === 'sloped') return; // vamos ignorar slope por enquanto
-
-    let nextY = player.y + player.velY;
+    if (p.type === 'sloped') return;
 
     if (
-        player.velY >= 0 && // caindo ou parado
+        player.velY >= 0 &&                 // caindo
         player.x + 40 < p.x + p.w &&
         player.x + 60 > p.x &&
-        player.y + player.height <= p.y &&
-        nextY + player.height >= p.y
+        player.y + player.height <= p.y &&  // estava acima
+        nextY + player.height >= p.y        // cruzou o topo
     ) {
-        player.y = p.y - player.height;
+        nextY = p.y - player.height;
         player.velY = 0;
         player.onGround = true;
     }
 });
-	player.y += player.velY;
+
+// aplica UMA vez
+player.y = nextY;
+
 
     if(player.onGround) player.canAirAttack=true;
 
@@ -687,6 +689,7 @@ window.addEventListener('keyup',(e)=>{
 
 const btnReset = document.getElementById('btn-reset');
 if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); window.resetGame(); }); }
+
 
 
 
