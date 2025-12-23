@@ -11,7 +11,7 @@ bgMusic.volume = 0.5;
 const gravity = 0.8;
 const zoom = 2; 
 const mapWidth = 7000;
-const mapHeight = 2000;
+const mapHeight = 450;
 let cameraX = 0, cameraY = 0;
 let gameState = 'menu';
 let isPaused = false;
@@ -106,13 +106,13 @@ const platforms = [
 // --- Cerca ---
     { x: 400, y: 370, w: 150, h: 50, type: 'pattern', alpha: 0 },
 // --- Chão parte 1 ---
-    { x: 0, y: 500, w: 2000, h: 200, type: 'pattern' },
+    { x: 0, y: 400, w: 2000, h: 50, type: 'pattern' },
 // --- Poço ---
     { x: 612, y: 323, w: 70, h: 80, type: 'pattern', alpha: 0 },
 // --- Árvore ---
     { x: 1970, y: 370, w: 210, h: 20, type: 'stretch', alpha: 0 },
 // --- Chão parte 2 ---
-    { x: 2150, y: 500, w: 4800, h: 200, type: 'pattern' }, 
+    { x: 2150, y: 400, w: 4800, h: 50, type: 'pattern' }, 
 ];
 
 // --- Cenário ---
@@ -345,7 +345,7 @@ function update(){
     player.y+=player.velY;
 
     if(Math.abs(player.x-oxNpc.x)<150 && oxNpc.dialogueTimer<=0){ npcSay(oxNpc,0,120); }
-    if(player.y>=450){ player.hp=0; player.state='dead'; return;}
+    if(player.y>=mapHeight){ player.hp=0; player.state='dead'; return;}
 
     if(player.state!=='attacking'){ if(keys.left) player.velX=-player.speed; else if(keys.right) player.velX=player.speed; else player.velX*=0.7; } else player.velX=0;
 
@@ -678,6 +678,7 @@ window.addEventListener('keyup',(e)=>{
 
 const btnReset = document.getElementById('btn-reset');
 if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); window.resetGame(); }); }
+
 
 
 
