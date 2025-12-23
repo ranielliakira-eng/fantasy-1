@@ -12,7 +12,7 @@ const gravity = 0.8;
 const zoom = 2; 
 const mapWidth = 7000;
 const mapHeight = 2000;
-let cameraX = 0, cameraY = 0;
+let cameraX = 0, cameraY = -100;
 let gameState = 'menu';
 let isPaused = false;
 let isMuted = false;
@@ -683,6 +683,7 @@ window.addEventListener('keyup',(e)=>{
 
 const btnReset = document.getElementById('btn-reset');
 if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); window.resetGame(); }); }
+
 
 
 
