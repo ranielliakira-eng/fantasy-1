@@ -501,7 +501,12 @@ function draw() {
 
     // 2. DEPOIS: Desenhamos o mundo (Câmera)
     ctx.save();
-    ctx.translate(-Math.floor(cameraX), -Math.floor(cameraY));
+ctx.setTransform(
+    zoom, 0, 0, zoom,
+    -Math.floor(cameraX * zoom),
+    -Math.floor(cameraY * zoom)
+);
+
 
     // 3. Plataformas
 
@@ -680,6 +685,7 @@ window.addEventListener('keyup',(e)=>{
 
 const btnReset = document.getElementById('btn-reset');
 if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); window.resetGame(); }); }
+
 
 
 
