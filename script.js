@@ -176,7 +176,7 @@ let keys = { left: false, right: false };
 
 const backgroundObjects = [
         { x: 30, y: 200, width: 100, height: 100, img: Decor_CartImg },
-	{ x: 270, y: 100, width: 250, height: 200, img: house1Img },
+		{ x: 270, y: 100, width: 250, height: 200, img: house1Img },
         { x: 600, y: 200, width: 100, height: 100, img: wellImg },
 
 	{ x: 1000, y: 250, width: 50, height: 50, img: tree9Img },
@@ -681,6 +681,7 @@ window.addEventListener('keyup',(e)=>{
 
 const btnReset = document.getElementById('btn-reset');
 if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); window.resetGame(); }); }
+
 
 
 
