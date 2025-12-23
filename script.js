@@ -106,13 +106,13 @@ const platforms = [
 // --- Cerca ---
     { x: 400, y: 370, w: 150, h: 50, type: 'pattern', alpha: 0 },
 // --- Chão parte 1 ---
-    { x: 0, y: 400, w: 2000, h: 50, type: 'pattern' },
+    { x: 0, y: 450, w: 2000, h: 50, type: 'pattern' },
 // --- Poço ---
     { x: 612, y: 323, w: 70, h: 80, type: 'pattern', alpha: 0 },
 // --- Árvore ---
     { x: 1970, y: 370, w: 210, h: 20, type: 'stretch', alpha: 0 },
 // --- Chão parte 2 ---
-    { x: 2150, y: 400, w: 4800, h: 50, type: 'pattern' }, 
+    { x: 2150, y: 450, w: 4800, h: 50, type: 'pattern' }, 
 ];
 
 // --- Cenário ---
@@ -354,26 +354,29 @@ function update(){
     // COLISÃO PLATAFORMAS
     player.onGround=false;
 
-    platforms.forEach(p=>{
-        if (p.type === 'sloped') {
-        // Calcula Y do topo da plataforma naquela posição X do jogador (centro do jogador)
-        let topY = p.y + (player.x + player.width/2 - p.x) * p.slope;
-        if (player.x + player.width > p.x && player.x < p.x + p.w &&
-            player.y + player.height >= topY && player.y + player.height <= topY + 10) {
-            player.y = topY - player.height;
-            player.velY = 0;
-            player.onGround = true;
+platforms.forEach(p => {
+    let nextY = player.y + player.velY;
+
+    if (p.type === 'sloped') {
+        let topY = p.y + (player.x + player.width / 2 - p.x) * p.slope;
+        if (player.x + player.width > p.x && player.x < p.x + p.w) {
+            if (player.y + player.height <= topY && nextY + player.height >= topY) {
+                player.y = topY - player.height;
+                player.velY = 0;
+                player.onGround = true;
+            }
         }
     } else {
-        // Plataforma normal
-        if (player.x + 40 < p.x + p.w && player.x + 60 > p.x &&
-            player.y + player.height >= p.y && player.y + player.height <= p.y + 10) {
-            player.y = p.y - player.height;
-            player.velY = 0;
-            player.onGround = true;
+        if (player.x + 40 < p.x + p.w && player.x + 60 > p.x) {
+            if (player.y + player.height <= p.y && nextY + player.height >= p.y) {
+                player.y = p.y - player.height;
+                player.velY = 0;
+                player.onGround = true;
+            }
         }
     }
 });
+
 
     if(player.onGround) player.canAirAttack=true;
 
@@ -678,6 +681,7 @@ window.addEventListener('keyup',(e)=>{
 
 const btnReset = document.getElementById('btn-reset');
 if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); window.resetGame(); }); }
+
 
 
 
