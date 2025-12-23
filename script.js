@@ -456,15 +456,16 @@ do jogador)
                 else player.state='idle';
                 player.currentFrame=0;
             }
-        } else if(!player.onGround){ player.state='jumping'; 
-
-player.currentFrame=(player.currentFrame+1)%player.jumpFrames; }
-        else if(Math.abs(player.velX)>0.5){ player.state='walking'; 
-
-player.currentFrame=(player.currentFrame+1)%player.walkFrames; }
-        else{ player.state='idle'; player.currentFrame=(player.currentFrame
-
-+1)%player.idleFrames;}
+        } 
+		else if(!player.onGround){ 
+			player.state='jumping'; player.currentFrame=(player.currentFrame+1)%player.jumpFrames; 
+								 }
+        else if(Math.abs(player.velX)>0.5){ 
+			player.state='walking'; player.currentFrame=(player.currentFrame+1)%player.walkFrames; 
+		}
+        else{ 
+			player.state='idle'; player.currentFrame=(player.currentFrame+1)%player.idleFrames;
+		}
     }
 
     cameraX += ((player.x + player.width/2) - (canvas.width/2) - cameraX)*0.1;
@@ -472,74 +473,85 @@ player.currentFrame=(player.currentFrame+1)%player.walkFrames; }
 
     // INIMIGOS
     enemies.forEach(en=>{
-        if(en.patrolMinX===undefined){ en.patrolMinX=en.x-120; 
-
-en.patrolMaxX=en.x+120;}
+        if(en.patrolMinX===undefined){ en.patrolMinX=en.x-120; en.patrolMaxX=en.x+120;
+									 }
         if(en.facing===undefined) en.facing='left';
         let dist=Math.abs(player.x-en.x);
-
-        if(en.type==='Enchantress' && en.state!=='dead' && dist<200 && 
-
-en.dialogueTimer<=0){
+        if(en.type==='Enchantress' && en.state!=='dead' && dist<200 && en.dialogueTimer<=0){
             en.dialogue=en.phrases.idle[0]; en.dialogueTimer=180;
         }
 
-        en.velY+=gravity; en.y+=en.velY; en.onGround=false;
+		en.velY+=gravity; en.y+=en.velY; en.onGround=false;
 
         platforms.forEach(p=>{
-            if(en.x+40<p.x+p.w && en.x+60>p.x && en.y+en.height>=p.y && en.y
+            if(en.x+40<p.x+p.w && en.x+60>p.x && en.y+en.height>=p.y && en.y+en.height<=p.y+10){ 
+				en.y=p.y-en.height; en.velY=0; en.onGround=true; 
+			}
+		}
+						 );
 
-+en.height<=p.y+10){ en.y=p.y-en.height; en.velY=0; en.onGround=true; }
-        });
+        if(en.state==='dead'){ 
+			if(en.frameTimer>=en.frameInterval && en.currentFrame<en.deadFrames-1){ 
+				en.currentFrame++; en.frameTimer=0;
+			} return; 
+		}
 
-        if(en.state==='dead'){ if(en.frameTimer>=en.frameInterval && 
+        if(en.type==='Blue_Slime' && en.onGround){ 
+			en.jumpCooldown--; if(en.jumpCooldown<=0){ 
+				en.velY=-12; en.onGround=false; en.jumpCooldown=en.jumpInterval; 
+			} 
+		}
 
-en.currentFrame<en.deadFrames-1){ en.currentFrame++; en.frameTimer=0;} return; }
+        if(en.state==='hurt'){ en.frameTimer++; 
+							  if(en.frameTimer>=30){ 
+			en.state='patrol'; en.frameTimer=0; en.currentFrame=0;
+							  }
+							 }
+        else if(en.state==='patrol'){ 
+			if(en.facing==='left'){
+				en.x-=en.speed; 
+				if(en.x<=en.patrolMinX) en.facing='right'; 
+			} 
+			else{ 
+				en.x+=en.speed; 
+				if(en.x>=en.patrolMaxX) en.facing='left'; 
+			} 
+			if(dist<100) en.state='chase'; 
+		}
+        else if(en.state==='chase'){ 
+			if(player.x<en.x){ en.x-=en.speed*1.2; en.facing='left'; 
+							 } else{
+				en.x+=en.speed*1.2; en.facing='right'; 
+			} if(dist<=en.attackRange && en.attackCooldown<=0){
+				en.state='attacking'; en.currentFrame=0; 
+			} 
+			if(dist>150) en.state='patrol'; 
+		}
+        else if(en.state==='attacking'){
+			const attackFrame=2; en.frameTimer++; 
+			if(en.frameTimer>=en.frameInterval){ 
+				en.frameTimer=0; en.currentFrame++;
+				if(en.currentFrame===attackFrame && dist<=en.attackRange){ 
+					player.hp-=1; en.attackCooldown=80;
+				} 
+				if(en.currentFrame>=en.attackFrames){
+					en.currentFrame=0; en.state='chase'; 
+				} 
+			} 
+		}
 
-        if(en.type==='Blue_Slime' && en.onGround){ en.jumpCooldown--; if
-
-(en.jumpCooldown<=0){ en.velY=-12; en.onGround=false; 
-
-en.jumpCooldown=en.jumpInterval; } }
-
-        if(en.state==='hurt'){ en.frameTimer++; if(en.frameTimer>=30){ 
-
-en.state='patrol'; en.frameTimer=0; en.currentFrame=0;} }
-        else if(en.state==='patrol'){ if(en.facing==='left'){ en.x-=en.speed; 
-
-if(en.x<=en.patrolMinX) en.facing='right'; } else{ en.x+=en.speed; if
-
-(en.x>=en.patrolMaxX) en.facing='left'; } if(dist<100) en.state='chase'; }
-        else if(en.state==='chase'){ if(player.x<en.x){ en.x-=en.speed*1.2; 
-
-en.facing='left'; } else{ en.x+=en.speed*1.2; en.facing='right'; } if
-
-(dist<=en.attackRange && en.attackCooldown<=0){ en.state='attacking'; 
-
-en.currentFrame=0; } if(dist>150) en.state='patrol'; }
-        else if(en.state==='attacking'){ const attackFrame=2; en.frameTimer++; 
-
-if(en.frameTimer>=en.frameInterval){ en.frameTimer=0; en.currentFrame++; if
-
-(en.currentFrame===attackFrame && dist<=en.attackRange){ player.hp-=1; 
-
-en.attackCooldown=80;} if(en.currentFrame>=en.attackFrames){ en.currentFrame=0; 
-
-en.state='chase'; } } }
-
-        if(en.attackCooldown>0) en.attackCooldown--;
-        en.frameTimer++; if(en.frameTimer>=en.frameInterval){ let totalF=
-
-(en.state==='attacking')?en.attackFrames:en.walkFrames; en.currentFrame=
-
-(en.currentFrame+1)%totalF; en.frameTimer=0; }
-    });
+        if(en.attackCooldown>0) en.attackCooldown--; en.frameTimer++;
+		if(en.frameTimer>=en.frameInterval){ 
+			let totalF=(en.state==='attacking')?en.attackFrames:en.walkFrames; en.currentFrame=(en.currentFrame+1)%totalF; en.frameTimer=0; 
+		}
+	}
+				   );
 
     // PLAYER DIALOG
     playerDialogTriggers.forEach(trigger=>{
-        if(!trigger.used && player.x>trigger.x){ playerSay(trigger.text,180); 
-
-trigger.used=true;}
+        if(!trigger.used && player.x>trigger.x){ 
+			playerSay(trigger.text,180); trigger.used=true;
+											   }
     });
 }
 
@@ -589,21 +601,21 @@ platforms.forEach(p => {
     [...enemies, player].forEach(obj => {
         let img = obj.imgIdle;
         let totalF = obj.idleFrames || 8;
-        if (obj.state === 'walking') { img = obj.imgWalk; totalF = 
-
-obj.walkFrames; }
-        else if (obj.state === 'attacking') { img = obj.imgAttack; totalF = 
-
-obj.attackFrames; }
-        else if (obj.state === 'jumping') { img = obj.imgJump; totalF = 
-
-obj.jumpFrames || 8; }
-        else if (obj.state === 'hurt') { img = obj.imgHurt; totalF = (obj.type 
-
-=== 'Enchantress' ? 2 : obj.hurtFrames); }
-        else if (obj.state === 'dead') { img = obj.imgDead; totalF = 
-
-obj.deadFrames; }
+        if (obj.state === 'walking') { 
+			img = obj.imgWalk; totalF = obj.walkFrames; 
+		}
+        else if (obj.state === 'attacking') {
+			img = obj.imgAttack; totalF = obj.attackFrames; 
+		}
+        else if (obj.state === 'jumping') { 
+			img = obj.imgJump; totalF = obj.jumpFrames || 8; 
+		}
+        else if (obj.state === 'hurt') { 
+			img = obj.imgHurt; totalF = (obj.type === 'Enchantress' ? 2 : obj.hurtFrames); 
+		}
+        else if (obj.state === 'dead') { 
+			img = obj.imgDead; totalF = obj.deadFrames; 
+		}
 
         if (img.complete && img.width > 0) {
             const fw = img.width / totalF;
@@ -617,13 +629,9 @@ obj.deadFrames; }
             ctx.save();
             if (obj.facing === 'left') {
                 ctx.translate(obj.x + obj.width, dY); ctx.scale(-1, 1);
-                ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, 
-
-0, 0, obj.width, dH);
+                ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, 0, 0, obj.width, dH);
             } else {
-                ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, 
-
-obj.x, dY, obj.width, dH);
+                ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, obj.x, dY, obj.width, dH);
             }
             ctx.restore();
 
@@ -666,17 +674,13 @@ if (obj.state !== 'dead' && obj.dialogue && obj.dialogueTimer > 0) {
     // Sombra
     ctx.fillStyle = "rgba(0,0,0,0.3)";
     ctx.beginPath();
-    ctx.ellipse(n.x + n.width/2, n.y + n.height, n.width/2, 10, 0, 0, 
-
-Math.PI*2);
+    ctx.ellipse(n.x + n.width/2, n.y + n.height, n.width/2, 10, 0, 0, Math.PI*2);
     ctx.fill();
 
     // Sprite Idle
     const fw = n.imgIdle.width / n.idleFrames;
     const fh = n.imgIdle.height;
-    ctx.drawImage(n.imgIdle, n.currentFrame * fw, 0, fw, fh, n.x, n.y, n.width, 
-
-n.height);
+    ctx.drawImage(n.imgIdle, n.currentFrame * fw, 0, fw, fh, n.x, n.y, n.width, n.height);
 
     // Balão de fala
     if (n.dialogueTimer > 0) {
@@ -685,13 +689,9 @@ n.height);
         ctx.textAlign = "center";
         const textWidth = ctx.measureText(text).width;
         ctx.fillStyle = "white";
-        ctx.fillRect(n.x + n.width/2 - textWidth/2 - 5, n.y - 25, textWidth + 
-
-10, 20);
+        ctx.fillRect(n.x + n.width/2 - textWidth/2 - 5, n.y - 25, textWidth + 10, 20);
         ctx.strokeStyle = "black";
-        ctx.strokeRect(n.x + n.width/2 - textWidth/2 - 5, n.y - 25, textWidth + 
-
-10, 20);
+        ctx.strokeRect(n.x + n.width/2 - textWidth/2 - 5, n.y - 25, textWidth + 10, 20);
         ctx.fillStyle = "black";
         ctx.fillText(text, n.x + n.width/2, n.y - 10);
     }
@@ -708,9 +708,7 @@ foregroundObjects.forEach(d => {
     // 3. BARRA DE VIDA
     if (gameState === 'playing') {
         ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(20, 20, 150, 15);
-        ctx.fillStyle = "red"; ctx.fillRect(20, 20, (player.hp / player.maxHp) * 
-
-150, 15);
+        ctx.fillStyle = "red"; ctx.fillRect(20, 20, (player.hp / player.maxHp) * 150, 15);
     }
 
     // 4. POR ÚLTIMO: TELA DE VITÓRIA (Fica por cima de tudo)
@@ -754,6 +752,9 @@ window.addEventListener('keyup',(e)=>{
 });
 
 const btnReset = document.getElementById('btn-reset');
-if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); 
-
-window.resetGame(); }); }
+if(btnReset){ 
+	btnReset.addEventListener('pointerdown',(e)=>{ 
+		e.preventDefault(); window.resetGame(); 
+	}
+							 );
+}
