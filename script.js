@@ -76,11 +76,11 @@ function initEnemies() {
 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
 
 3 },
-		{ type: 'Green_Slime', x: 1120, y: 200, hp: 1, speed: 1.2, 
+	{ type: 'Green_Slime', x: 1120, y: 200, hp: 1, speed: 1.2, attackRange: 
 
-attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 
+30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
 
-6, deadFrames: 3 },
+3 },
         
         { type: 'Blue_Slime', x: 2995, y: 200, hp: 1, speed: 1.8, attackRange: 
 
@@ -159,17 +159,26 @@ attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames:
 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
 
 3 },
-        { type: 'Red_Slime', x: 5000, y: 200, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Red_Slime', x: 5000, y: 207, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 5000, y: 200, hp: 1, speed: 2.5, attackRange: 
+
+30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
+
+3 },
+        { type: 'Red_Slime', x: 5000, y: 207, hp: 1, speed: 2.5, attackRange: 
+
+30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
+
+3 },
    
-        { 
-            type: 'Enchantress',
-            x: 6600, y: 100, hp: 3, speed: 2, attackRange: 60,
-            idleFrames: 8, walkFrames: 5, attackFrames: 6, hurtFrames: 2, deadFrames: 5,
-            dialogue: "", dialogueTimer: 0,
+        { type: 'Enchantress', x: 6600, y: 100, hp: 3, speed: 2, attackRange: 
+
+60, idleFrames: 8, walkFrames: 5, attackFrames: 6, hurtFrames: 2, deadFrames: 5, 
+
+dialogue: "", dialogueTimer: 0,
             phrases: { idle: [
-				"O equilíbrio foi quebrado","A energia da terra foi corrompida!"
-			] }
+		"O equilíbrio foi quebrado",
+		"A energia da terra foi corrompida!"]
+		}
         }
     ];
 
@@ -197,11 +206,30 @@ ${en.type}/Attack_1.png`;
 
 // --- PLATAFORMAS ---
 const platforms = [
+
+// ---Telhado esquerdo ---
+    { x: 300, y: 175, w: 50, h: 20, type: 'pattern', type: 'sloped', slope: -
+
+0.5, alpha: 0 },
+// --- Telhado direito ---
+    { x: 420, y: 135, w: 50, h: 20, type: 'pattern', type: 'sloped', slope: 
+
+0.5,alpha: 0 },
+// --- Cerca ---
     { x: 400, y: 270, w: 150, h: 50, type: 'pattern', alpha: 0 },
+
+// --- Chão parte 1 ---
     { x: 0, y: 300, w: 2000, h: 200, type: 'pattern' },
+    { x: 0, y: 300, w: 2000, h: 200, type: 'pattern' },
+
+// --- Poço ---
     { x: 612, y: 223, w: 70, h: 80, type: 'pattern', alpha: 0 },
-    { x: 1970, y: 270, w: 210, h: 20, type: 'stretch' },
-    { x: 2150, y: 300, w: 4800, h: 200, type: 'pattern' },  
+// --- Árvore ---
+    { x: 1970, y: 270, w: 210, h: 20, type: 'stretch', alpha: 0 },
+
+// --- Chão parte 2 ---
+    { x: 2150, y: 300, w: 4800, h: 200, type: 'pattern' },
+    { x: 2150, y: 300, w: 4800, h: 200, type: 'pattern' },   
 ];
 
 const platformImg = new Image();
@@ -314,9 +342,9 @@ platformImg.onload = () => {
 let keys = { left: false, right: false };
 
 const backgroundObjects = [
-    { x: 30, y: 200, width: 100, height: 100, img: Decor_CartImg },
+        { x: 30, y: 200, width: 100, height: 100, img: Decor_CartImg },
 	{ x: 270, y: 100, width: 250, height: 200, img: house1Img },
-    { x: 600, y: 200, width: 100, height: 100, img: wellImg },
+        { x: 600, y: 200, width: 100, height: 100, img: wellImg },
 
 	{ x: 1000, y: 250, width: 50, height: 50, img: tree9Img },
 	{ x: 1110, y: 250, width: 50, height: 50, img: tree10Img },
@@ -458,21 +486,37 @@ n.dialogueTimer=180+Math.floor(Math.random()*120);} n.frameTimer++; if
 
 // HIT MELEE
 function checkMeleeHit(){
-    let alcance = player.width*0.4;
-    let hitboxX = player.facing==='right'? player.x+player.width: player.x-
+    let alcance = player.width *-0.2;
+    let hitboxX = player.facing === 'right' ? player.x + player.width : player.x 
 
-alcance;
-    enemies.forEach(en=>{
-        if(en.state==='dead') return;
-        if(hitboxX<en.x+en.width && hitboxX+alcance>en.x && player.y<en.y
+- alcance;
 
-+en.height && player.y+player.height>en.y){
-            en.hp--; if(en.type!=='Enchantress'){ en.state='hurt'; 
+    enemies.forEach(en => {
+        if(en.state === 'dead') return;
 
-en.currentFrame=0; en.frameTimer=0;}
-            if(en.hp<=0){ en.state='dead'; en.dialogue=""; en.dialogueTimer=0; 
+        // Ajuste do hitbox vertical
+        let hitY = en.y + (en.height * 0.3); // começa 30% de baixo do topo
+        let hitHeight = en.height * 0.7;     // atinge 70% da altura
 
-en.currentFrame=0; en.frameTimer=0;}
+        if(
+            hitboxX < en.x + en.width &&
+            hitboxX + alcance > en.x &&
+            player.y < hitY + hitHeight &&
+            player.y + player.height > hitY
+        ){
+            en.hp--;
+            if(en.type !== 'Enchantress'){
+                en.state = 'hurt';
+                en.currentFrame = 0;
+                en.frameTimer = 0;
+            }
+            if(en.hp <= 0){
+                en.state = 'dead';
+                en.dialogue = "";
+                en.dialogueTimer = 0;
+                en.currentFrame = 0;
+                en.frameTimer = 0;
+            }
         }
     });
 }
@@ -506,13 +550,34 @@ player.velX=0;
 
     // COLISÃO PLATAFORMAS
     player.onGround=false;
-    platforms.forEach(p=>{
-        if(player.x+40<p.x+p.w && player.x+60>p.x && player.y+player.height>=p.y 
 
-&& player.y+player.height<=p.y+10){
-            player.y=p.y-player.height; player.velY=0; player.onGround=true;
+    platforms.forEach(p=>{
+        if (p.type === 'sloped') {
+        // Calcula Y do topo da plataforma naquela posição X do jogador (centro 
+
+do jogador)
+        let topY = p.y + (player.x + player.width/2 - p.x) * p.slope;
+        if (player.x + player.width > p.x && player.x < p.x + p.w &&
+            player.y + player.height >= topY && player.y + player.height <= topY 
+
++ 10) {
+            player.y = topY - player.height;
+            player.velY = 0;
+            player.onGround = true;
         }
-    });
+    } else {
+        // Plataforma normal
+        if (player.x + 40 < p.x + p.w && player.x + 60 > p.x &&
+            player.y + player.height >= p.y && player.y + player.height <= p.y + 
+
+10) {
+            player.y = p.y - player.height;
+            player.velY = 0;
+            player.onGround = true;
+        }
+    }
+});
+
     if(player.onGround) player.canAirAttack=true;
 
     // ANIMAÇÃO PLAYER
@@ -556,6 +621,7 @@ en.dialogueTimer<=0){
         }
 
         en.velY+=gravity; en.y+=en.velY; en.onGround=false;
+
         platforms.forEach(p=>{
             if(en.x+40<p.x+p.w && en.x+60>p.x && en.y+en.height>=p.y && en.y
 
@@ -623,42 +689,37 @@ function draw() {
     ctx.save();
     ctx.translate(-Math.floor(cameraX), -Math.floor(cameraY));
 
+    // 3. Plataformas
 
+    backgroundObjects.forEach(d => {
+	if (d.img.complete) {
+	    ctx.drawImage(d.img, d.x, d.y, d.width, d.height);
+  	}
+    });
 platforms.forEach(p => {
-    if (!platformImg.complete) return;
-
     ctx.save();
-
-    // Transparência individual (opcional)
     if (p.alpha !== undefined) ctx.globalAlpha = p.alpha;
 
     if (p.type === 'stretch') {
-
-        // Stretch (use apenas para coisas que PODEM esticar)
         ctx.drawImage(platformImg, p.x, p.y, p.w, p.h);
-
     } else if (p.type === 'pattern') {
-
-        if (!platformPattern) {
-            ctx.restore();
-            return;
+        if (platformPattern) {
+            ctx.translate(p.x, p.y);
+            ctx.fillStyle = platformPattern;
+            ctx.fillRect(0, 0, p.w, p.h);
         }
-
-        // Alinha o padrão ao topo da plataforma
-        ctx.translate(p.x, p.y);
-
-        ctx.fillStyle = platformPattern;
-        ctx.fillRect(0, 0, p.w, p.h);
+    } else if (p.type === 'sloped') {
+        ctx.fillStyle = "brown";
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(p.x + p.w, p.y + p.w * p.slope);
+        ctx.lineTo(p.x + p.w, p.y + p.w * p.slope + p.h);
+        ctx.lineTo(p.x, p.y + p.h);
+        ctx.closePath();
+        ctx.fill();
     }
 
-    ctx.restore();
-});
-
-
-backgroundObjects.forEach(d => {
-  if (d.img.complete) {
-    ctx.drawImage(d.img, d.x, d.y, d.width, d.height);
-  }
+    ctx.restore(); // só aqui
 });
 
     [...enemies, player].forEach(obj => {
@@ -832,4 +893,3 @@ const btnReset = document.getElementById('btn-reset');
 if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); 
 
 window.resetGame(); }); }
-
