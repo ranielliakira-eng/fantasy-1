@@ -398,22 +398,18 @@ function update(){
         else{ player.state='idle'; player.currentFrame=(player.currentFrame+1)%player.idleFrames;}
     }
 
-// --- CÂMERA DINÂMICA (CORREÇÃO PARA SEGUIR Y) ---
-    let targetX = (player.x + player.width / 2) - (canvas.width / 2) / zoom;
-    let targetY = (player.y + player.height / 2) - (canvas.height / 2) / zoom;
+// --- CÂMERA DINÂMICA CORRIGIDA ---
+let targetX = (player.x + player.width / 2) - (canvas.width / 2) / zoom;
+let targetY = (player.y + player.height / 2) - (canvas.height / 2) / zoom;
 
-    cameraX += (targetX - cameraX) * 0.1;
-    cameraY += (targetY - cameraY) * 0.1;
+// Suavização
+cameraX += (targetX - cameraX) * 0.1;
+cameraY += (targetY - cameraY) * 0.1;
 
-    if (cameraX < 0) cameraX = 0;
-    if (cameraX > mapWidth - (canvas.width / zoom)) cameraX = mapWidth - (canvas.width / zoom);
-	cameraX += ((player.x + player.width/2) - (canvas.width/2) - cameraX)*0.1;
-    cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width));
+// Limites da câmera
+cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width / zoom));
+cameraY = Math.max(0, Math.min(cameraY, mapHeight - canvas.height / zoom));
 
-	 if (cameraY < 0) cameraY = 0;
-    if (cameraY > mapHeight  - (canvas.height / zoom)) cameraY = mapHeight - (canvas.height / zoom);
-	cameraY += ((player.y + canvas.height/2) - (canvas.height/2) - cameraY)*0.1;
-    cameraY = Math.max(0, Math.min(cameraY, mapHeight - canvas.height));
 
     // INIMIGOS
     enemies.forEach(en=>{
@@ -686,6 +682,7 @@ window.addEventListener('keyup',(e)=>{
 
 const btnReset = document.getElementById('btn-reset');
 if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); window.resetGame(); }); }
+
 
 
 
