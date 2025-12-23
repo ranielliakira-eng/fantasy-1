@@ -506,16 +506,25 @@ function update(){
 				if(en.x>=en.patrolMaxX) en.facing='left'; 
 			} 
 			if(dist<100) en.state='chase'; 
-		}
-        else if(en.state==='chase'){ 
-			if(player.x<en.x){ en.x-=en.speed*1.2; en.facing='left'; 
-							 } else{
-				en.x+=en.speed*1.2; en.facing='right'; 
-			} if(dist<=en.attackRange && en.attackCooldown<=0){
-				en.state='attacking'; en.currentFrame=0; 
+		}	
+		else if(en.state==='chase'){ 
+			const minDist = 30; 
+			if(dist > minDist) { 
+				if(player.x < en.x){ 
+					en.x -= en.speed*1.2; 
+					en.facing='left'; 
+				} 
+				else { 
+					en.x += en.speed*1.2; 
+					en.facing='right'; 
+				}
+			}
+			if(dist <= en.attackRange && en.attackCooldown<=0){ 
+				en.state='attacking'; 
+				en.currentFrame=0; 
 			} 
-			if(dist>150) en.state='patrol'; 
-		}
+			if(dist > 150) en.state='patrol'; 
+		} 
         else if(en.state==='attacking'){
 			const attackFrame=2; en.frameTimer++; 
 			if(en.frameTimer>=en.frameInterval){ 
@@ -747,4 +756,5 @@ if(btnReset){
 	}
 							 );
 }
+
 
