@@ -31,7 +31,6 @@ const player = {
 const playerDialogTriggers = [
     { x: 600, text: "Esses Slimes não deveriam estar aqui.", used: false },
     { x: 1800, text: "A floresta está ficando mais densa.", used: false },
-    { x: 4800, text: "Slimes de cores diferentes juntos?", used: false },
     { x: 6200, text: "Acho que sei o que juntou aqueles Slimes...", used: false },
 ];
 
@@ -268,7 +267,8 @@ window.playerSay = function(text, duration = 120) {
 window.togglePause = function() { if (gameState !== 'playing') return; isPaused = !isPaused; if (isPaused) bgMusic.pause(); else if (!isMuted) bgMusic.play().catch(() => {}); };
 window.toggleSom = function() { isMuted = !isMuted; bgMusic.muted = isMuted; const btn = document.getElementById('btn-audio'); if(btn) btn.innerText = isMuted ? "Mudo" : "Som"; };
 window.resetGame = function() {
-    const screen = document.getElementById('game-over-screen'); if(screen) screen.style.display='none';
+    const screen = document.getElementById('game-over-screen'); 
+	if(screen) screen.style.display='none';
     player.hp = player.maxHp; player.x = 200; player.y = 100; player.velX = 0; player.velY = 0; player.state='idle';
     cameraX=0; isPaused=false; gameState='playing';
     initEnemies();
@@ -686,6 +686,7 @@ window.addEventListener('keyup',(e)=>{
 
 const btnReset = document.getElementById('btn-reset');
 if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); window.resetGame(); }); }
+
 
 
 
