@@ -23,159 +23,52 @@ const player = {
     velX: 0, velY: 0, speed: 5, jumpForce: -15,
     facing: 'right', onGround: false, state: 'idle',
     hp: 3, maxHp: 3, canAirAttack: true,
-    imgWalk: new Image(), imgDead: new Image(), imgJump: new Image(), imgHurt: 
-
-new Image(),
+    imgWalk: new Image(), imgDead: new Image(), imgJump: new Image(), imgHurt: new Image(),
     imgAttack: new Image(), imgIdle: new Image(),
     attackFrames: 6, walkFrames: 8, idleFrames: 8, jumpFrames: 8, deadFrames: 4,
-    currentFrame: 0, frameTimer: 0, frameInterval: 6, dialogue: "", 
-
-dialogueTimer: 0,
+    currentFrame: 0, frameTimer: 0, frameInterval: 6, dialogue: "", dialogueTimer: 0,
 };
 
 const playerDialogTriggers = [
     { x: 600, text: "Esses Slimes não deveriam estar aqui.", used: false },
     { x: 1800, text: "A floresta está ficando mais densa.", used: false },
     { x: 4800, text: "Slimes de cores diferentes juntos?", used: false },
-    { x: 6200, text: "Acho que sei o que juntou aqueles Slimes...", used: false 
-
-},
+    { x: 6200, text: "Acho que sei o que juntou aqueles Slimes...", used: false },
 ];
 
 // --- INIMIGOS ---
 let enemies = [];
 function initEnemies() {
     enemies = [
-        { type: 'Green_Slime', x: 800, y: 200, hp: 1, speed: 1.2, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-        { type: 'Green_Slime', x: 850, y: 200, hp: 1, speed: 1.1, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-        { type: 'Green_Slime', x: 910, y: 200, hp: 1, speed: 1.0, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-        { type: 'Green_Slime', x: 905, y: 200, hp: 1, speed: 0.9, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-        { type: 'Green_Slime', x: 907, y: 200, hp: 1, speed: 1.2, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-        { type: 'Green_Slime', x: 1050, y: 200, hp: 1, speed: 1.2, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-	{ type: 'Green_Slime', x: 1120, y: 200, hp: 1, speed: 1.2, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
+        { type: 'Green_Slime', x: 800, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 850, y: 200, hp: 1, speed: 1.1, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 910, y: 200, hp: 1, speed: 1.0, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 905, y: 200, hp: 1, speed: 0.9, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 907, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 1050, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+		{ type: 'Green_Slime', x: 1120, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         
-        { type: 'Blue_Slime', x: 2995, y: 200, hp: 1, speed: 1.8, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 }, 
-        { type: 'Blue_Slime', x: 3000, y: 200, hp: 1, speed: 1.7, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 }, 
-        { type: 'Blue_Slime', x: 3005, y: 200, hp: 1, speed: 1.6, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-        { type: 'Blue_Slime', x: 3010, y: 200, hp: 1, speed: 1.7, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 }, 
-        { type: 'Blue_Slime', x: 3015, y: 200, hp: 1, speed: 1.5, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 }, 
-        { type: 'Blue_Slime', x: 3020, y: 200, hp: 1, speed: 1.9, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
+        { type: 'Blue_Slime', x: 2995, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 3000, y: 200, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 3005, y: 200, hp: 1, speed: 1.6, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Blue_Slime', x: 3010, y: 200, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 3015, y: 200, hp: 1, speed: 1.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 3020, y: 200, hp: 1, speed: 1.9, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         
-        { type: 'Red_Slime', x: 4000, y: 200, hp: 1, speed: 2.5, attackRange: 
+        { type: 'Red_Slime', x: 4000, y: 200, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 4005, y: 200, hp: 1, speed: 2.4, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 4010, y: 200, hp: 1, speed: 2.3, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 4015, y: 200, hp: 1, speed: 2.1, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
 
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-        { type: 'Red_Slime', x: 4005, y: 200, hp: 1, speed: 2.4, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-        { type: 'Red_Slime', x: 4010, y: 200, hp: 1, speed: 2.3, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-        { type: 'Red_Slime', x: 4015, y: 200, hp: 1, speed: 2.1, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-
-        { type: 'Blue_Slime', x: 5000, y: 200, hp: 1, speed: 1.8, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 }, 
-        { type: 'Blue_Slime', x: 2495, y: 207, hp: 1, speed: 1.7, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 }, 
-        { type: 'Blue_Slime', x: 5005, y: 200, hp: 1, speed: 1.6, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-        { type: 'Green_Slime', x: 4995, y: 205, hp: 1, speed: 1.2, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-        { type: 'Green_Slime', x: 5000, y: 203, hp: 1, speed: 1.3, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-        { type: 'Red_Slime', x: 5000, y: 200, hp: 1, speed: 2.5, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-        { type: 'Red_Slime', x: 5000, y: 207, hp: 1, speed: 2.5, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
+        { type: 'Blue_Slime', x: 5000, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 2495, y: 207, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 5005, y: 200, hp: 1, speed: 1.6, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 4995, y: 205, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 5000, y: 203, hp: 1, speed: 1.3, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 5000, y: 200, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 5000, y: 207, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
    
-        { type: 'Enchantress', x: 6600, y: 100, hp: 3, speed: 2, attackRange: 
-
-60, idleFrames: 8, walkFrames: 5, attackFrames: 6, hurtFrames: 2, deadFrames: 5, 
-
-dialogue: "", dialogueTimer: 0,
-            phrases: { idle: [
+        { type: 'Enchantress', x: 6600, y: 100, hp: 3, speed: 2, attackRange: 60, idleFrames: 8, walkFrames: 5, attackFrames: 6, hurtFrames: 2, deadFrames: 5, dialogue: "", dialogueTimer: 0, phrases: { idle: [
 		"O equilíbrio foi quebrado",
 		"A energia da terra foi corrompida!"]
 		}
@@ -233,105 +126,49 @@ const platforms = [
 ];
 
 const platformImg = new Image();
-platformImg.src = 
-
-'assets/Battleground/Battleground1/summer_0/Environment/Ground_11.png';
+platformImg.src = 'assets/Battleground/Battleground1/summer_0/Environment/Ground_11.png';
 
 // --- Cenário ---
 const wellImg = new Image();
 wellImg.src = 'assets/Battleground/Battleground1/summer_0/Environment/Well.png';
 
 const tree1Img = new Image();
-tree1Img.src = 
-
-'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree1.
-
-png';
+tree1Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree1.png';
 const tree2Img = new Image();
-tree2Img.src = 
-
-'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree2.
-
-png';
+tree2Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree2.png';
 const tree3Img = new Image();
-tree3Img.src = 
-
-'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree3.
-
-png';
+tree3Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree3.png';
 const tree4Img = new Image();
-tree4Img.src = 
-
-'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree4.
-
-png';
+tree4Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree4.png';
 const tree5Img = new Image();
-tree5Img.src = 
-
-'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree5.
-
-png';
+tree5Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree5.png';
 const tree6Img = new Image();
-tree6Img.src = 
-
-'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree6.
-
-png';
+tree6Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree6.png';
 const tree7Img = new Image();
-tree7Img.src = 
-
-'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree7.
-
-png';
+tree7Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree7.png';
 const tree8Img = new Image();
-tree8Img.src = 
-
-'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree8.
-
-png';
+tree8Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree8.png';
 const tree9Img = new Image();
-tree9Img.src = 
-
-'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree9.
-
-png';
+tree9Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree9.png';
 const tree10Img = new Image();
-tree10Img.src = 
-
-'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree10
-
-.png';
+tree10Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree10.png';
 const tree11Img = new Image();
-tree11Img.src = 
-
-'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree11
-
-.png';
+tree11Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree11.png';
 
 const house1Img = new Image();
-house1Img.src = 
-
-'assets/Battleground/Battleground1/summer_0/Environment/House1.png';
+house1Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/House1.png';
 
 const Decor_CartImg = new Image();
-Decor_CartImg.src = 
-
-'assets/Battleground/Battleground1/summer_0/Environment/Decor_Cart.png';
+Decor_CartImg.src = 'assets/Battleground/Battleground1/summer_0/Environment/Decor_Cart.png';
 
 const fence_01Img = new Image();
-fence_01Img.src = 
-
-'assets/Battleground/Battleground1/summer_0/Environment/Fence_01.png';
+fence_01Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/Fence_01.png';
 
 const fence_02Img = new Image();
-fence_02Img.src = 
-
-'assets/Battleground/Battleground1/summer_0/Environment/Fence_02.png';
+fence_02Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/Fence_02.png';
 
 const fence_03Img = new Image();
-fence_03Img.src = 
-
-'assets/Battleground/Battleground1/summer_0/Environment/Fence_03.png';
+fence_03Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/Fence_03.png';
 
 let platformPattern = null;
 
@@ -342,9 +179,9 @@ platformImg.onload = () => {
 let keys = { left: false, right: false };
 
 const backgroundObjects = [
-        { x: 30, y: 200, width: 100, height: 100, img: Decor_CartImg },
+    { x: 30, y: 200, width: 100, height: 100, img: Decor_CartImg },
 	{ x: 270, y: 100, width: 250, height: 200, img: house1Img },
-        { x: 600, y: 200, width: 100, height: 100, img: wellImg },
+    { x: 600, y: 200, width: 100, height: 100, img: wellImg },
 
 	{ x: 1000, y: 250, width: 50, height: 50, img: tree9Img },
 	{ x: 1110, y: 250, width: 50, height: 50, img: tree10Img },
@@ -416,10 +253,10 @@ const satyrNpc = {
     x: 300, y: 190, width: 120, height: 120, imgIdle: new Image(),
     idleFrames: 6, currentFrame: 0, frameTimer: 0, frameInterval: 16,
     phrases: [
-		"Que bom que você chegou!", 
-		"Cuidado com os Slimes!", 
-		"Os Slimes estão vindo da floresta."
-	],
+"Que bom que você chegou!", 
+"Cuidado com os Slimes!", 
+"Os Slimes estão vindo da floresta."
+],
     dialogueIndex: 0, dialogueTimer: 0
 };
 satyrNpc.imgIdle.src = 'assets/Satyr_3/Idle.png';
@@ -433,16 +270,15 @@ window.playerSay = function(text, duration = 120) {
 };
 
 // --- FUNÇÕES DO SISTEMA ---
-window.togglePause = function() { if (gameState !== 'playing') return; isPaused 
-
-= !isPaused; if (isPaused) bgMusic.pause(); else if (!isMuted) bgMusic.play
-
-().catch(() => {}); };
-window.toggleSom = function() { isMuted = !isMuted; bgMusic.muted = isMuted; 
-
-const btn = document.getElementById('btn-audio'); if(btn) btn.innerText = 
-
-isMuted ? "Mudo" : "Som"; };
+window.togglePause = function() { 
+	if (gameState !== 'playing') return; isPaused = !isPaused; if (isPaused) bgMusic.pause(); 
+	else if (!isMuted) bgMusic.play().catch(() => {}
+		); 
+								};
+window.toggleSom = function() {
+	isMuted = !isMuted; bgMusic.muted = isMuted;const btn = document.getElementById('btn-audio');
+	if(btn) btn.innerText = isMuted ? "Mudo" : "Som"; 
+							};
 window.resetGame = function() {
     const screen = document.getElementById('game-over-screen'); if(screen) 
 
@@ -477,44 +313,47 @@ menu.style.display='none';
 };
 
 // Movimentação
-window.mover = function(dir, estado) { if(gameState!=='playing'||
+window.mover = function(dir, estado) { 
+	if(gameState!=='playing'|| player.state==='dead'||isPaused) return;
+	if(dir==='left') keys.left=estado;
+	if(dir==='right') keys.right=estado; if(estado) player.facing=dir; 
+};
 
-player.state==='dead'||isPaused) return; if(dir==='left') keys.left=estado; if
+window.pular = function() { if(gameState==='playing' && player.onGround && ! isPaused){
+	player.velY=player.jumpForce; player.onGround=false;
+} 
+						  };
 
-(dir==='right') keys.right=estado; if(estado) player.facing=dir; };
-window.pular = function() { if(gameState==='playing' && player.onGround && !
-
-isPaused){player.velY=player.jumpForce; player.onGround=false;} };
-window.atacar = function() { if(player.state==='dead'){window.resetGame(); 
-
-return;} if(gameState!=='playing'||isPaused)return; if
-
-(player.state==='attacking')return; if(!player.onGround && !
-
-player.canAirAttack)return; player.state='attacking'; player.currentFrame=0; if
-
-(!player.onGround) player.canAirAttack=false; checkMeleeHit(); };
+window.atacar = function() { 
+	if(player.state==='dead'){window.resetGame(); 
+							  return;
+							 } 
+	if(gameState!=='playing'||isPaused)return; 
+	if(player.state==='attacking')return; 
+	if(!player.onGround && ! player.canAirAttack)return;
+	player.state='attacking'; player.currentFrame=0;
+	if(!player.onGround) player.canAirAttack=false; checkMeleeHit(); 
+};
 
 // NPCs
-function npcSay(npc, index=0, duration=120){ npc.dialogueIndex=index; 
-
-npc.dialogueTimer=duration; }
-function updateNPCs(){ npcs.forEach(n=>{ if(n.dialogueTimer>0)n.dialogueTimer--; 
-
-else{ n.dialogueIndex=Math.floor(Math.random()*n.phrases.length); 
-
-n.dialogueTimer=180+Math.floor(Math.random()*120);} n.frameTimer++; if
-
-(n.frameTimer>=n.frameInterval){ n.frameTimer=0; n.currentFrame=(n.currentFrame
-
-+1)%n.idleFrames; } }); }
+function npcSay(npc, index=0, duration=120){ 
+	npc.dialogueIndex=index;
+	npc.dialogueTimer=duration;
+}
+function updateNPCs(){
+	npcs.forEach(n=>{ if(n.dialogueTimer>0)n.dialogueTimer--; 
+	else{ n.dialogueIndex=Math.floor(Math.random()*n.phrases.length); 
+		 n.dialogueTimer=180+Math.floor(Math.random()*120);} n.frameTimer++;
+					 if(n.frameTimer>=n.frameInterval){ n.frameTimer=0; n.currentFrame=(n.currentFrame+1)%n.idleFrames; 
+													  } 
+					}
+				);
+}
 
 // HIT MELEE
 function checkMeleeHit(){
     let alcance = player.width *-0.2;
-    let hitboxX = player.facing === 'right' ? player.x + player.width : player.x 
-
-- alcance;
+    let hitboxX = player.facing === 'right' ? player.x + player.width : player.x - alcance;
 
     enemies.forEach(en => {
         if(en.state === 'dead') return;
