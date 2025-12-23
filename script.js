@@ -353,43 +353,30 @@ function update(){
     if(player.dialogueTimer>0){ player.dialogueTimer--; if(player.dialogueTimer<=0) player.dialogue=""; }
 
     // COLISÃO PLATAFORMAS
+player.velY += gravity;
+player.velY = Math.min(player.velY, 20);
+	
     player.onGround=false;
 
 platforms.forEach(p => {
 
+    if (p.type === 'sloped') return; // vamos ignorar slope por enquanto
+
     let nextY = player.y + player.velY;
 
-    if (p.type === 'sloped') {
-
-        let topY = p.y + (player.x + player.width / 2 - p.x) * p.slope;
-
-        if (
-            player.velY > 0 &&
-            player.x + player.width > p.x &&
-            player.x < p.x + p.w &&
-            player.y + player.height <= topY &&
-            nextY + player.height >= topY
-        ) {
-            player.y = topY - player.height;
-            player.velY = 0;
-            player.onGround = true;
-        }
-
-    } else {
-
-        if (
-            player.velY > 0 &&
-            player.x + 40 < p.x + p.w &&
-            player.x + 60 > p.x &&
-            player.y + player.height <= p.y &&
-            nextY + player.height >= p.y
-        ) {
-            player.y = p.y - player.height;
-            player.velY = 0;
-            player.onGround = true;
-        }
+    if (
+        player.velY >= 0 && // caindo ou parado
+        player.x + 40 < p.x + p.w &&
+        player.x + 60 > p.x &&
+        player.y + player.height <= p.y &&
+        nextY + player.height >= p.y
+    ) {
+        player.y = p.y - player.height;
+        player.velY = 0;
+        player.onGround = true;
     }
 });
+	player.y += player.velY;
 
     if(player.onGround) player.canAirAttack=true;
 
@@ -700,6 +687,7 @@ window.addEventListener('keyup',(e)=>{
 
 const btnReset = document.getElementById('btn-reset');
 if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); window.resetGame(); }); }
+
 
 
 
