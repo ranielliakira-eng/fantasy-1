@@ -366,12 +366,25 @@ const backgroundObjects = [
 	{ x: 3570, y: 5, width: 250, height: 300, img: tree2Img },
 	{ x: 3680, y: 5, width: 250, height: 300, img: tree2Img },
 	{ x: 3790, y: 5, width: 250, height: 300, img: tree2Img },
+
+	{ x: 4450, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 4560, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 4570, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 4680, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 4790, y: 5, width: 250, height: 300, img: tree2Img },
+
+	{ x: 5450, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 5560, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 5570, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 5680, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 5790, y: 5, width: 250, height: 300, img: tree2Img },
 ];
 
 const foregroundObjects = [
-    { x: 400, y: 260, width: 50, height: 50, img: fence_01Img },
-    { x: 450, y: 260, width: 50, height: 50, img: fence_02Img },
-    { x: 500, y: 260, width: 50, height: 50, img: fence_03Img },
+
+        { x: 400, y: 260, width: 50, height: 50, img: fence_01Img },
+        { x: 450, y: 260, width: 50, height: 50, img: fence_02Img },
+        { x: 500, y: 260, width: 50, height: 50, img: fence_03Img },
 	
 	{ x: 1220, y: 250, width: 50, height: 50, img: tree11Img },
 	
@@ -379,6 +392,16 @@ const foregroundObjects = [
 	{ x: 3220, y: 5, width: 300, height: 300, img: tree3Img },
 	{ x: 3560, y: 5, width: 300, height: 300, img: tree3Img },
 	{ x: 3720, y: 5, width: 300, height: 300, img: tree3Img },
+
+	{ x: 4060, y: 5, width: 300, height: 300, img: tree3Img },
+	{ x: 4220, y: 5, width: 300, height: 300, img: tree3Img },
+	{ x: 4560, y: 5, width: 300, height: 300, img: tree3Img },
+	{ x: 4720, y: 5, width: 300, height: 300, img: tree3Img },
+
+	{ x: 5060, y: 5, width: 300, height: 300, img: tree3Img },
+	{ x: 5220, y: 5, width: 300, height: 300, img: tree3Img },
+	{ x: 5560, y: 5, width: 300, height: 300, img: tree3Img },
+	{ x: 5720, y: 5, width: 300, height: 300, img: tree3Img },
 ];
 
 // --- NPCs ---
