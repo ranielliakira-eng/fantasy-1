@@ -341,10 +341,6 @@ function update(){
     if(gameState!=='playing'||isPaused) return;
     updateNPCs();
 
-    player.velY+=gravity; player.x+=player.velX;
-    if(player.x<0)player.x=0; if(player.x+player.width>mapWidth)player.x=mapWidth-player.width;
-    player.y+=player.velY;
-
     if(Math.abs(player.x-oxNpc.x)<150 && oxNpc.dialogueTimer<=0){ npcSay(oxNpc,0,120); }
     if(player.y>=450){ player.hp=0; player.state='dead'; return;}
 
@@ -353,38 +349,44 @@ function update(){
     if(player.dialogueTimer>0){ player.dialogueTimer--; if(player.dialogueTimer<=0) player.dialogue=""; }
 
 // ===== FÍSICA VERTICAL =====
-// GRAVIDADE
 player.velY += gravity;
-player.velY = Math.min(player.velY, 20);
+if (player.velY > 20) player.velY = 20;
 
+// move
+player.y += player.velY;
+
+// assume no ar
 player.onGround = false;
-let collided = false;
 
+// colisão
 platforms.forEach(p => {
-
     if (p.type === 'sloped') return;
 
-    let nextY = player.y + player.velY;
+    const playerBottom = player.y + player.height;
+    const playerPrevBottom = playerBottom - player.velY;
+
+    const overlapX =
+        player.x + player.width > p.x &&
+        player.x < p.x + p.w;
 
     if (
-        player.velY >= 0 &&
-        player.x + 40 < p.x + p.w &&
-        player.x + 60 > p.x &&
-        player.y + player.height <= p.y &&
-        nextY + player.height >= p.y
+        overlapX &&
+        playerPrevBottom <= p.y &&
+        playerBottom >= p.y
     ) {
         player.y = p.y - player.height;
         player.velY = 0;
         player.onGround = true;
-        collided = true;
     }
 });
 
-// MOVE SÓ SE NÃO COLIDIU
-if (!collided) {
-    player.y += player.velY;
-}
+// ===== MOVIMENTO HORIZONTAL =====
+player.x += player.velX;
 
+// limites do mapa
+if (player.x < 0) player.x = 0;
+if (player.x + player.width > mapWidth)
+    player.x = mapWidth - player.width; 
 
     if(player.onGround) player.canAirAttack=true;
 
