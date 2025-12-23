@@ -46,7 +46,7 @@ function initEnemies() {
         { type: 'Green_Slime', x: 905, y: 200, hp: 1, speed: 0.9, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         { type: 'Green_Slime', x: 907, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         { type: 'Green_Slime', x: 1050, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-	    { type: 'Green_Slime', x: 1120, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 1120, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         
         { type: 'Blue_Slime', x: 2995, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
         { type: 'Blue_Slime', x: 3000, y: 200, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
@@ -105,11 +105,11 @@ const platforms = [
 // --- Telhado direito ---
     { x: 420, y: 135, w: 50, h: 20, type: 'sloped', slope: 0.5,alpha: 0 },
 // --- Cerca ---
-    { x: 400, y: 270, w: 150, h: 50, type: 'pattern', alpha: 0 },
+    { x: 450, y: 270, w: 70, h: 50, type: 'pattern', alpha: 0 },
 // --- Chão parte 1 ---
     { x: 0, y: 300, w: 2000, h: 150, type: 'pattern' },
 // --- Poço ---
-    { x: 612, y: 223, w: 70, h: 80, type: 'pattern', alpha: 0 },
+    { x: 620, y: 223, w: 5, h: 80, type: 'pattern', alpha: 0 },
 // --- Árvore ---
     { x: 1970, y: 270, w: 210, h: 20, type: 'stretch', alpha: 0 },
 // --- Chão parte 2 ---
@@ -697,14 +697,4 @@ window.addEventListener('keyup',(e)=>{
 
 const btnReset = document.getElementById('btn-reset');
 if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); window.resetGame(); }); }
-
-
-
-
-
-
-
-
-
-
 
