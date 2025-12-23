@@ -101,11 +101,11 @@ ${en.type}/Attack_1.png`;
 const platforms = [
 
 // ---Telhado esquerdo ---
-    { x: 300, y: 175, w: 50, h: 20, type: 'pattern', type: 'sloped', slope: -
+    { x: 300, y: 175, w: 50, h: 20, type: 'sloped', slope: -
 
 0.5, alpha: 0 },
 // --- Telhado direito ---
-    { x: 420, y: 135, w: 50, h: 20, type: 'pattern', type: 'sloped', slope: 
+    { x: 420, y: 135, w: 50, h: 20, type: 'sloped', slope: 
 
 0.5,alpha: 0 },
 // --- Cerca ---
@@ -387,57 +387,46 @@ function checkMeleeHit(){
 
 // --- UPDATE ---
 function update(){
-    if(player.hp<=0){player.state='dead'; return;}
+    if(player.hp<=0){
+		player.state='dead'; return;
+	}
     if(gameState!=='playing'||isPaused) return;
-    updateNPCs();
-
-    player.velY+=gravity; player.x+=player.velX;
-    if(player.x<0)player.x=0; if(player.x+player.width>mapWidth)
-
-player.x=mapWidth-player.width;
+    updateNPCs(); player.velY+=gravity; player.x+=player.velX;
+    if(player.x<0)player.x=0; 
+	if(player.x+player.width>mapWidth)player.x=mapWidth-player.width;
     player.y+=player.velY;
-
-    if(Math.abs(player.x-oxNpc.x)<150 && oxNpc.dialogueTimer<=0){ npcSay
-
-(oxNpc,0,120); }
-    if(player.y>=450){ player.hp=0; player.state='dead'; return;}
-
-    if(player.state!=='attacking'){ if(keys.left) player.velX=-player.speed; 
-
-else if(keys.right) player.velX=player.speed; else player.velX*=0.7; } else 
-
-player.velX=0;
-
-    if(player.dialogueTimer>0){ player.dialogueTimer--; if
-
-(player.dialogueTimer<=0) player.dialogue=""; }
+    if(Math.abs(player.x-oxNpc.x)<150 && oxNpc.dialogueTimer<=0){
+		npcSay(oxNpc,0,120); 
+	}
+    if(player.y>=450){ 
+		player.hp=0; player.state='dead'; return;
+	}
+    if(player.state!=='attacking'){ 
+		if(keys.left) player.velX=-player.speed;else if(keys.right) player.velX=player.speed; else player.velX*=0.7;
+	}
+	else player.velX=0;
+    if(player.dialogueTimer>0){ 
+		player.dialogueTimer--; 
+		if(player.dialogueTimer<=0) player.dialogue=""; 
+							  }
 
     // COLISÃO PLATAFORMAS
     player.onGround=false;
 
     platforms.forEach(p=>{
         if (p.type === 'sloped') {
-        // Calcula Y do topo da plataforma naquela posição X do jogador (centro 
-
-do jogador)
+        // Calcula Y do topo da plataforma naquela posição X do jogador (centro do jogador)
         let topY = p.y + (player.x + player.width/2 - p.x) * p.slope;
         if (player.x + player.width > p.x && player.x < p.x + p.w &&
-            player.y + player.height >= topY && player.y + player.height <= topY 
-
-+ 10) {
+            player.y + player.height >= topY && player.y + player.height <= topY + 10) {
             player.y = topY - player.height;
             player.velY = 0;
             player.onGround = true;
         }
     } else {
         // Plataforma normal
-        if (player.x + 40 < p.x + p.w && player.x + 60 > p.x &&
-            player.y + player.height >= p.y && player.y + player.height <= p.y + 
-
-10) {
-            player.y = p.y - player.height;
-            player.velY = 0;
-            player.onGround = true;
+        if (player.x + 40 < p.x + p.w && player.x + 60 > p.x && player.y + player.height >= p.y && player.y + player.height <= p.y + 10) {
+            player.y = p.y - player.height; player.velY = 0;player.onGround = true;
         }
     }
 });
@@ -758,3 +747,4 @@ if(btnReset){
 	}
 							 );
 }
+
