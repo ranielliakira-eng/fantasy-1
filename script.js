@@ -106,13 +106,13 @@ const platforms = [
 // --- Cerca ---
     { x: 400, y: 370, w: 150, h: 50, type: 'pattern', alpha: 0 },
 // --- Chão parte 1 ---
-    { x: 0, y: 450, w: 2000, h: 50, type: 'pattern' },
+    { x: 0, y: 550, w: 2000, h: 50, type: 'pattern' },
 // --- Poço ---
     { x: 612, y: 323, w: 70, h: 80, type: 'pattern', alpha: 0 },
 // --- Árvore ---
     { x: 1970, y: 370, w: 210, h: 20, type: 'stretch', alpha: 0 },
 // --- Chão parte 2 ---
-    { x: 2150, y: 450, w: 4800, h: 50, type: 'pattern' }, 
+    { x: 2150, y: 550, w: 4800, h: 50, type: 'pattern' }, 
 ];
 
 // --- Cenário ---
@@ -681,6 +681,7 @@ window.addEventListener('keyup',(e)=>{
 
 const btnReset = document.getElementById('btn-reset');
 if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); window.resetGame(); }); }
+
 
 
 
