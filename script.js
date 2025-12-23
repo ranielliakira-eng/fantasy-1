@@ -412,7 +412,7 @@ function update(){
 
 	 if (cameraY < 0) cameraY = 0;
     if (cameraY > mapHeight  - (canvas.height / zoom)) cameraY = mapHeight - (canvas.height / zoom);
-	cameraY += ((player.y + canvas.height/2) - (canvas.height/2) - cameraX)*0.1;
+	cameraY += ((player.y + canvas.height/2) - (canvas.height/2) - cameraY)*0.1;
     cameraY = Math.max(0, Math.min(cameraY, mapHeight - canvas.height));
 
     // INIMIGOS
@@ -686,6 +686,7 @@ window.addEventListener('keyup',(e)=>{
 
 const btnReset = document.getElementById('btn-reset');
 if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); window.resetGame(); }); }
+
 
 
 
