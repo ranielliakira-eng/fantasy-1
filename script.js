@@ -358,7 +358,10 @@ platforms.forEach(p => {
     let nextY = player.y + player.velY;
 
     if (p.type === 'sloped') {
-        let topY = p.y + (player.x + player.width / 2 - p.x) * p.slope;
+        let leftY = p.y + (player.x - p.x) * p.slope;
+        let rightY = p.y + (player.x + player.width - p.x) * p.slope;
+        let topY = Math.min(leftY, rightY);
+
         if (player.x + player.width > p.x && player.x < p.x + p.w) {
             if (player.y + player.height <= topY && nextY + player.height >= topY) {
                 player.y = topY - player.height;
@@ -366,8 +369,9 @@ platforms.forEach(p => {
                 player.onGround = true;
             }
         }
+
     } else {
-        if (player.x + 40 < p.x + p.w && player.x + 60 > p.x) {
+        if (player.x + player.width > p.x && player.x < p.x + p.w) {
             if (player.y + player.height <= p.y && nextY + player.height >= p.y) {
                 player.y = p.y - player.height;
                 player.velY = 0;
@@ -376,7 +380,6 @@ platforms.forEach(p => {
         }
     }
 });
-
 
     if(player.onGround) player.canAirAttack=true;
 
@@ -681,6 +684,7 @@ window.addEventListener('keyup',(e)=>{
 
 const btnReset = document.getElementById('btn-reset');
 if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); window.resetGame(); }); }
+
 
 
 
