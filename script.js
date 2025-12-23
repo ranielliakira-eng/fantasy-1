@@ -100,32 +100,24 @@ function initEnemies() {
 const platforms = [
 
 // ---Telhado esquerdo ---
-    { x: 300, y: 175, w: 50, h: 20, type: 'pattern', type: 'sloped', slope: -0.5, alpha: 0 },
+    { x: 300, y: 275, w: 50, h: 20, type: 'pattern', type: 'sloped', slope: -0.5, alpha: 0 },
 // --- Telhado direito ---
-    { x: 420, y: 135, w: 50, h: 20, type: 'pattern', type: 'sloped', slope: 0.5,alpha: 0 },
+    { x: 420, y: 235, w: 50, h: 20, type: 'pattern', type: 'sloped', slope: 0.5,alpha: 0 },
 // --- Cerca ---
-    { x: 400, y: 270, w: 150, h: 50, type: 'pattern', alpha: 0 },
-
+    { x: 400, y: 370, w: 150, h: 50, type: 'pattern', alpha: 0 },
 // --- Chão parte 1 ---
-    { x: 0, y: 300, w: 2000, h: 200, type: 'pattern' },
-    { x: 0, y: 300, w: 2000, h: 200, type: 'pattern' },
-
+    { x: 0, y: 400, w: 2000, h: 200, type: 'pattern' },
 // --- Poço ---
-    { x: 612, y: 223, w: 70, h: 80, type: 'pattern', alpha: 0 },
+    { x: 612, y: 323, w: 70, h: 80, type: 'pattern', alpha: 0 },
 // --- Árvore ---
-    { x: 1970, y: 270, w: 210, h: 20, type: 'stretch', alpha: 0 },
-
+    { x: 1970, y: 370, w: 210, h: 20, type: 'stretch', alpha: 0 },
 // --- Chão parte 2 ---
-    { x: 2150, y: 300, w: 4800, h: 200, type: 'pattern' },
-    { x: 2150, y: 300, w: 4800, h: 200, type: 'pattern' },   
+    { x: 2150, y: 400, w: 4800, h: 200, type: 'pattern' }, 
 ];
 
+// --- Cenário ---
 const platformImg = new Image();
 platformImg.src = 'assets/Battleground/Battleground1/summer_0/Environment/Ground_11.png';
-
-// --- Cenário ---
-const wellImg = new Image();
-wellImg.src = 'assets/Battleground/Battleground1/summer_0/Environment/Well.png';
 
 const tree1Img = new Image();
 tree1Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree1.png';
@@ -149,6 +141,9 @@ const tree10Img = new Image();
 tree10Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree10.png';
 const tree11Img = new Image();
 tree11Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree11.png';
+
+const wellImg = new Image();
+wellImg.src = 'assets/Battleground/Battleground1/summer_0/Environment/Well.png';
 
 const house1Img = new Image();
 house1Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/House1.png';
@@ -174,78 +169,78 @@ platformImg.onload = () => {
 let keys = { left: false, right: false };
 
 const backgroundObjects = [
-        { x: 30, y: 200, width: 100, height: 100, img: Decor_CartImg },
-		{ x: 270, y: 100, width: 250, height: 200, img: house1Img },
-        { x: 600, y: 200, width: 100, height: 100, img: wellImg },
+    { x: 30, y: 300, width: 100, height: 100, img: Decor_CartImg },
+	{ x: 270, y: 300, width: 250, height: 200, img: house1Img },
+    { x: 600, y: 300, width: 100, height: 100, img: wellImg },
 
-	{ x: 1000, y: 250, width: 50, height: 50, img: tree9Img },
-	{ x: 1110, y: 250, width: 50, height: 50, img: tree10Img },
-	{ x: 1330, y: 250, width: 50, height: 50, img: tree9Img },
-	{ x: 1440, y: 250, width: 50, height: 50, img: tree8Img },
+	{ x: 1000, y: 350, width: 50, height: 50, img: tree9Img },
+	{ x: 1110, y: 350, width: 50, height: 50, img: tree10Img },
+	{ x: 1330, y: 350, width: 50, height: 50, img: tree9Img },
+	{ x: 1440, y: 350, width: 50, height: 50, img: tree8Img },
 	
-	{ x: 1960, y: 100, width: 380, height: 200, img: tree1Img },
+	{ x: 1960, y: 200, width: 380, height: 200, img: tree1Img },
 	
-	{ x: 2470, y: 5, width: 250, height: 300, img: tree5Img },
+	{ x: 2470, y: 105, width: 250, height: 300, img: tree5Img },
 	
-	{ x: 2900, y: 5, width: 250, height: 300, img: tree2Img },
-	{ x: 3010, y: 5, width: 250, height: 300, img: tree2Img },
-	{ x: 3120, y: 5, width: 250, height: 300, img: tree2Img },
-	{ x: 3230, y: 5, width: 250, height: 300, img: tree2Img },
-	{ x: 3340, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 2900, y: 105, width: 250, height: 300, img: tree2Img },
+	{ x: 3010, y: 105, width: 250, height: 300, img: tree2Img },
+	{ x: 3120, y: 105, width: 250, height: 300, img: tree2Img },
+	{ x: 3230, y: 105, width: 250, height: 300, img: tree2Img },
+	{ x: 3340, y: 105, width: 250, height: 300, img: tree2Img },
 	
-	{ x: 3450, y: 5, width: 250, height: 300, img: tree2Img },
-	{ x: 3560, y: 5, width: 250, height: 300, img: tree2Img },
-	{ x: 3570, y: 5, width: 250, height: 300, img: tree2Img },
-	{ x: 3680, y: 5, width: 250, height: 300, img: tree2Img },
-	{ x: 3790, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 3450, y: 105, width: 250, height: 300, img: tree2Img },
+	{ x: 3560, y: 105, width: 250, height: 300, img: tree2Img },
+	{ x: 3570, y: 105, width: 250, height: 300, img: tree2Img },
+	{ x: 3680, y: 105, width: 250, height: 300, img: tree2Img },
+	{ x: 3790, y: 105, width: 250, height: 300, img: tree2Img },
 
-	{ x: 4450, y: 5, width: 250, height: 300, img: tree2Img },
-	{ x: 4560, y: 5, width: 250, height: 300, img: tree2Img },
-	{ x: 4570, y: 5, width: 250, height: 300, img: tree2Img },
-	{ x: 4680, y: 5, width: 250, height: 300, img: tree2Img },
-	{ x: 4790, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 4450, y: 105, width: 250, height: 300, img: tree2Img },
+	{ x: 4560, y: 105, width: 250, height: 300, img: tree2Img },
+	{ x: 4570, y: 105, width: 250, height: 300, img: tree2Img },
+	{ x: 4680, y: 105, width: 250, height: 300, img: tree2Img },
+	{ x: 4790, y: 105, width: 250, height: 300, img: tree2Img },
 
-	{ x: 5450, y: 5, width: 250, height: 300, img: tree2Img },
-	{ x: 5560, y: 5, width: 250, height: 300, img: tree2Img },
-	{ x: 5570, y: 5, width: 250, height: 300, img: tree2Img },
-	{ x: 5680, y: 5, width: 250, height: 300, img: tree2Img },
-	{ x: 5790, y: 5, width: 250, height: 300, img: tree2Img },
+	{ x: 5450, y: 105, width: 250, height: 300, img: tree2Img },
+	{ x: 5560, y: 105, width: 250, height: 300, img: tree2Img },
+	{ x: 5570, y: 105, width: 250, height: 300, img: tree2Img },
+	{ x: 5680, y: 105, width: 250, height: 300, img: tree2Img },
+	{ x: 5790, y: 105, width: 250, height: 300, img: tree2Img },
 ];
 
 const foregroundObjects = [
 
-        { x: 400, y: 260, width: 50, height: 50, img: fence_01Img },
-        { x: 450, y: 260, width: 50, height: 50, img: fence_02Img },
-        { x: 500, y: 260, width: 50, height: 50, img: fence_03Img },
+        { x: 400, y: 360, width: 50, height: 50, img: fence_01Img },
+        { x: 450, y: 360, width: 50, height: 50, img: fence_02Img },
+        { x: 500, y: 360, width: 50, height: 50, img: fence_03Img },
 	
-	{ x: 1220, y: 250, width: 50, height: 50, img: tree11Img },
+	    { x: 1220, y: 350, width: 50, height: 50, img: tree11Img },
 	
-	{ x: 3060, y: 5, width: 300, height: 300, img: tree3Img },
-	{ x: 3220, y: 5, width: 300, height: 300, img: tree3Img },
-	{ x: 3560, y: 5, width: 300, height: 300, img: tree3Img },
-	{ x: 3720, y: 5, width: 300, height: 300, img: tree3Img },
+	{ x: 3060, y: 105, width: 300, height: 300, img: tree3Img },
+	{ x: 3220, y: 105, width: 300, height: 300, img: tree3Img },
+	{ x: 3560, y: 105, width: 300, height: 300, img: tree3Img },
+	{ x: 3720, y: 105, width: 300, height: 300, img: tree3Img },
 
-	{ x: 4060, y: 5, width: 300, height: 300, img: tree3Img },
-	{ x: 4220, y: 5, width: 300, height: 300, img: tree3Img },
-	{ x: 4560, y: 5, width: 300, height: 300, img: tree3Img },
-	{ x: 4720, y: 5, width: 300, height: 300, img: tree3Img },
+	{ x: 4060, y: 105, width: 300, height: 300, img: tree3Img },
+	{ x: 4220, y: 105, width: 300, height: 300, img: tree3Img },
+	{ x: 4560, y: 105, width: 300, height: 300, img: tree3Img },
+	{ x: 4720, y: 105, width: 300, height: 300, img: tree3Img },
 
-	{ x: 5060, y: 5, width: 300, height: 300, img: tree3Img },
-	{ x: 5220, y: 5, width: 300, height: 300, img: tree3Img },
-	{ x: 5560, y: 5, width: 300, height: 300, img: tree3Img },
-	{ x: 5720, y: 5, width: 300, height: 300, img: tree3Img },
+	{ x: 5060, y: 105, width: 300, height: 300, img: tree3Img },
+	{ x: 5220, y: 105, width: 300, height: 300, img: tree3Img },
+	{ x: 5560, y: 105, width: 300, height: 300, img: tree3Img },
+	{ x: 5720, y: 105, width: 300, height: 300, img: tree3Img },
 ];
 
 // --- NPCs ---
 const oxNpc = {
-    x: 120, y: 210, width: 115, height: 115, imgIdle: new Image(),
+    x: 120, y: 310, width: 115, height: 115, imgIdle: new Image(),
     idleFrames: 4, currentFrame: 0, frameTimer: 0, frameInterval: 20,
     phrases: ["Muuu!"], dialogueIndex: 0, dialogueTimer: 0
 };
 oxNpc.imgIdle.src = 'assets/Animals/Without_shadow/Bull_Idle.png';
 
 const satyrNpc = {
-    x: 300, y: 190, width: 120, height: 120, imgIdle: new Image(),
+    x: 300, y: 290, width: 120, height: 120, imgIdle: new Image(),
     idleFrames: 6, currentFrame: 0, frameTimer: 0, frameInterval: 16,
     phrases: [
 "Que bom que você chegou!", 
@@ -399,15 +394,10 @@ function update(){
         else{ player.state='idle'; player.currentFrame=(player.currentFrame+1)%player.idleFrames;}
     }
 
-// --- DESLOCAMENTO VERTICAL DA CÂMERA ---
-let cameraYOffset = -100; // ajusta para subir ou descer a câmera
-	
 // --- CÂMERA DINÂMICA ---
 let targetX = (player.x + player.width / 2) - (canvas.width / 2) / zoom;
 let targetY = (player.y + player.height / 2) - (canvas.height / 2) / zoom;
 
-// aplica o deslocamento vertical
-targetY += cameraYOffset;
 // Suavização
 cameraX += (targetX - cameraX) * 0.1;
 cameraY += (targetY - cameraY) * 0.1;
@@ -688,6 +678,7 @@ window.addEventListener('keyup',(e)=>{
 
 const btnReset = document.getElementById('btn-reset');
 if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); window.resetGame(); }); }
+
 
 
 
