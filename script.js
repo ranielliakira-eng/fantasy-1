@@ -159,27 +159,17 @@ attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames:
 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
 
 3 },
-        { type: 'Red_Slime', x: 5000, y: 200, hp: 1, speed: 2.5, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
-        { type: 'Red_Slime', x: 5000, y: 207, hp: 1, speed: 2.5, attackRange: 
-
-30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 
-
-3 },
+        { type: 'Red_Slime', x: 5000, y: 200, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 5000, y: 207, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 4, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
    
         { 
             type: 'Enchantress',
             x: 6600, y: 100, hp: 3, speed: 2, attackRange: 60,
-            idleFrames: 8, walkFrames: 5, attackFrames: 6, hurtFrames: 2, 
-
-deadFrames: 5,
+            idleFrames: 8, walkFrames: 5, attackFrames: 6, hurtFrames: 2, deadFrames: 5,
             dialogue: "", dialogueTimer: 0,
-            phrases: { idle: ["O equilíbrio foi quebrado","A energia da terra 
-
-foi corrompida!"] }
+            phrases: { idle: [
+				"O equilíbrio foi quebrado","A energia da terra foi corrompida!"
+			] }
         }
     ];
 
@@ -842,3 +832,4 @@ const btnReset = document.getElementById('btn-reset');
 if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); 
 
 window.resetGame(); }); }
+
