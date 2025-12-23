@@ -169,7 +169,7 @@ platformImg.onload = () => {
 let keys = { left: false, right: false };
 
 const backgroundObjects = [
-    { x: 30, y: 300, width: 100, height: 100, img: Decor_CartImg },
+    { x: 30, y: 400, width: 100, height: 100, img: Decor_CartImg },
 	{ x: 270, y: 300, width: 250, height: 200, img: house1Img },
     { x: 600, y: 300, width: 100, height: 100, img: wellImg },
 
@@ -681,6 +681,7 @@ window.addEventListener('keyup',(e)=>{
 
 const btnReset = document.getElementById('btn-reset');
 if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); window.resetGame(); }); }
+
 
 
 
