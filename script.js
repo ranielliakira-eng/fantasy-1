@@ -353,31 +353,36 @@ function update(){
     if(player.dialogueTimer>0){ player.dialogueTimer--; if(player.dialogueTimer<=0) player.dialogue=""; }
 
 // ===== FÍSICA VERTICAL =====
+// 1. gravidade
 player.velY += gravity;
 player.velY = Math.min(player.velY, 20);
 
-let nextY = player.y + player.velY;
+// 2. assume que está no ar
 player.onGround = false;
 
+// 3. colisão ANTES de mover
 platforms.forEach(p => {
 
     if (p.type === 'sloped') return;
 
+    let nextY = player.y + player.velY;
+
     if (
-        player.velY >= 0 &&                 // caindo
+        player.velY >= 0 &&
         player.x + 40 < p.x + p.w &&
         player.x + 60 > p.x &&
-        player.y + player.height <= p.y &&  // estava acima
-        nextY + player.height >= p.y        // cruzou o topo
+        player.y + player.height <= p.y &&
+        nextY + player.height >= p.y
     ) {
-        nextY = p.y - player.height;
+        player.y = p.y - player.height;
         player.velY = 0;
         player.onGround = true;
     }
 });
 
-// aplica UMA vez
-player.y = nextY;
+// 4. move no final
+player.y += player.velY;
+
 
 
     if(player.onGround) player.canAirAttack=true;
@@ -689,6 +694,7 @@ window.addEventListener('keyup',(e)=>{
 
 const btnReset = document.getElementById('btn-reset');
 if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); window.resetGame(); }); }
+
 
 
 
