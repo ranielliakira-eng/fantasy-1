@@ -355,20 +355,35 @@ function update(){
     // COLISÃO PLATAFORMAS
     player.onGround=false;
 
-    platforms.forEach(p=>{
-        if (p.type === 'sloped') {
-        // Calcula Y do topo da plataforma naquela posição X do jogador (centro do jogador)
-        let topY = p.y + (player.x + player.width/2 - p.x) * p.slope;
-        if (player.x + player.width > p.x && player.x < p.x + p.w &&
-            player.y + player.height >= topY && player.y + player.height <= topY + 10) {
+platforms.forEach(p => {
+
+    let nextY = player.y + player.velY;
+
+    if (p.type === 'sloped') {
+
+        let topY = p.y + (player.x + player.width / 2 - p.x) * p.slope;
+
+        if (
+            player.velY > 0 &&
+            player.x + player.width > p.x &&
+            player.x < p.x + p.w &&
+            player.y + player.height <= topY &&
+            nextY + player.height >= topY
+        ) {
             player.y = topY - player.height;
             player.velY = 0;
             player.onGround = true;
         }
+
     } else {
-        // Plataforma normal
-        if (player.x + 40 < p.x + p.w && player.x + 60 > p.x &&
-            player.y + player.height >= p.y && player.y + player.height <= p.y + 10) {
+
+        if (
+            player.velY > 0 &&
+            player.x + 40 < p.x + p.w &&
+            player.x + 60 > p.x &&
+            player.y + player.height <= p.y &&
+            nextY + player.height >= p.y
+        ) {
             player.y = p.y - player.height;
             player.velY = 0;
             player.onGround = true;
@@ -685,6 +700,7 @@ window.addEventListener('keyup',(e)=>{
 
 const btnReset = document.getElementById('btn-reset');
 if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); window.resetGame(); }); }
+
 
 
 
