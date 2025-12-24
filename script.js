@@ -109,6 +109,9 @@ const platforms = [
 ];
 
 // --- Cenário ---
+const fundoImg = new Image();
+fundoImg.src = 'assets/fundo.png';
+
 const platformImg = new Image();
 platformImg.src = 'assets/Battleground/Battleground1/summer_0/Environment/Ground_11.png';
 
@@ -162,9 +165,10 @@ platformImg.onload = () => {
 let keys = { left: false, right: false };
 
 const backgroundObjects = [
-        { x: 30, y: 200, width: 100, height: 100, img: Decor_CartImg },
+                { x: 0, y: 0, width: 7000, height: 1000, img: fundoImg },
+                { x: 30, y: 200, width: 100, height: 100, img: Decor_CartImg },
 	{ x: 270, y: 100, width: 250, height: 200, img: house1Img },
-        { x: 600, y: 200, width: 100, height: 100, img: wellImg },
+                { x: 600, y: 200, width: 100, height: 100, img: wellImg },
 
 	{ x: 1000, y: 250, width: 50, height: 50, img: tree9Img },
 	{ x: 1110, y: 250, width: 50, height: 50, img: tree10Img },
