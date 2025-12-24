@@ -268,9 +268,20 @@ window.togglePause = function() { if (gameState !== 'playing') return; isPaused 
 window.toggleSom = function() { isMuted = !isMuted; bgMusic.muted = isMuted; const btn = document.getElementById('btn-audio'); if(btn) btn.innerText = isMuted ? "Mudo" : "Som"; };
 window.resetGame = function() {
     const screen = document.getElementById('game-over-screen'); 
-	if(screen) screen.style.display='none';
-    player.hp = player.maxHp; player.x = 200; player.y = 100; player.velX = 0; player.velY = 0; player.state='idle';
-    cameraX=0; isPaused=false; gameState='playing';
+    if(screen) screen.style.display='none';
+    
+    player.hp = player.maxHp; 
+    player.x = 200; 
+    player.y = 100; 
+    player.velX = 0; 
+    player.velY = 0; 
+    player.state = 'idle';
+    
+    cameraX = 0; 
+    isPaused = false; 
+    gameState = 'playing';
+    
+    boss = null; // <--- ADICIONE ISSO: Remove o boss atual para ele dar spawn de novo no gatilho
     initEnemies();
 };
 
