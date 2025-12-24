@@ -18,9 +18,11 @@ let gameState = 'menu';
 let isPaused = false;
 let isMuted = false;
 
+let boss = null;
+
 // --- JOGADOR ---
 const player = {
-    x: 100, y: 100, width: 100, height: 100,
+    x: 200, y: 200, width: 100, height: 100,
     velX: 0, velY: 0, speed: 5, jumpForce: -15,
     facing: 'right', onGround: false, state: 'idle',
     hp: 3, maxHp: 3, canAirAttack: true,
@@ -41,41 +43,14 @@ let enemies = [];
 function initEnemies() {
     enemies = [
         { type: 'Green_Slime', x: 800, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 850, y: 200, hp: 1, speed: 1.1, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 910, y: 200, hp: 1, speed: 1.0, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 905, y: 200, hp: 1, speed: 0.9, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 907, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 1050, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 1120, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         
         { type: 'Blue_Slime', x: 2995, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 3000, y: 200, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 3005, y: 200, hp: 1, speed: 1.6, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Blue_Slime', x: 3010, y: 200, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 3015, y: 200, hp: 1, speed: 1.5, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 3020, y: 200, hp: 1, speed: 1.9, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         
         { type: 'Red_Slime', x: 4000, y: 200, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Red_Slime', x: 4005, y: 200, hp: 1, speed: 2.4, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Red_Slime', x: 4010, y: 200, hp: 1, speed: 2.3, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Red_Slime', x: 4015, y: 200, hp: 1, speed: 2.1, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-
-        { type: 'Blue_Slime', x: 5000, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+                { type: 'Blue_Slime', x: 5000, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
         { type: 'Blue_Slime', x: 2495, y: 207, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 5005, y: 200, hp: 1, speed: 1.6, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 4995, y: 205, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 5000, y: 203, hp: 1, speed: 1.3, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Red_Slime', x: 5000, y: 200, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Red_Slime', x: 5000, y: 207, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-   
-        { type: 'Enchantress', x: 6500, y: 100, hp: 3, speed: 2, attackRange: 60, idleFrames: 8, walkFrames: 5, attackFrames: 6, hurtFrames: 2, deadFrames: 5, dialogue: "", dialogueTimer: 0,
-            phrases: { idle: [
-		"O equilíbrio foi quebrado",
-		"A energia da terra foi corrompida!",
-			     ]
-		     }
-        }
-    ];
+        
+       ];
 
     enemies.forEach(en => {
         en.imgIdle = new Image(); en.imgIdle.src = `assets/${en.type}/Idle.png`;
@@ -308,38 +283,45 @@ function npcSay(npc, index=0, duration=120){ npc.dialogueIndex=index; npc.dialog
 function updateNPCs(){ npcs.forEach(n=>{ if(n.dialogueTimer>0)n.dialogueTimer--; else{ n.dialogueIndex=Math.floor(Math.random()*n.phrases.length); n.dialogueTimer=180+Math.floor(Math.random()*120);} n.frameTimer++; if(n.frameTimer>=n.frameInterval){ n.frameTimer=0; n.currentFrame=(n.currentFrame+1)%n.idleFrames; } }); }
 
 // HIT MELEE
-function checkMeleeHit(){
-    let alcance = player.width *-0.2;
+function checkMeleeHit() {
+    let alcance = player.width * -0.2;
     let hitboxX = player.facing === 'right' ? player.x + player.width : player.x - alcance;
 
+    // 1. Dano nos inimigos comuns
     enemies.forEach(en => {
-        if(en.state === 'dead') return;
+        if (en.state === 'dead') return;
+        let hitY = en.y + (en.height * 0.3);
+        let hitHeight = en.height * 0.7;
 
-        // Ajuste do hitbox vertical
-        let hitY = en.y + (en.height * 0.3); // começa 30% de baixo do topo
-        let hitHeight = en.height * 0.7;     // atinge 70% da altura
-
-        if(
-            hitboxX < en.x + en.width &&
-            hitboxX + alcance > en.x &&
-            player.y < hitY + hitHeight &&
-            player.y + player.height > hitY
-        ){
+        if (hitboxX < en.x + en.width && hitboxX + alcance > en.x &&
+            player.y < hitY + hitHeight && player.y + player.height > hitY) {
             en.hp--;
-            if(en.type !== 'Enchantress'){
-                en.state = 'hurt';
-                en.currentFrame = 0;
-                en.frameTimer = 0;
-            }
-            if(en.hp <= 0){
-                en.state = 'dead';
-                en.dialogue = "";
-                en.dialogueTimer = 0;
-                en.currentFrame = 0;
-                en.frameTimer = 0;
-            }
+            en.state = 'hurt';
+            en.currentFrame = 0;
+            if (en.hp <= 0) en.state = 'dead';
         }
     });
+
+    // 2. NOVA: Dano no Boss
+    if (boss && boss.state !== 'dead') {
+        // Como o Boss é maior (200px), a detecção precisa ser generosa
+        if (hitboxX < boss.x + boss.width && hitboxX + alcance > boss.x &&
+            player.y < boss.y + boss.height && player.y + player.height > boss.y) {
+            
+            boss.hp--;
+            boss.state = 'hurt';
+            boss.currentFrame = 0;
+            boss.frameTimer = 0;
+
+            if (boss.hp <= 0) {
+                boss.state = 'dead';
+                boss.currentFrame = 0;
+                // Opcional: O Boss diz algo ao morrer
+                boss.dialogue = "Impossível...";
+                boss.dialogueTimer = 180;
+            }
+        }
+    }
 }
 
 // --- UPDATE ---
@@ -439,15 +421,11 @@ cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width / zoom));
 cameraY = Math.max(0, Math.min(cameraY, mapHeight - canvas.height / zoom));
 
 
-    // INIMIGOS
+// INIMIGOS
     enemies.forEach(en=>{
         if(en.patrolMinX===undefined){ en.patrolMinX=en.x-120; en.patrolMaxX=en.x+120;}
         if(en.facing===undefined) en.facing='left';
         let dist=Math.abs(player.x-en.x);
-
-        if(en.type==='Enchantress' && en.state!=='dead' && dist<200 && en.dialogueTimer<=0){
-            en.dialogue=en.phrases.idle[0]; en.dialogueTimer=180;
-        }
 
         en.velY+=gravity; en.y+=en.velY; en.onGround=false;
 
@@ -459,69 +437,115 @@ cameraY = Math.max(0, Math.min(cameraY, mapHeight - canvas.height / zoom));
 
         if(en.type==='Blue_Slime' && en.onGround){ en.jumpCooldown--; if(en.jumpCooldown<=0){ en.velY=-12; en.onGround=false; en.jumpCooldown=en.jumpInterval; } }
 
-        if(en.state==='hurt'){ en.frameTimer++; if(en.frameTimer>=30){ en.state='patrol'; en.frameTimer=0; en.currentFrame=0;} }
-        else if(en.state==='patrol'){ if(en.facing==='left'){ en.x-=en.speed; if(en.x<=en.patrolMinX) en.facing='right'; } else{ en.x+=en.speed; if(en.x>=en.patrolMaxX) en.facing='left'; } if(dist<100) en.state='chase'; }
-		else if(en.state==='chase'){ 
-			const minDist = 30; 
-			if(dist > minDist) { 
-				if(player.x < en.x){ 
-            		en.x -= en.speed*1.2; 
-            		en.facing='left'; 
-        		} 
-				else { 
-            		en.x += en.speed*1.2; 
-            		en.facing='right'; 
+// --- LÓGICA DE ESTADOS ---
+        if(en.state === 'hurt') {
+            en.frameTimer++;
+            if(en.frameTimer >= 30) { 
+                en.state = 'patrol'; 
+                en.frameTimer = 0; 
+                en.currentFrame = 0;
+            }
+        } 
+        else if(en.state === 'patrol') {
+            if(en.facing === 'left') {
+                en.x -= en.speed; 
+                if(en.x <= en.patrolMinX) en.facing = 'right'; 
+            } else {
+                en.x += en.speed; 
+                if(en.x >= en.patrolMaxX) en.facing = 'left'; 
+            }
+            if(dist < 100) en.state = 'chase';
         }
-    }
-    if(dist <= en.attackRange && en.attackCooldown<=0){ 
-        en.state='attacking'; 
-        en.currentFrame=0; 
-    } 
-    if(dist > 150) en.state='patrol'; 
-}        
-else if(en.state==='attacking'){ const attackFrame=2; en.frameTimer++; if(en.frameTimer>=en.frameInterval){ en.frameTimer=0; en.currentFrame++; if(en.currentFrame===attackFrame && dist<=en.attackRange){ player.hp-=1; en.attackCooldown=80;} if(en.currentFrame>=en.attackFrames){ en.currentFrame=0; en.state='chase'; } } }
-
-        else if(en.state==='attacking'){ 
-    const attackFrame = 5; // frame que o ataque realmente acerta
-    en.frameTimer++; 
-    if(en.frameTimer >= en.frameInterval){ 
-        en.frameTimer = 0; 
-        en.currentFrame++;
-
-        // dano só no frame do ataque e com hitbox
-        if(en.currentFrame === attackFrame){ 
-            let hitX = en.facing === 'right' ? en.x + en.width : en.x - en.attackRange;
-            if(player.x + player.width > hitX && player.x < hitX + en.attackRange &&
-               player.y + player.height > en.y && player.y < en.y + en.height) {
-                player.hp -= 1;
-                en.attackCooldown = 80;
+        else if(en.state === 'chase') { 
+            const minDist = 30; 
+            if(dist > minDist) { 
+                if(player.x < en.x) { en.x -= en.speed * 1.2; en.facing = 'left'; } 
+                else { en.x += en.speed * 1.2; en.facing = 'right'; }
+            }
+            if(dist <= en.attackRange && en.attackCooldown <= 0) { 
+                en.state = 'attacking'; 
+                en.currentFrame = 0; 
+                en.frameTimer = 0;
+            } 
+            if(dist > 150) en.state = 'patrol'; 
+        }        
+        else if(en.state === 'attacking') {
+            const attackFrame = 2; // Frame do Slime que causa dano
+            en.frameTimer++;
+            if(en.frameTimer >= en.frameInterval) {
+                en.frameTimer = 0;
+                en.currentFrame++;
+                
+                // Aplica o dano no frame correto
+                if(en.currentFrame === attackFrame && dist <= en.attackRange) {
+                    player.hp -= 1;
+                    en.attackCooldown = 80;
+                }
+                
+                // Volta a perseguir após o ataque
+                if(en.currentFrame >= en.attackFrames) {
+                    en.currentFrame = 0;
+                    en.state = 'chase';
+                }
             }
         }
 
-        // final da animação de ataque
-        if(en.currentFrame >= en.attackFrames){ 
-            en.currentFrame = 0; 
-            en.state = 'chase'; 
-        } 
-    } 
-}
+        // Cooldown e Animação Geral (fora dos estados)
+        if(en.attackCooldown > 0) en.attackCooldown--;
 
-// cooldown do ataque
-if(en.attackCooldown > 0) en.attackCooldown--;
-
-// animação geral
-en.frameTimer++; 
-if(en.frameTimer >= en.frameInterval){ 
-    let totalF = (en.state === 'attacking') ? en.attackFrames : en.walkFrames; 
-    en.currentFrame = (en.currentFrame + 1) % totalF; 
-    en.frameTimer = 0; 
-}
-});
+        // Atualiza a animação para estados que não são 'attacking' (que já tem sua lógica acima)
+        if(en.state !== 'attacking' && en.state !== 'dead') {
+            en.frameTimer++;
+            if(en.frameTimer >= en.frameInterval) {
+                let totalF = (en.state === 'patrol' || en.state === 'chase') ? en.walkFrames : en.idleFrames;
+                en.currentFrame = (en.currentFrame + 1) % totalF;
+                en.frameTimer = 0;
+            }
+        }
+    }); // Fim do forEach
 
     // PLAYER DIALOG
     playerDialogTriggers.forEach(trigger=>{
         if(!trigger.used && player.x>trigger.x){ playerSay(trigger.text,180); trigger.used=true;}
     });
+// Gatilho para o Boss (Aparece no X: 6500)
+if (player.x > 6500 && !boss) {
+    boss = {
+        type: 'Boss',
+        x: 6800, // Ele aparece um pouco à frente
+        y: 100, 
+        width: 100, height: 100, // Boss é maior!
+        hp: 10, maxHp: 10,
+        speed: 2,
+        state: 'idle',
+        facing: 'left',
+        damage: 1,
+        attackRange: 60,
+        attackCooldown: 0,
+        currentFrame: 0,
+        frameTimer: 0,
+        frameInterval: 8,
+
+        idleFrames: 5, walkFrames: 8, attackFrames: 6, hurtFrames: 2, deadFrames: 5,
+        
+        // Imagens (Generalizado: você só precisa garantir que as pastas existam)
+        imgIdle: new Image(), imgWalk: new Image(), imgAttack: new Image(), 
+        imgHurt: new Image(), imgDead: new Image()
+    };
+    
+    // Carregamento automático das imagens (ajuste a pasta conforme seu assets)
+    const folder = 'assets/Enchantress'; 
+    boss.imgIdle.src = `${folder}/Idle.png`;
+    boss.imgWalk.src = `${folder}/Walk.png`;
+    boss.imgAttack.src = `${folder}/Attack_1.png`;
+    boss.imgHurt.src = `${folder}/Hurt.png`;
+    boss.imgDead.src = `${folder}/Dead.png`;
+}
+
+// Se o Boss existir, rodar a lógica dele
+if (boss) {
+    updateBossLogic(); 
+}
 }
 
 
@@ -532,181 +556,254 @@ function draw() {
 
     // 2. DEPOIS: Desenhamos o mundo (Câmera)
     ctx.save();
-ctx.setTransform(
-    zoom, 0, 0, zoom,
-    -Math.floor(cameraX * zoom),
-    -Math.floor(cameraY * zoom)
-);
+    ctx.setTransform(
+        zoom, 0, 0, zoom,
+        -Math.floor(cameraX * zoom),
+        -Math.floor(cameraY * zoom)
+    );
 
-
-    // 3. Plataformas
-
+    // Background
     backgroundObjects.forEach(d => {
-	if (d.img.complete) {
-	    ctx.drawImage(d.img, d.x, d.y, d.width, d.height);
-  	}
+        if (d.img.complete) ctx.drawImage(d.img, d.x, d.y, d.width, d.height);
     });
 
-platforms.forEach(p => {
-    ctx.save();
-    if (p.alpha !== undefined) ctx.globalAlpha = p.alpha;
-
-    if (p.type === 'stretch') {
-        ctx.drawImage(platformImg, p.x, p.y, p.w, p.h);
-    } else if (p.type === 'pattern') {
-        if (platformPattern) {
-            ctx.translate(p.x, p.y);
-            ctx.fillStyle = platformPattern;
-            ctx.fillRect(0, 0, p.w, p.h);
+    // Plataformas
+    platforms.forEach(p => {
+        ctx.save();
+        if (p.alpha !== undefined) ctx.globalAlpha = p.alpha;
+        if (p.type === 'stretch') {
+            ctx.drawImage(platformImg, p.x, p.y, p.w, p.h);
+        } else if (p.type === 'pattern') {
+            if (platformPattern) {
+                ctx.translate(p.x, p.y);
+                ctx.fillStyle = platformPattern;
+                ctx.fillRect(0, 0, p.w, p.h);
+            }
+        } else if (p.type === 'sloped') {
+            ctx.fillStyle = "brown";
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p.x + p.w, p.y + p.w * p.slope);
+            ctx.lineTo(p.x + p.w, p.y + p.w * p.slope + p.h);
+            ctx.lineTo(p.x, p.y + p.h);
+            ctx.closePath();
+            ctx.fill();
         }
-    } else if (p.type === 'sloped') {
-        ctx.fillStyle = "brown";
-        ctx.beginPath();
-        ctx.moveTo(p.x, p.y);
-        ctx.lineTo(p.x + p.w, p.y + p.w * p.slope);
-        ctx.lineTo(p.x + p.w, p.y + p.w * p.slope + p.h);
-        ctx.lineTo(p.x, p.y + p.h);
-        ctx.closePath();
-        ctx.fill();
-    }
+        ctx.restore();
+    });
 
-    ctx.restore(); // só aqui
-});
+    // Entidades (Inimigos, Player e Boss)
+    const allEntities = [...enemies, player];
+    if (boss) allEntities.push(boss);
 
-    [...enemies, player].forEach(obj => {
+    allEntities.forEach(obj => {
         let img = obj.imgIdle;
         let totalF = obj.idleFrames || 8;
         if (obj.state === 'walking') { img = obj.imgWalk; totalF = obj.walkFrames; }
         else if (obj.state === 'attacking') { img = obj.imgAttack; totalF = obj.attackFrames; }
         else if (obj.state === 'jumping') { img = obj.imgJump; totalF = obj.jumpFrames || 8; }
-        else if (obj.state === 'hurt') { img = obj.imgHurt; totalF = (obj.type === 'Enchantress' ? 2 : obj.hurtFrames); }
+        else if (obj.state === 'hurt') { img = obj.imgHurt; totalF = obj.hurtFrames; }
         else if (obj.state === 'dead') { img = obj.imgDead; totalF = obj.deadFrames; }
 
         if (img.complete && img.width > 0) {
             const fw = img.width / totalF;
             const fh = img.height;
-            let dH = obj.height, dY = obj.y;
-
-            if (obj.type === 'Enchantress' && obj.state === 'hurt') {
-                dH = obj.height * 1.5; dY = obj.y - (obj.height * 0.5);
-            }
-
             ctx.save();
-
             if (obj.facing === 'left') {
-                ctx.translate(obj.x + obj.width, dY); ctx.scale(-1, 1);
-                ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, 0, 0, obj.width, dH);
+                ctx.translate(obj.x + obj.width, obj.y); ctx.scale(-1, 1);
+                ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, 0, 0, obj.width, obj.height);
             } else {
-                ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, obj.x, dY, obj.width, dH);
+                ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, obj.x, obj.y, obj.width, obj.height);
             }
             ctx.restore();
 
-            // DESENHO DO BALÃO DE FALA
-if (obj.state !== 'dead' && obj.dialogue && obj.dialogueTimer > 0) {
-    ctx.font = "bold 16px Arial";
-    ctx.textAlign = "center";
-
-    let textWidth = ctx.measureText(obj.dialogue).width;
-
-    ctx.fillStyle = "white";
-    ctx.fillRect(
-        obj.x + obj.width / 2 - textWidth / 2 - 5,
-        obj.y - 35,
-        textWidth + 10,
-        20
-    );
-
-    ctx.strokeStyle = "black";
-    ctx.strokeRect(
-        obj.x + obj.width / 2 - textWidth / 2 - 5,
-        obj.y - 35,
-        textWidth + 10,
-        20
-    );
-
-    ctx.fillStyle = "black";
-    ctx.fillText(
-        obj.dialogue,
-        obj.x + obj.width / 2,
-        obj.y - 20
-    );
-}
+            // Balão de fala das entidades
+            if (obj.state !== 'dead' && obj.dialogue && obj.dialogueTimer > 0) {
+                ctx.font = "bold 16px Arial"; ctx.textAlign = "center";
+                let textWidth = ctx.measureText(obj.dialogue).width;
+                ctx.fillStyle = "white"; ctx.fillRect(obj.x + obj.width / 2 - textWidth / 2 - 5, obj.y - 35, textWidth + 10, 20);
+                ctx.strokeStyle = "black"; ctx.strokeRect(obj.x + obj.width / 2 - textWidth / 2 - 5, obj.y - 35, textWidth + 10, 20);
+                ctx.fillStyle = "black"; ctx.fillText(obj.dialogue, obj.x + obj.width / 2, obj.y - 20);
+            }
         }
     });
 
-	npcs.forEach(n => {
-    if (!n.imgIdle.complete) return;
+    // NPCs
+    npcs.forEach(n => {
+        if (!n.imgIdle.complete) return;
+        const fw = n.imgIdle.width / n.idleFrames;
+        const fh = n.imgIdle.height;
+        ctx.drawImage(n.imgIdle, n.currentFrame * fw, 0, fw, fh, n.x, n.y, n.width, n.height);
+        if (n.dialogueTimer > 0) {
+            const text = n.phrases[n.dialogueIndex];
+            ctx.font = "bold 14px Arial"; ctx.textAlign = "center";
+            const textWidth = ctx.measureText(text).width;
+            ctx.fillStyle = "white"; ctx.fillRect(n.x + n.width/2 - textWidth/2 - 5, n.y - 25, textWidth + 10, 20);
+            ctx.fillStyle = "black"; ctx.fillText(text, n.x + n.width/2, n.y - 10);
+        }
+    });
 
-    // Sombra
-    ctx.fillStyle = "rgba(0,0,0,0.3)";
-    ctx.beginPath();
-    ctx.ellipse(n.x + n.width/2, n.y + n.height, n.width/2, 10, 0, 0, Math.PI*2);
-    ctx.fill();
+    // Foreground
+    foregroundObjects.forEach(d => {
+        if (d.img.complete) ctx.drawImage(d.img, d.x, d.y, d.width, d.height);
+    });
 
-    // Sprite Idle
-    const fw = n.imgIdle.width / n.idleFrames;
-    const fh = n.imgIdle.height;
-    ctx.drawImage(n.imgIdle, n.currentFrame * fw, 0, fw, fh, n.x, n.y, n.width, n.height);
+    ctx.restore(); // Fecha Câmera
 
-    // Balão de fala
-    if (n.dialogueTimer > 0) {
-        const text = n.phrases[n.dialogueIndex];
-        ctx.font = "bold 14px Arial";
-        ctx.textAlign = "center";
-        const textWidth = ctx.measureText(text).width;
-        ctx.fillStyle = "white";
-        ctx.fillRect(n.x + n.width/2 - textWidth/2 - 5, n.y - 25, textWidth + 10, 20);
-        ctx.strokeStyle = "black";
-        ctx.strokeRect(n.x + n.width/2 - textWidth/2 - 5, n.y - 25, textWidth + 10, 20);
-        ctx.fillStyle = "black";
-        ctx.fillText(text, n.x + n.width/2, n.y - 10);
-    }
-});
-
-foregroundObjects.forEach(d => {
-  if (d.img.complete) {
-    ctx.drawImage(d.img, d.x, d.y, d.width, d.height);
-  }
-});
-
-    ctx.restore(); // Fecha a câmera
-
-    // 3. BARRA DE VIDA
+    // 3. UI (Fixo na tela)
     if (gameState === 'playing') {
+        // Vida Player
         ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(20, 20, 150, 15);
         ctx.fillStyle = "red"; ctx.fillRect(20, 20, (player.hp / player.maxHp) * 150, 15);
-    }
 
-    // 4. POR ÚLTIMO: TELA DE VITÓRIA (Fica por cima de tudo)
-    const boss = enemies.find(en => en.type === 'Enchantress');
-    // Se ela estiver morta ou com 0 de HP, a tela aparece
-    if (boss && boss.state === 'dead') {
-    const screen = document.getElementById('game-over-screen');
-    if (screen && screen.style.display !== 'flex') {
-        screen.style.display = 'flex'; // Aqui o JS apenas "liga" a tela HTML
+        // Vida Boss
+        if (boss && boss.hp > 0) {
+            ctx.fillStyle = "rgba(0,0,0,0.7)"; ctx.fillRect(canvas.width/2 - 200, 40, 400, 20);
+            ctx.fillStyle = "purple"; ctx.fillRect(canvas.width/2 - 200, 40, (boss.hp / boss.maxHp) * 400, 20);
+            ctx.strokeStyle = "white"; ctx.strokeRect(canvas.width/2 - 200, 40, 400, 20);
+            ctx.fillStyle = "white"; ctx.font = "bold 14px Arial"; ctx.textAlign = "center";
+            ctx.fillText("ENCHANTRESS", canvas.width/2, 35);
         }
     }
-}
+
+// --- 4. TELAS FINAIS ---
+    const screen = document.getElementById('game-over-screen');
+    const title = screen ? screen.querySelector('h1') : null;
+    const subtitle = screen ? screen.querySelector('p') : null; // Captura o parágrafo (subtítulo)
+
+    if (screen) {
+        // CASO A: DERROTA (Player morreu)
+        if (player.hp <= 0 || player.state === 'dead') {
+            screen.style.display = 'flex';
+            screen.style.backgroundColor = "rgba(139, 0, 0, 0.8)"; // Vermelho escuro
+            
+            if (title) title.innerText = "VOCÊ CAIU...";
+            if (subtitle) subtitle.innerText = "Aperte JOGAR para voltar para o início";
+        } 
+        
+        // CASO B: VITÓRIA (Boss morreu)
+        else if (boss && boss.state === 'dead' && boss.hp <= 0) {
+            if (screen.style.display !== 'flex') {
+                screen.style.display = 'flex';
+                screen.style.backgroundColor = "rgba(0, 0, 0, 0.8)"; // Verde escuro
+                
+                if (title) title.innerHTML = "Você derrubou <br>  Enchantress";
+                if (subtitle) subtitle.innerHTML = "Mas o desequilíbrio permanece... <br>Algo pior espreita nas sombras.";
+            }
+        }
+    }
+} // FIM DA FUNÇÃO DRAW
+
+// --- OUTRAS FUNÇÕES ---
 function enemySay(en, type) {
     const list = en.phrases[type];
     en.dialogue = list[Math.floor(Math.random() * list.length)];
-    en.dialogueTimer = 120; // O balão fica por 2 segundos (60 frames por seg)
+    en.dialogueTimer = 120;
 }
 
- 
+function updateBossLogic() {
+    if (!boss) return;
 
-// --- GAME LOOP ---
-function gameLoop(){ update(); draw(); requestAnimationFrame(gameLoop);}
+    // 1. ESTADO DE MORTE
+    if (boss.state === 'dead') {
+        boss.frameTimer++;
+        if (boss.frameTimer >= boss.frameInterval) {
+            boss.frameTimer = 0;
+            if (boss.currentFrame < boss.deadFrames - 1) {
+                boss.currentFrame++;
+            }
+        }
+        return; 
+    }
+
+    // 2. GRAVIDADE E CHÃO
+    boss.velY = (boss.velY || 0) + gravity;
+    boss.y += boss.velY;
+
+    if (boss.y + boss.height > 300) {
+        boss.y = 300 - boss.height;
+        boss.velY = 0;
+    }
+
+    // 3. LÓGICA DE ANIMAÇÃO E DANO
+    boss.frameTimer++;
+    if (boss.frameTimer >= boss.frameInterval) {
+        boss.frameTimer = 0;
+        
+        // Define o máximo de frames do estado atual
+        let maxFrames = 1;
+        if (boss.state === 'idle') maxFrames = boss.idleFrames;
+        else if (boss.state === 'walking') maxFrames = boss.walkFrames;
+        else if (boss.state === 'attacking') maxFrames = boss.attackFrames;
+        else if (boss.state === 'hurt') maxFrames = boss.hurtFrames;
+
+        boss.currentFrame++;
+
+        // VERIFICAÇÃO DE DANO (No frame 3 do ataque)
+        if (boss.state === 'attacking' && boss.currentFrame === 3) {
+            let dist = Math.abs((player.x + player.width/2) - (boss.x + boss.width/2));
+            if (dist < (boss.attackRange || 100) && player.hp > 0) {
+                player.hp -= (boss.damage || 2);
+                player.state = 'hurt';
+                player.currentFrame = 0;
+                // Knockback no player
+                player.x += (player.x < boss.x) ? -40 : 40;
+                console.log("Player atingido! HP:", player.hp);
+            }
+        }
+
+        // RESET DE ESTADOS APÓS ANIMAÇÃO
+        if (boss.state === 'hurt' && boss.currentFrame >= maxFrames) {
+            boss.state = 'idle';
+            boss.currentFrame = 0;
+        }
+
+        if (boss.state === 'attacking' && boss.currentFrame >= maxFrames) {
+            boss.state = 'idle';
+            boss.currentFrame = 0;
+            boss.attackCooldown = 100;
+        }
+
+        if (boss.state === 'idle' || boss.state === 'walking') {
+            if (boss.currentFrame >= maxFrames) {
+                boss.currentFrame = 0;
+            }
+        }
+    } // FIM DO BLOCO DE ANIMAÇÃO
+
+    // 4. IA DO BOSS (MOVIMENTO E DECISÃO)
+    // Só age se não estiver em animação de dano ou ataque
+    if (boss.state !== 'hurt' && boss.state !== 'attacking') {
+        let dist = Math.abs(player.x - boss.x);
+        boss.facing = (player.x < boss.x) ? 'left' : 'right';
+
+        if (dist > (boss.attackRange || 100)) {
+            boss.state = 'walking';
+            boss.x += (player.x < boss.x) ? -boss.speed : boss.speed;
+        } else {
+            if ((boss.attackCooldown || 0) <= 0) {
+                boss.state = 'attacking';
+                boss.currentFrame = 0;
+            } else {
+                boss.state = 'idle';
+            }
+        }
+    }
+
+    // 5. REDUÇÃO DE COOLDOWN
+    if (boss.attackCooldown > 0) boss.attackCooldown--;
+}
+
+function gameLoop(){ update(); draw(); requestAnimationFrame(gameLoop); }
 gameLoop();
 
-// --- CONTROLES ---
 window.addEventListener('keydown',(e)=>{
     const k=e.key.toLowerCase();
     if(k==='a') window.mover('left',true);
     if(k==='d') window.mover('right',true);
     if(k==='w'||k===' ') window.pular();
     if(k==='k') window.atacar();
-    if(k==='r'){ const boss = enemies.find(en=>en.type==='Enchantress'); if(player.state==='dead'||(boss&&boss.state==='dead')) window.resetGame(); }
+    if(k==='r'){ if(player.state==='dead') window.resetGame(); }
 });
 window.addEventListener('keyup',(e)=>{
     const k=e.key.toLowerCase();
@@ -716,5 +813,3 @@ window.addEventListener('keyup',(e)=>{
 
 const btnReset = document.getElementById('btn-reset');
 if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); window.resetGame(); }); }
-
-
