@@ -11,7 +11,7 @@ bgMusic.volume = 0.5;
 const gravity = 0.8;
 const zoom = 2; 
 const mapWidth = 7000;
-const mapHeight = 2000;
+const mapHeight = 450;
 let cameraX = 0;
 let cameraY = 0;
 let gameState = 'menu';
@@ -43,13 +43,34 @@ let enemies = [];
 function initEnemies() {
     enemies = [
         { type: 'Green_Slime', x: 800, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        
-        { type: 'Blue_Slime', x: 2995, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Green_Slime', x: 1000, y: 200, hp: 1, speed: 1.3, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 1200, y: 200, hp: 1, speed: 1.4, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 1300, y: 200, hp: 1, speed: 1.5, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 1400, y: 200, hp: 1, speed: 1.5, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 1500, y: 200, hp: 1, speed: 1.4, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 1250, y: 200, hp: 1, speed: 1.3, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 1450, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+       
+        { type: 'Blue_Slime', x: 2980, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 3000, y: 200, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 3025, y: 200, hp: 1, speed: 1.6, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 3100, y: 200, hp: 1, speed: 1.6, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 3125, y: 200, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 3150, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
         
         { type: 'Red_Slime', x: 4000, y: 200, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-                { type: 'Blue_Slime', x: 5000, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 2495, y: 207, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        
+        { type: 'Red_Slime', x: 4050, y: 200, hp: 1, speed: 2.4, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 4100, y: 200, hp: 1, speed: 2.2, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 4200, y: 200, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+
+        { type: 'Green_Slime', x: 5000, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 5100, y: 200, hp: 1, speed: 1.2, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+         	
+        { type: 'Blue_Slime', x: 5000, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 5125, y: 207, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+
+        { type: 'Red_Slime', x: 5000, y: 200, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 5150, y: 200, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
        ];
 
     enemies.forEach(en => {
@@ -512,7 +533,7 @@ cameraY = Math.max(0, Math.min(cameraY, mapHeight - canvas.height / zoom));
 if (player.x > 6500 && !boss) {
     boss = {
         type: 'Boss',
-        x: 6800, // Ele aparece um pouco à frente
+        x: 6700, // Ele aparece um pouco à frente
         y: 100, 
         width: 100, height: 100, // Boss é maior!
         hp: 10, maxHp: 10,
@@ -524,7 +545,8 @@ if (player.x > 6500 && !boss) {
         attackCooldown: 0,
         currentFrame: 0,
         frameTimer: 0,
-        frameInterval: 8,
+        frameInterval: 8,fala: "",
+        falaTimer: 0,
 
         idleFrames: 5, walkFrames: 8, attackFrames: 6, hurtFrames: 2, deadFrames: 5,
         
@@ -548,6 +570,10 @@ if (boss) {
 }
 }
 
+function bossDiz(texto, tempo = 120) {
+boss.dialogue = texto; // Use 'dialogue' em vez de 'fala'
+    boss.dialogueTimer = tempo;
+}
 
 function draw() {
     // 1. PRIMEIRO: Limpamos a tela
@@ -692,6 +718,24 @@ function draw() {
             }
         }
     }
+if (boss && boss.falaTimer > 0) {
+    ctx.save();
+    ctx.font = "italic bold 16px 'Segoe UI', Arial";
+    
+    // Mede a largura do texto para centralizar o balão
+    let textWidth = ctx.measureText(boss.fala).width;
+    let bx = boss.x - cameraX + (boss.width / 2) - (textWidth / 2);
+    let by = boss.y - 30; // Posição acima da cabeça
+
+    // Fundo do balão (Sombra/Preto)
+    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+    ctx.fillRect(bx - 10, by - 20, textWidth + 20, 30);
+    
+    // Texto da fala
+    ctx.fillStyle = "#dfa9ff"; // Roxo claro/mágico
+    ctx.fillText(boss.fala, bx, by);
+    ctx.restore();
+}
 } // FIM DA FUNÇÃO DRAW
 
 // --- OUTRAS FUNÇÕES ---
@@ -701,8 +745,11 @@ function enemySay(en, type) {
     en.dialogueTimer = 120;
 }
 
+// --- LÓGICA DO BOSS (ENCHANTRESS) ---
 function updateBossLogic() {
     if (!boss) return;
+
+    let dist = Math.abs((player.x + player.width / 2) - (boss.x + boss.width / 2));
 
     // 1. ESTADO DE MORTE
     if (boss.state === 'dead') {
@@ -720,17 +767,19 @@ function updateBossLogic() {
     boss.velY = (boss.velY || 0) + gravity;
     boss.y += boss.velY;
 
+    // Colisão simples com o chão para o Boss
     if (boss.y + boss.height > 300) {
         boss.y = 300 - boss.height;
         boss.velY = 0;
     }
 
-    // 3. LÓGICA DE ANIMAÇÃO E DANO
+    // 3. ANIMAÇÃO E TIMERS
+    if (boss.falaTimer > 0) boss.falaTimer--;
+    
     boss.frameTimer++;
     if (boss.frameTimer >= boss.frameInterval) {
         boss.frameTimer = 0;
         
-        // Define o máximo de frames do estado atual
         let maxFrames = 1;
         if (boss.state === 'idle') maxFrames = boss.idleFrames;
         else if (boss.state === 'walking') maxFrames = boss.walkFrames;
@@ -741,75 +790,82 @@ function updateBossLogic() {
 
         // VERIFICAÇÃO DE DANO (No frame 3 do ataque)
         if (boss.state === 'attacking' && boss.currentFrame === 3) {
-            let dist = Math.abs((player.x + player.width/2) - (boss.x + boss.width/2));
             if (dist < (boss.attackRange || 100) && player.hp > 0) {
-                player.hp -= (boss.damage || 2);
+                player.hp -= (boss.damage || 1);
                 player.state = 'hurt';
                 player.currentFrame = 0;
-                // Knockback no player
+                // Knockback
                 player.x += (player.x < boss.x) ? -40 : 40;
-                console.log("Player atingido! HP:", player.hp);
             }
         }
 
-        // RESET DE ESTADOS APÓS ANIMAÇÃO
-        if (boss.state === 'hurt' && boss.currentFrame >= maxFrames) {
-            boss.state = 'idle';
+        // RESET DE ESTADOS
+        if (boss.currentFrame >= maxFrames) {
             boss.currentFrame = 0;
-        }
-
-        if (boss.state === 'attacking' && boss.currentFrame >= maxFrames) {
-            boss.state = 'idle';
-            boss.currentFrame = 0;
-            boss.attackCooldown = 100;
-        }
-
-        if (boss.state === 'idle' || boss.state === 'walking') {
-            if (boss.currentFrame >= maxFrames) {
-                boss.currentFrame = 0;
+            if (boss.state === 'hurt' || boss.state === 'attacking') {
+                boss.state = 'idle';
+                if (boss.state === 'attacking') boss.attackCooldown = 100;
             }
         }
-    } // FIM DO BLOCO DE ANIMAÇÃO
+    }
 
-    // 4. IA DO BOSS (MOVIMENTO E DECISÃO)
-    // Só age se não estiver em animação de dano ou ataque
+    // 4. GATILHOS DE FALA
+    if (dist < 400 && !boss.viuPlayer) {
+        bossDiz("Não venha! O desequilíbrio...");
+        boss.viuPlayer = true;
+    }
+
+    // 5. IA DE MOVIMENTO
     if (boss.state !== 'hurt' && boss.state !== 'attacking') {
-        let dist = Math.abs(player.x - boss.x);
         boss.facing = (player.x < boss.x) ? 'left' : 'right';
 
-        if (dist > (boss.attackRange || 100)) {
+        if (dist > (boss.attackRange || 80)) {
             boss.state = 'walking';
             boss.x += (player.x < boss.x) ? -boss.speed : boss.speed;
         } else {
             if ((boss.attackCooldown || 0) <= 0) {
                 boss.state = 'attacking';
                 boss.currentFrame = 0;
+                if (Math.random() < 0.3) bossDiz("Fuja!");
             } else {
                 boss.state = 'idle';
             }
         }
     }
 
-    // 5. REDUÇÃO DE COOLDOWN
     if (boss.attackCooldown > 0) boss.attackCooldown--;
 }
 
-function gameLoop(){ update(); draw(); requestAnimationFrame(gameLoop); }
+// --- LOOP PRINCIPAL E INPUTS ---
+function gameLoop() {
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+}
+
+// Inicia o loop
 gameLoop();
 
-window.addEventListener('keydown',(e)=>{
-    const k=e.key.toLowerCase();
-    if(k==='a') window.mover('left',true);
-    if(k==='d') window.mover('right',true);
-    if(k==='w'||k===' ') window.pular();
-    if(k==='k') window.atacar();
-    if(k==='r'){ if(player.state==='dead') window.resetGame(); }
-});
-window.addEventListener('keyup',(e)=>{
-    const k=e.key.toLowerCase();
-    if(k==='a') window.mover('left',false);
-    if(k==='d') window.mover('right',false);
+window.addEventListener('keydown', (e) => {
+    const k = e.key.toLowerCase();
+    if (k === 'a') window.mover('left', true);
+    if (k === 'd') window.mover('right', true);
+    if (k === 'w' || k === ' ') window.pular();
+    if (k === 'k') window.atacar();
+    if (k === 'r') { if (player.state === 'dead') window.resetGame(); }
 });
 
+window.addEventListener('keyup', (e) => {
+    const k = e.key.toLowerCase();
+    if (k === 'a') window.mover('left', false);
+    if (k === 'd') window.mover('right', false);
+});
+
+// Listener para o botão de reset (HTML)
 const btnReset = document.getElementById('btn-reset');
-if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); window.resetGame(); }); }
+if (btnReset) {
+    btnReset.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        window.resetGame();
+    });
+}
