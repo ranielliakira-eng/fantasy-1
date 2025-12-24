@@ -241,7 +241,7 @@ const foregroundObjects = [
 
 // --- NPCs ---
 const oxNpc = {
-    x: 120, y: 210, width: 100, height: 100, imgIdle: new Image(),
+    x: 120, y: 220, width: 100, height: 100, imgIdle: new Image(),
     idleFrames: 4, currentFrame: 0, frameTimer: 0, frameInterval: 20,
     phrases: ["Muuu!"], dialogueIndex: 0, dialogueTimer: 0
 };
@@ -716,4 +716,5 @@ window.addEventListener('keyup',(e)=>{
 
 const btnReset = document.getElementById('btn-reset');
 if(btnReset){ btnReset.addEventListener('pointerdown',(e)=>{ e.preventDefault(); window.resetGame(); }); }
+
 
