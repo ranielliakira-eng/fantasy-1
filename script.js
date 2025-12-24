@@ -22,7 +22,7 @@ let boss = null;
 
 // --- JOGADOR ---
 const player = {
-    x: 200, y: 200, width: 100, height: 100,
+    x: 140, y: 200, width: 100, height: 100,
     velX: 0, velY: 0, speed: 5, jumpForce: -15,
     facing: 'right', onGround: false, state: 'idle',
     hp: 3, maxHp: 3, canAirAttack: true,
@@ -166,7 +166,7 @@ let keys = { left: false, right: false };
 
 const backgroundObjects = [
                 { x: 0, y: 0, width: 7000, height: 1000, img: fundoImg },
-                { x: 30, y: 200, width: 100, height: 100, img: Decor_CartImg },
+                { x: 120, y: 230, width: 75, height: 75, img: Decor_CartImg },
 	{ x: 270, y: 100, width: 250, height: 200, img: house1Img },
                 { x: 600, y: 200, width: 100, height: 100, img: wellImg },
 
@@ -241,15 +241,15 @@ const foregroundObjects = [
 
 // --- NPCs ---
 const oxNpc = {
-    x: 120, y: 220, width: 100, height: 100, imgIdle: new Image(),
+    x: 10, y: 220, width: 100, height: 100, imgIdle: new Image(),
     idleFrames: 4, currentFrame: 0, frameTimer: 0, frameInterval: 20,
     phrases: ["Muuu!"], dialogueIndex: 0, dialogueTimer: 0
 };
 oxNpc.imgIdle.src = 'assets/Animals/Without_shadow/Bull_Idle.png';
 
 const satyrNpc = {
-    x: 300, y: 190, width: 120, height: 120, imgIdle: new Image(),
-    idleFrames: 6, currentFrame: 0, frameTimer: 0, frameInterval: 16,
+    x: 220, y: 225, width: 80, height: 80, imgIdle: new Image(),
+    idleFrames: 5, currentFrame: 0, frameTimer: 0, frameInterval: 16,
     phrases: [
 "Que bom que você chegou!", 
 "Cuidado com os Slimes!", 
