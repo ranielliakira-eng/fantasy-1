@@ -68,7 +68,7 @@ function initEnemies() {
         { type: 'Red_Slime', x: 5000, y: 200, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         { type: 'Red_Slime', x: 5000, y: 207, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
    
-        { type: 'Enchantress', x: 6600, y: 100, hp: 3, speed: 2, attackRange: 60, idleFrames: 8, walkFrames: 5, attackFrames: 6, hurtFrames: 2, deadFrames: 5, dialogue: "", dialogueTimer: 0,
+        { type: 'Enchantress', x: 6500, y: 100, hp: 3, speed: 2, attackRange: 60, idleFrames: 8, walkFrames: 5, attackFrames: 6, hurtFrames: 2, deadFrames: 5, dialogue: "", dialogueTimer: 0,
             phrases: { idle: [
 		"O equilíbrio foi quebrado",
 		"A energia da terra foi corrompida!",
@@ -100,10 +100,6 @@ function initEnemies() {
 // --- PLATAFORMAS ---
 const platforms = [
 
-// ---Telhado esquerdo ---
-    { x: 300, y: 175, w: 50, h: 20, type: 'sloped', slope: -0.5, alpha: 0 },
-// --- Telhado direito ---
-    { x: 420, y: 135, w: 50, h: 20, type: 'sloped', slope: 0.5,alpha: 0 },
 // --- Cerca ---
     { x: 450, y: 270, w: 70, h: 50, type: 'pattern', alpha: 0 },
 // --- Chão parte 1 ---
@@ -111,7 +107,7 @@ const platforms = [
 // --- Poço ---
     { x: 620, y: 223, w: 5, h: 80, type: 'pattern', alpha: 0 },
 // --- Árvore ---
-    { x: 1970, y: 270, w: 210, h: 20, type: 'stretch', alpha: 0 },
+    { x: 2020, y: 270, w: 150, h: 20, type: 'stretch', alpha: 0 },
 // --- Chão parte 2 ---
     { x: 2150, y: 300, w: 4800, h: 150, type: 'pattern' }, 
 ];
@@ -170,16 +166,14 @@ platformImg.onload = () => {
 let keys = { left: false, right: false };
 
 const backgroundObjects = [
-    { x: 30, y: 200, width: 100, height: 100, img: Decor_CartImg },
+        { x: 30, y: 200, width: 100, height: 100, img: Decor_CartImg },
 	{ x: 270, y: 100, width: 250, height: 200, img: house1Img },
-    { x: 600, y: 200, width: 100, height: 100, img: wellImg },
+        { x: 600, y: 200, width: 100, height: 100, img: wellImg },
 
 	{ x: 1000, y: 250, width: 50, height: 50, img: tree9Img },
 	{ x: 1110, y: 250, width: 50, height: 50, img: tree10Img },
 	{ x: 1330, y: 250, width: 50, height: 50, img: tree9Img },
 	{ x: 1440, y: 250, width: 50, height: 50, img: tree8Img },
-	
-	{ x: 1960, y: 100, width: 380, height: 200, img: tree1Img },
 	
 	{ x: 2470, y: 5, width: 250, height: 300, img: tree5Img },
 	
@@ -206,6 +200,11 @@ const backgroundObjects = [
 	{ x: 5570, y: 5, width: 250, height: 300, img: tree2Img },
 	{ x: 5680, y: 5, width: 250, height: 300, img: tree2Img },
 	{ x: 5790, y: 5, width: 250, height: 300, img: tree2Img },
+
+	{ x: 6425, y: 275, width: 25, height: 25, img: tree11Img },
+	{ x: 6475, y: 275, width: 25, height: 25, img: tree11Img },
+	{ x: 6525, y: 275, width: 25, height: 25, img: tree11Img },
+	{ x: 6575, y: 275, width: 25, height: 25, img: tree11Img },
 ];
 
 const foregroundObjects = [
@@ -213,8 +212,10 @@ const foregroundObjects = [
         { x: 400, y: 260, width: 50, height: 50, img: fence_01Img },
         { x: 450, y: 260, width: 50, height: 50, img: fence_02Img },
         { x: 500, y: 260, width: 50, height: 50, img: fence_03Img },
+
+	{ x: 1960, y: 110, width: 380, height: 200, img: tree1Img },
 	
-	    { x: 1220, y: 250, width: 50, height: 50, img: tree11Img },
+	{ x: 1220, y: 250, width: 50, height: 50, img: tree11Img },
 	
 	{ x: 3060, y: 5, width: 300, height: 300, img: tree3Img },
 	{ x: 3220, y: 5, width: 300, height: 300, img: tree3Img },
@@ -230,11 +231,17 @@ const foregroundObjects = [
 	{ x: 5220, y: 5, width: 300, height: 300, img: tree3Img },
 	{ x: 5560, y: 5, width: 300, height: 300, img: tree3Img },
 	{ x: 5720, y: 5, width: 300, height: 300, img: tree3Img },
+
+	{ x: 6400, y: 275, width: 25, height: 25, img: tree11Img },
+	{ x: 6450, y: 275, width: 25, height: 25, img: tree11Img },
+	{ x: 6500, y: 275, width: 25, height: 25, img: tree11Img },
+	{ x: 6550, y: 275, width: 25, height: 25, img: tree11Img },
+	{ x: 6600, y: 275, width: 25, height: 25, img: tree11Img },
 ];
 
 // --- NPCs ---
 const oxNpc = {
-    x: 120, y: 210, width: 115, height: 115, imgIdle: new Image(),
+    x: 120, y: 210, width: 100, height: 100, imgIdle: new Image(),
     idleFrames: 4, currentFrame: 0, frameTimer: 0, frameInterval: 20,
     phrases: ["Muuu!"], dialogueIndex: 0, dialogueTimer: 0
 };
@@ -349,18 +356,19 @@ function update(){
     if(player.dialogueTimer>0){ player.dialogueTimer--; if(player.dialogueTimer<=0) player.dialogue=""; }
 
 // ===== FÍSICA VERTICAL =====
+// assume que está no ar
+player.onGround = false;
+
+// aplica gravidade
 player.velY += gravity;
 if (player.velY > 20) player.velY = 20;
 
-// move
+// move verticalmente
 player.y += player.velY;
 
-// assume no ar
-player.onGround = false;
-
-// colisão
+// --- colisão com plataformas retas ---
 platforms.forEach(p => {
-    if (p.type === 'sloped') return;
+    if(p.type === 'sloped') return; // ignora slopes aqui
 
     const playerBottom = player.y + player.height;
     const playerPrevBottom = playerBottom - player.velY;
@@ -369,17 +377,28 @@ platforms.forEach(p => {
         player.x + player.width > p.x &&
         player.x < p.x + p.w;
 
-    if (
-        overlapX &&
-        playerPrevBottom <= p.y &&
-        playerBottom >= p.y
-    ) {
+    if (overlapX && playerPrevBottom <= p.y && playerBottom >= p.y) {
         player.y = p.y - player.height;
         player.velY = 0;
         player.onGround = true;
     }
 });
 
+// --- colisão com slopes ---
+platforms.forEach(p => {
+    if(p.type !== 'sloped') return;
+
+    let relativeX = player.x + player.width/2 - p.x;
+    let slopeY = p.y - relativeX * p.slope;
+
+    if(player.x + player.width > p.x && player.x < p.x + p.w) {
+        if(player.y + player.height > slopeY && player.y + player.height - player.velY <= slopeY) {
+            player.y = slopeY - player.height;
+            player.velY = 0;
+            player.onGround = true;
+        }
+    }
+});
 // ===== MOVIMENTO HORIZONTAL =====
 player.x += player.velX;
 
@@ -573,6 +592,7 @@ platforms.forEach(p => {
             }
 
             ctx.save();
+
             if (obj.facing === 'left') {
                 ctx.translate(obj.x + obj.width, dY); ctx.scale(-1, 1);
                 ctx.drawImage(img, (obj.currentFrame % totalF) * fw, 0, fw, fh, 0, 0, obj.width, dH);
@@ -667,7 +687,6 @@ foregroundObjects.forEach(d => {
         }
     }
 }
-
 function enemySay(en, type) {
     const list = en.phrases[type];
     en.dialogue = list[Math.floor(Math.random() * list.length)];
