@@ -113,48 +113,48 @@ const fundoImg = new Image();
 fundoImg.src = 'assets/fundo.png';
 
 const platformImg = new Image();
-platformImg.src = 'assets/Battleground/Battleground1/summer_0/Environment/Ground_11.png';
+platformImg.src = 'assets/Battleground/Ground_11.png';
 
 const tree1Img = new Image();
-tree1Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree1.png';
+tree1Img.src = 'assets/Battleground/trees/middle_lane_tree1.png';
 const tree2Img = new Image();
-tree2Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree2.png';
+tree2Img.src = 'assets/Battleground/trees/middle_lane_tree2.png';
 const tree3Img = new Image();
-tree3Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree3.png';
+tree3Img.src = 'assets/Battleground/trees/middle_lane_tree3.png';
 const tree4Img = new Image();
-tree4Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree4.png';
+tree4Img.src = 'assets/Battleground/trees/middle_lane_tree4.png';
 const tree5Img = new Image();
-tree5Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree5.png';
+tree5Img.src = 'assets/Battleground/trees/middle_lane_tree5.png';
 const tree6Img = new Image();
-tree6Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree6.png';
+tree6Img.src = 'assets/Battleground/trees/middle_lane_tree6.png';
 const tree7Img = new Image();
-tree7Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree7.png';
+tree7Img.src = 'assets/Battleground/trees/middle_lane_tree7.png';
 const tree8Img = new Image();
-tree8Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree8.png';
+tree8Img.src = 'assets/Battleground/trees/middle_lane_tree8.png';
 const tree9Img = new Image();
-tree9Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree9.png';
+tree9Img.src = 'assets/Battleground/trees/middle_lane_tree9.png';
 const tree10Img = new Image();
-tree10Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree10.png';
+tree10Img.src = 'assets/Battleground/trees/middle_lane_tree10.png';
 const tree11Img = new Image();
-tree11Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/trees/middle_lane_tree11.png';
+tree11Img.src = 'assets/Battleground/trees/middle_lane_tree11.png';
 
 const wellImg = new Image();
-wellImg.src = 'assets/Battleground/Battleground1/summer_0/Environment/Well.png';
+wellImg.src = 'assets/Battleground/Well.png';
 
 const house1Img = new Image();
-house1Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/House1.png';
+house1Img.src = 'assets/Battleground/House1.png';
 
 const Decor_CartImg = new Image();
-Decor_CartImg.src = 'assets/Battleground/Battleground1/summer_0/Environment/Decor_Cart.png';
+Decor_CartImg.src = 'assets/Battleground/Decor_Cart.png';
 
 const fence_01Img = new Image();
-fence_01Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/Fence_01.png';
+fence_01Img.src = 'assets/Battleground/Fence_01.png';
 
 const fence_02Img = new Image();
-fence_02Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/Fence_02.png';
+fence_02Img.src = 'assets/Battleground/Fence_02.png';
 
 const fence_03Img = new Image();
-fence_03Img.src = 'assets/Battleground/Battleground1/summer_0/Environment/Fence_03.png';
+fence_03Img.src = 'assets/Battleground/Fence_03.png';
 
 let platformPattern = null;
 
