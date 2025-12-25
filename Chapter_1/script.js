@@ -245,7 +245,7 @@ const oxNpc = {
     idleFrames: 4, currentFrame: 0, frameTimer: 0, frameInterval: 20,
     phrases: ["Muuu!"], dialogueIndex: 0, dialogueTimer: 0
 };
-oxNpc.imgIdle.src = 'assets/Animals/Without_shadow/Bull_Idle.png';
+oxNpc.imgIdle.src = 'assets/Animals/Bull_Idle.png';
 
 const farmerNpc = {
     x: 220, y: 225, width: 80, height: 80, imgIdle: new Image(),
