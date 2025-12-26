@@ -116,7 +116,8 @@ setTimeout(() => {
 const playerDialogTriggers = [
     { x: 600, text: "Esses Slimes não deveriam estar aqui.", used: false },
     { x: 1800, text: "A floresta está ficando mais densa.", used: false },
-    { x: 6200, text: "Acho que sei o que juntou aqueles Slimes...", used: false },
+    { x: 6200, text: "Floresta está cheia de Slimes...", used: false },
+	{ x: 6500, text: "Quem é você?", used: false },
 ];
 
 // --- INIMIGOS ---
@@ -312,12 +313,6 @@ const foregroundObjects = [
 	{ x: 5220, y: 5, width: 300, height: 300, img: tree3Img },
 	{ x: 5560, y: 5, width: 300, height: 300, img: tree3Img },
 	{ x: 5720, y: 5, width: 300, height: 300, img: tree3Img },
-
-	{ x: 6400, y: 275, width: 25, height: 25, img: tree11Img },
-	{ x: 6450, y: 275, width: 25, height: 25, img: tree11Img },
-	{ x: 6500, y: 275, width: 25, height: 25, img: tree11Img },
-	{ x: 6550, y: 275, width: 25, height: 25, img: tree11Img },
-	{ x: 6600, y: 275, width: 25, height: 25, img: tree11Img },
 ];
 
 // --- NPCs ---
@@ -986,3 +981,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+
