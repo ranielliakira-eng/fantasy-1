@@ -247,10 +247,10 @@ platformImg.onload = () => {
 let keys = { left: false, right: false };
 
 const backgroundObjects = [
-                { x: 0, y: 0, width: 7000, height: 1000, img: fundoImg },
-                { x: 120, y: 230, width: 75, height: 75, img: Decor_CartImg },
+    { x: 0, y: 0, width: 7000, height: 1000, img: fundoImg },
+    { x: 120, y: 230, width: 75, height: 75, img: Decor_CartImg },
 	{ x: 270, y: 100, width: 250, height: 200, img: house1Img },
-                { x: 600, y: 200, width: 100, height: 100, img: wellImg },
+    { x: 600, y: 200, width: 100, height: 100, img: wellImg },
 
 	{ x: 1000, y: 250, width: 50, height: 50, img: tree9Img },
 	{ x: 1110, y: 250, width: 50, height: 50, img: tree10Img },
@@ -282,11 +282,6 @@ const backgroundObjects = [
 	{ x: 5570, y: 5, width: 250, height: 300, img: tree2Img },
 	{ x: 5680, y: 5, width: 250, height: 300, img: tree2Img },
 	{ x: 5790, y: 5, width: 250, height: 300, img: tree2Img },
-
-	{ x: 6425, y: 275, width: 25, height: 25, img: tree11Img },
-	{ x: 6475, y: 275, width: 25, height: 25, img: tree11Img },
-	{ x: 6525, y: 275, width: 25, height: 25, img: tree11Img },
-	{ x: 6575, y: 275, width: 25, height: 25, img: tree11Img },
 ];
 
 const foregroundObjects = [
@@ -317,7 +312,7 @@ const foregroundObjects = [
 
 // --- NPCs ---
 const oxNpc = {
-    x: 10, y: 210, width: 100, height: 100, imgIdle: new Image(),
+    x: 10, y: 215, width: 100, height: 100, imgIdle: new Image(),
     idleFrames: 4, currentFrame: 0, frameTimer: 0, frameInterval: 20,
     phrases: ["Muuu!"], dialogueIndex: 0, dialogueTimer: 0
 };
@@ -981,6 +976,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+
 
 
 
