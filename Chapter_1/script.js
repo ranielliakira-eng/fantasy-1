@@ -117,7 +117,7 @@ const playerDialogTriggers = [
     { x: 600, text: "Esses Slimes não deveriam estar aqui.", used: false },
     { x: 1800, text: "A floresta está ficando mais densa.", used: false },
     { x: 6200, text: "Floresta está cheia de Slimes...", used: false },
-	{ x: 6400, text: "Quem é você?", used: false },
+	{ x: 6400, text: "Enchantress, você está bem?", used: false },
 ];
 
 // --- INIMIGOS ---
@@ -935,7 +935,7 @@ function updateBossLogic() {
             if ((boss.attackCooldown || 0) <= 0) {
                 boss.state = 'attacking';
                 boss.currentFrame = 0;
-                if (Math.random() < 0.3) bossDiz("Fuja!");
+                if (Math.random() < 0.3) bossDiz("Eu não consigo me controlar!");
             } else {
                 boss.state = 'idle';
             }
@@ -997,6 +997,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+
 
 
 
