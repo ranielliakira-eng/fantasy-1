@@ -2,95 +2,165 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pixel Quest - 800x450</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pixel Quest</title>
     <style>
-        body, html {
-            margin: 0; padding: 0;
-            height: 100%; width: 100%;
-            background-color: #111; /* Fundo externo ao jogo */
-            display: flex; justify-content: center; align-items: center;
-            overflow: hidden;
+        body, html { 
+            margin: 0; padding: 0; height: 100%; width: 100%; 
+            background-color: #000; display: flex; justify-content: center; align-items: center; 
+            overflow: hidden; font-family: 'Courier New', monospace;
         }
 
-        /* O "Canvas" do jogo fixo em 800x450 */
-#game-canvas {
-    width: 800px;
-    height: 450px;
-    position: relative;
-    /* Como está na mesma pasta, usamos apenas o nome exato */
-    background-image: url('Background.png'); 
-    background-size: 100% 100%;
-    image-rendering: pixelated;
-    box-shadow: 0 0 50px rgba(0,0,0,0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+        #game-area {
+            width: 800px; height: 450px;
+            background-image: url('Background.png');
+            background-size: 100% 100%;
+            image-rendering: pixelated;
+            position: relative;
+            border: 4px solid #333;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
 
-        /* Menu Centralizado */
-        .menu-overlay {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 320px; /* Largura do menu dentro dos 800px */
-            background-color: rgba(0, 0, 0, 0.8);
-            padding: 20px;
-            border: 2px solid #ffd700;
+        /* AJUSTE NO TÍTULO: Mais para cima e um pouco menor no topo */
+        h1 {
+            color: #ffd700; font-size: 48px; text-shadow: 4px 4px #000;
+            margin: 0; position: absolute; transition: all 0.8s ease-in-out;
+            z-index: 10;
             text-align: center;
-            color: white;
+            width: 100%;
+        }
+        h1.pos-top { 
+            transform: translateY(-175px); /* Subiu mais 25px para dar espaço */
+            font-size: 28px; /* Diminuiu um pouco para não apertar */
+        }
+
+        .container {
+            background-color: rgba(0, 0, 0, 0.85);
+            padding: 20px; /* Reduzi um pouco o padding interno */
+            border-radius: 10px; border: 2px solid #ffd700;
+            display: none; flex-direction: column; align-items: center;
+            animation: fadeIn 0.5s forwards;
+            min-width: 320px;
+            margin-top: 40px; /* Garante que a caixa comece abaixo do título */
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Botões mais compactos para caberem todos */
+        .btn {
+            width: 260px; margin: 4px; padding: 10px;
+            background: none; color: white; border: 1px solid white; 
+            cursor: pointer; font-size: 14px; transition: 0.2s;
             font-family: 'Courier New', monospace;
         }
+        
+        .btn:hover:not(.locked) { background: white; color: black; transform: scale(1.03); }
 
-        .game-title {
-            font-size: 24px;
-            color: #ffd700;
-            margin-bottom: 20px;
-            text-transform: uppercase;
+        .locked { 
+            opacity: 0.4; 
+            cursor: not-allowed !important; 
+            border: 1px dashed #777;
+            color: #777;
         }
 
-        .chapter-list { display: flex; flex-direction: column; gap: 8px; }
-
-        .btn-chapter {
-            padding: 10px;
-            font-size: 14px;
-            background: transparent;
-            color: white;
-            border: 1px solid white;
-            cursor: pointer;
+        .hero-grid { display: flex; gap: 40px; margin-top: 10px; }
+        .hero-card { text-align: center; cursor: pointer; transition: 0.2s; width: 100px; }
+        .sprite-container {
+            width: 70px; height: 70px; overflow: hidden; margin: 0 auto 10px;
+            display: flex; justify-content: flex-start; align-items: center;
+            border: 2px solid transparent; transition: 0.2s;
         }
+        .hero-card img { height: 70px; width: auto; image-rendering: pixelated; }
+        .hero-card:hover .sprite-container { border-color: #ffd700; background: rgba(255,215,0,0.1); }
+        .hero-card span { color: white; font-weight: bold; font-size: 13px; }
 
-        .btn-chapter:hover { background: white; color: black; }
-
-        .locked { opacity: 0.3; cursor: not-allowed; }
-
-        /* Ajuste para Celular: Escala o jogo inteiro se a tela for pequena */
-        @media (max-width: 800px) {
-            #game-canvas {
-                transform: scale(calc(window.innerWidth / 800));
-                transform-origin: center;
-            }
-        }
+        @media (max-width: 820px) { #game-area { transform: scale(0.9); } }
+        @media (max-width: 600px) { #game-area { transform: scale(0.5); } }
     </style>
 </head>
 <body>
 
-    <div id="game-canvas">
-        <div class="menu-overlay">
-            <h1 class="game-title">PIXEL QUEST</h1>
-            <div class="chapter-list">
-                <button class="btn-chapter" onclick="abrirSelecao()">Chapter 1</button>
-                <button class="btn-chapter locked">Chapter 2</button>
-                <button class="btn-chapter locked">Chapter 3</button>
-                <button class="btn-chapter locked">Chapter 4</button>
-                <button class="btn-chapter locked">Chapter 5</button>
+    <div id="game-area">
+        <h1 id="main-title">PIXEL QUEST</h1>
+
+        <div id="step-players" class="container">
+            <button class="btn" onclick="escolherJogadores(1)">1 JOGADOR</button>
+            <button class="btn locked">2 JOGADORES (??)</button>
+        </div>
+
+        <div id="step-heroes" class="container">
+            <h2 style="color:#ffd700; font-size: 16px; margin-top: 0;">QUEM VAI JOGAR?</h2>
+            <div class="hero-grid">
+                <div class="hero-card" onclick="finalizarSelecao('loiro')">
+                    <div class="sprite-container"><img src="Idle.png" alt="Guerreiro"></div>
+                    <span>GUERREIRO</span>
+                </div>
+                <div class="hero-card" onclick="finalizarSelecao('castanha')">
+                    <div class="sprite-container"><img src="Idle%20(1).png" alt="Baronesa"></div>
+                    <span>BARONESA</span>
+                </div>
             </div>
+            <button onclick="location.reload()" style="margin-top:15px; background:none; border:none; color:gray; cursor:pointer; font-size: 12px;">[ VOLTAR ]</button>
+        </div>
+
+        <div id="step-chapters" class="container">
+            <h2 style="color:white; font-size: 14px; margin-bottom: 8px;">SELECIONE O CAPÍTULO</h2>
+            <button class="btn" onclick="iniciarJogo(1)">CAPÍTULO 1</button>
+            <button id="btn-cap2" class="btn locked" onclick="verificarCap(2)">CAPÍTULO 2 (??)</button>
+            <button id="btn-cap3" class="btn locked" onclick="verificarCap(3)">CAPÍTULO 3 (??)</button>
+            <button id="btn-cap4" class="btn locked" onclick="verificarCap(4)">CAPÍTULO 4 (??)</button>
+            <button id="btn-cap5" class="btn locked" onclick="verificarCap(5)">CAPÍTULO 5 (??)</button>
+            <button class="btn" style="color:red; border-color:red; margin-top:10px; padding: 5px;" onclick="location.reload()">SAIR</button>
         </div>
     </div>
 
     <script>
-        function abrirSelecao() {
-            window.location.href = "https://ranielliakira-eng.github.io/fantasy-1/Chapter_1/index.html";
+        const title = document.getElementById('main-title');
+        
+        setTimeout(() => {
+            title.classList.add('pos-top');
+            document.getElementById('step-players').style.display = 'flex';
+        }, 1500);
+
+        function escolherJogadores(num) {
+            localStorage.setItem('jogadores_total', num);
+            document.getElementById('step-players').style.display = 'none';
+            document.getElementById('step-heroes').style.display = 'flex';
+        }
+
+        function finalizarSelecao(heroi) {
+            localStorage.setItem('heroi_da_jornada', heroi);
+            document.getElementById('step-heroes').style.display = 'none';
+            mostrarCapitulos();
+        }
+
+        function mostrarCapitulos() {
+            const menu = document.getElementById('step-chapters');
+            menu.style.display = 'flex';
+            if (localStorage.getItem('capitulo_1_vencido') === 'true') {
+                liberarBotao('btn-cap2', "CAPÍTULO 2");
+            }
+        }
+
+        function liberarBotao(id, texto) {
+            const btn = document.getElementById(id);
+            if (btn) {
+                btn.classList.remove('locked');
+                btn.innerText = texto;
+            }
+        }
+
+        function iniciarJogo(cap) {
+            window.location.href = `Chapter_${cap}/index.html`;
+        }
+
+        function verificarCap(cap) {
+            const venceuAnterior = localStorage.getItem(`capitulo_${cap-1}_vencido`) === 'true';
+            if (venceuAnterior) {
+                iniciarJogo(cap);
+            } else {
+                alert(`Bloqueado! Vença o Capítulo ${cap-1} primeiro.`);
+            }
         }
     </script>
 </body>
