@@ -324,8 +324,8 @@ const farmerNpc = {
     idleFrames: 5, currentFrame: 0, frameTimer: 0, frameInterval: 16,
     phrases: [
 "Que bom que você chegou!", 
-"Cuidado com os Slimes!", 
-"Os Slimes estão vindo da floresta."
+"Enchantress entrou na floresta", 
+"Ajude-a, ela está sozinha."
 ],
     dialogueIndex: 0, dialogueTimer: 0
 };
@@ -377,8 +377,29 @@ window.atacar = function() { if(player.state==='dead'){window.resetGame(); retur
 
 // NPCs
 function npcSay(npc, index=0, duration=120){ npc.dialogueIndex=index; npc.dialogueTimer=duration; }
-function updateNPCs(){ npcs.forEach(n=>{ if(n.dialogueTimer>0)n.dialogueTimer--; else{ n.dialogueIndex=Math.floor(Math.random()*n.phrases.length); n.dialogueTimer=180+Math.floor(Math.random()*120);} n.frameTimer++; if(n.frameTimer>=n.frameInterval){ n.frameTimer=0; n.currentFrame=(n.currentFrame+1)%n.idleFrames; } }); }
+function updateNPCs() {
+    npcs.forEach(n => {
 
+        if (n.dialogueTimer > 0) {
+            n.dialogueTimer--;
+        } else {
+            n.dialogueIndex++;
+
+            if (n.dialogueIndex >= n.phrases.length) {
+                n.dialogueIndex = 0;
+            }
+
+            n.dialogueTimer = 180;
+        }
+
+        // animação idle
+        n.frameTimer++;
+        if (n.frameTimer >= n.frameInterval) {
+            n.frameTimer = 0;
+            n.currentFrame = (n.currentFrame + 1) % n.idleFrames;
+        }
+    });
+}
 // HIT MELEE
 function checkMeleeHit() {
     let alcance = player.width * -0.2;
@@ -976,6 +997,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+
 
 
 
