@@ -317,7 +317,7 @@ const foregroundObjects = [
 
 // --- NPCs ---
 const oxNpc = {
-    x: 10, y: 215, width: 90, height: 90, imgIdle: new Image(),
+    x: 10, y: 210, width: 90, height: 90, imgIdle: new Image(),
     idleFrames: 4, currentFrame: 0, frameTimer: 0, frameInterval: 20,
     phrases: ["Muuu!"], dialogueIndex: 0, dialogueTimer: 0
 };
@@ -419,7 +419,7 @@ function checkMeleeHit() {
                 boss.state = 'dead';
                 boss.currentFrame = 0;
                 // Opcional: O Boss diz algo ao morrer
-                boss.dialogue = "Impossível...";
+                boss.dialogue = "O equilíbrio...";
                 boss.dialogueTimer = 180;
             }
         }
@@ -981,4 +981,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+
 
