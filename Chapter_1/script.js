@@ -1,9 +1,9 @@
-ï»¿const canvas = document.getElementById('gameCanvas');
+const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 canvas.width = 800; 
 canvas.height = 450;
 
-// --- CONFIGURAÃ‡Ã•ES GLOBAIS ---
+// --- CONFIGURAÇÕES GLOBAIS ---
 const bgMusic = new Audio('assets/sounds/song.wav');
 bgMusic.loop = true;
 bgMusic.volume = 0.5;
@@ -14,13 +14,12 @@ const mapWidth = 7000;
 const mapHeight = 450;
 let cameraX = 0;
 let cameraY = 0;
-let gameState = 'menu';
+let gameState = 'loading'; // Estado inicial alterado para carregamento
 let isPaused = false;
 let isMuted = false;
-
 let boss = null;
 
-// --- JOGADOR ---
+// --- JOGADOR (ESTRUTURA BASE) ---
 const player = {
     x: 140, y: 200, width: 100, height: 100,
     velX: 0, velY: 0, speed: 5, jumpForce: -15,
@@ -32,9 +31,91 @@ const player = {
     currentFrame: 0, frameTimer: 0, frameInterval: 6, dialogue: "", dialogueTimer: 0,
 };
 
+// --- INICIALIZAÇÃO AUTOMÁTICA (PADRÃO SWORDSMAN / KNIGHT) ---
+window.onload = function() {
+    // 1. Esconde o menu de seleção antigo do Chapter_1
+    const selectionMenu = document.getElementById('selection-menu');
+    if (selectionMenu) selectionMenu.style.display = 'none';
+
+    // 2. Lê a escolha do herói do Menu Principal
+    // 'loiro' -> Swordsman | 'castanha' -> Knight
+    const escolhaMenu = localStorage.getItem('heroi_da_jornada') || 'loiro'; 
+    const heroiPadrao = (escolhaMenu === 'castanha') ? 'Knight' : 'Swordsman';
+    
+    // 3. Configura Frames Específicos
+    // Knight (Baronesa) tem 6 frames de Idle/Jump, Swordsman tem 8
+    player.idleFrames = (heroiPadrao === 'Knight') ? 6 : 8;
+    player.walkFrames = 8;
+    player.jumpFrames = (heroiPadrao === 'Knight') ? 6 : 8;
+    player.hurtFrames = 3;
+    player.deadFrames = (heroiPadrao === 'Knight') ? 4 : 3;
+    player.attackFrames = (heroiPadrao === 'Knight') ? 5 : 6;
+
+    // 4. Carrega os Assets da pasta correta
+    player.imgIdle.src = `assets/${heroiPadrao}/Idle.png`;
+    player.imgWalk.src = `assets/${heroiPadrao}/Walk.png`;
+    player.imgJump.src = `assets/${heroiPadrao}/Jump.png`;
+    player.imgHurt.src = `assets/${heroiPadrao}/Hurt.png`;
+    player.imgDead.src = `assets/${heroiPadrao}/Dead.png`;
+    player.imgAttack.src = `assets/${heroiPadrao}/Attack_1.png`;
+
+    // 5. Inicia o jogo após carregar as imagens
+    player.imgIdle.onload = () => {
+        gameState = 'playing'; 
+        initEnemies(); 
+        if (!isMuted) bgMusic.play().catch(() => {}); 
+    };
+    
+    const controls = document.getElementById('mobile-controls');
+    if(controls) controls.style.display = 'flex';
+};
+
+// --- ATUALIZAÇÃO DO STATUS DE VITÓRIA (Gatilho para o Menu Principal) ---
+function checkMeleeHit() {
+    let alcance = player.width * -0.2;
+    let hitboxX = player.facing === 'right' ? player.x + player.width : player.x - alcance;
+
+    // Colisão Inimigos Comuns
+    enemies.forEach(en => {
+        if (en.state === 'dead') return;
+        if (hitboxX < en.x + en.width && hitboxX + alcance > en.x &&
+            player.y < en.y + en.height && player.y + player.height > en.y) {
+            en.hp--;
+            en.state = 'hurt';
+            en.currentFrame = 0;
+            if (en.hp <= 0) en.state = 'dead';
+        }
+    });
+
+    // Colisão Boss e Progresso
+    if (boss && boss.state !== 'dead') {
+        if (hitboxX < boss.x + boss.width && hitboxX + alcance > boss.x &&
+            player.y < boss.y + boss.height && player.y + player.height > boss.y) {
+            
+            boss.hp--;
+            boss.state = 'hurt';
+            boss.currentFrame = 0;
+
+            if (boss.hp <= 0) {
+                boss.state = 'dead';
+                boss.currentFrame = 0;
+                boss.dialogue = "Impossível...";
+                boss.dialogueTimer = 180;
+
+                // LIBERA O CAPÍTULO 2 NO MENU PRINCIPAL
+                localStorage.setItem('capitulo_1_vencido', 'true');
+
+setTimeout(() => {
+        mostrarTelaVitoria();
+    }, 2000);
+            }
+        }
+    }
+}
+
 const playerDialogTriggers = [
-    { x: 600, text: "Esses Slimes nÃ£o deveriam estar aqui.", used: false },
-    { x: 1800, text: "A floresta estÃ¡ ficando mais densa.", used: false },
+    { x: 600, text: "Esses Slimes não deveriam estar aqui.", used: false },
+    { x: 1800, text: "A floresta está ficando mais densa.", used: false },
     { x: 6200, text: "Acho que sei o que juntou aqueles Slimes...", used: false },
 ];
 
@@ -98,17 +179,17 @@ const platforms = [
 
 // --- Cerca ---
     { x: 450, y: 270, w: 70, h: 50, type: 'pattern', alpha: 0 },
-// --- ChÃ£o parte 1 ---
+// --- Chão parte 1 ---
     { x: 0, y: 300, w: 2000, h: 150, type: 'pattern' },
-// --- PoÃ§o ---
+// --- Poço ---
     { x: 620, y: 223, w: 5, h: 80, type: 'pattern', alpha: 0 },
-// --- Ãrvore ---
+// --- Árvore ---
     { x: 2020, y: 270, w: 150, h: 20, type: 'stretch', alpha: 0 },
-// --- ChÃ£o parte 2 ---
+// --- Chão parte 2 ---
     { x: 2150, y: 300, w: 4800, h: 150, type: 'pattern' }, 
 ];
 
-// --- CenÃ¡rio ---
+// --- Cenário ---
 const fundoImg = new Image();
 fundoImg.src = 'assets/fundo.png';
 
@@ -245,29 +326,31 @@ const oxNpc = {
     idleFrames: 4, currentFrame: 0, frameTimer: 0, frameInterval: 20,
     phrases: ["Muuu!"], dialogueIndex: 0, dialogueTimer: 0
 };
+
 oxNpc.imgIdle.src = 'assets/Animals/Bull_Idle.png';
 
 const farmerNpc = {
     x: 220, y: 225, width: 80, height: 80, imgIdle: new Image(),
     idleFrames: 5, currentFrame: 0, frameTimer: 0, frameInterval: 16,
     phrases: [
-"Que bom que vocÃª chegou!", 
+"Que bom que você chegou!", 
 "Cuidado com os Slimes!", 
-"Os Slimes estÃ£o vindo da floresta."
+"Os Slimes estão vindo da floresta."
 ],
     dialogueIndex: 0, dialogueTimer: 0
 };
+
 farmerNpc.imgIdle.src = 'assets/Farmer/Idle.png';
 
 const npcs = [oxNpc, farmerNpc];
 
-// --- FUNÃ‡ÃƒO GLOBAL PARA FALA DO PLAYER ---
+// --- FUNÇÃO GLOBAL PARA FALA DO PLAYER ---
 window.playerSay = function(text, duration = 120) {
     player.dialogue = text;
     player.dialogueTimer = duration;
 };
 
-// --- FUNÃ‡Ã•ES DO SISTEMA ---
+// --- FUNÇÕES DO SISTEMA ---
 window.togglePause = function() { if (gameState !== 'playing') return; isPaused = !isPaused; if (isPaused) bgMusic.pause(); else if (!isMuted) bgMusic.play().catch(() => {}); };
 window.toggleSom = function() { isMuted = !isMuted; bgMusic.muted = isMuted; const btn = document.getElementById('btn-audio'); if(btn) btn.innerText = isMuted ? "Mudo" : "Som"; };
 window.resetGame = function() {
@@ -288,28 +371,16 @@ window.resetGame = function() {
     boss = null; // <--- ADICIONE ISSO: Remove o boss atual para ele dar spawn de novo no gatilho
     initEnemies();
 };
+// Função para salvar o progresso e voltar ao menu raiz
 
-// Escolher personagem
-window.escolherPersonagem = function(genero) {
-    const menu = document.getElementById('selection-menu'); if(menu) menu.style.display='none';
-    const folder = (genero==='menina')?'Knight':'Swordsman';
-    player.idleFrames = (genero==='menina')?6:8;
-    player.walkFrames = (genero==='menina')?8:8;
-    player.jumpFrames = (genero==='menina')?6:8;
-    player.hurtFrames = (genero==='menina')?3:3;
-    player.deadFrames = (genero==='menina')?4:3;
-    player.attackFrames = (genero==='menina')?5:6;
-    player.imgIdle.src = `assets/${folder}/Idle.png`;
-    player.imgWalk.src = `assets/${folder}/Walk.png`;
-    player.imgJump.src = `assets/${folder}/Jump.png`;
-    player.imgHurt.src = `assets/${folder}/Hurt.png`;
-    player.imgDead.src = `assets/${folder}/Dead.png`;
-    player.imgAttack.src = `assets/${folder}/Attack_1.png`;
-    gameState='playing'; initEnemies(); bgMusic.play().catch(()=>{}); 
-    document.getElementById('mobile-controls').style.display='flex';
+window.concluirCapituloEVoutar = function() {
+    localStorage.setItem('capitulo_1_vencido', 'true');
+    
+window.location.href = "../index.html"; // Volta para a pasta anterior (raiz)
+
 };
 
-// MovimentaÃ§Ã£o
+// Movimentação
 window.mover = function(dir, estado) { if(gameState!=='playing'||player.state==='dead'||isPaused) return; if(dir==='left') keys.left=estado; if(dir==='right') keys.right=estado; if(estado) player.facing=dir; };
 window.pular = function() { if(gameState==='playing' && player.onGround && !isPaused){player.velY=player.jumpForce; player.onGround=false;} };
 window.atacar = function() { if(player.state==='dead'){window.resetGame(); return;} if(gameState!=='playing'||isPaused)return; if(player.state==='attacking')return; if(!player.onGround && !player.canAirAttack)return; player.state='attacking'; player.currentFrame=0; if(!player.onGround) player.canAirAttack=false; checkMeleeHit(); };
@@ -340,7 +411,7 @@ function checkMeleeHit() {
 
     // 2. NOVA: Dano no Boss
     if (boss && boss.state !== 'dead') {
-        // Como o Boss Ã© maior (200px), a detecÃ§Ã£o precisa ser generosa
+        // Como o Boss é maior (200px), a detecção precisa ser generosa
         if (hitboxX < boss.x + boss.width && hitboxX + alcance > boss.x &&
             player.y < boss.y + boss.height && player.y + player.height > boss.y) {
             
@@ -353,7 +424,7 @@ function checkMeleeHit() {
                 boss.state = 'dead';
                 boss.currentFrame = 0;
                 // Opcional: O Boss diz algo ao morrer
-                boss.dialogue = "ImpossÃ­vel...";
+                boss.dialogue = "Impossível...";
                 boss.dialogueTimer = 180;
             }
         }
@@ -373,8 +444,8 @@ function update(){
 
     if(player.dialogueTimer>0){ player.dialogueTimer--; if(player.dialogueTimer<=0) player.dialogue=""; }
 
-// ===== FÃSICA VERTICAL =====
-// assume que estÃ¡ no ar
+// ===== FÍSICA VERTICAL =====
+// assume que está no ar
 player.onGround = false;
 
 // aplica gravidade
@@ -384,7 +455,7 @@ if (player.velY > 20) player.velY = 20;
 // move verticalmente
 player.y += player.velY;
 
-// --- colisÃ£o com plataformas retas ---
+// --- colisão com plataformas retas ---
 platforms.forEach(p => {
     if(p.type === 'sloped') return; // ignora slopes aqui
 
@@ -402,7 +473,7 @@ platforms.forEach(p => {
     }
 });
 
-// --- colisÃ£o com slopes ---
+// --- colisão com slopes ---
 platforms.forEach(p => {
     if(p.type !== 'sloped') return;
 
@@ -427,7 +498,7 @@ if (player.x + player.width > mapWidth)
 
     if(player.onGround) player.canAirAttack=true;
 
-    // ANIMAÃ‡ÃƒO PLAYER
+    // ANIMAÇÃO PLAYER
     player.frameTimer++;
     if(player.frameTimer>=player.frameInterval){
         player.frameTimer=0;
@@ -444,15 +515,15 @@ if (player.x + player.width > mapWidth)
         else{ player.state='idle'; player.currentFrame=(player.currentFrame+1)%player.idleFrames;}
     }
 
-// --- CÃ‚MERA DINÃ‚MICA ---
+// --- CÂMERA DINÂMICA ---
 let targetX = (player.x + player.width / 2) - (canvas.width / (2 * zoom));
 let targetY = (player.y + player.height / 2) - (canvas.height / (2 * zoom));
 
-// SuavizaÃ§Ã£o
+// Suavização
 cameraX += (targetX - cameraX) * 0.1;
 cameraY += (targetY - cameraY) * 0.1;
 
-// Limites da cÃ¢mera
+// Limites da câmera
 cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width / zoom));
 cameraY = Math.max(0, Math.min(cameraY, mapHeight - canvas.height / zoom));
 
@@ -473,7 +544,7 @@ cameraY = Math.max(0, Math.min(cameraY, mapHeight - canvas.height / zoom));
 
         if(en.type==='Blue_Slime' && en.onGround){ en.jumpCooldown--; if(en.jumpCooldown<=0){ en.velY=-12; en.onGround=false; en.jumpCooldown=en.jumpInterval; } }
 
-// --- LÃ“GICA DE ESTADOS ---
+// --- LÓGICA DE ESTADOS ---
         if(en.state === 'hurt') {
             en.frameTimer++;
             if(en.frameTimer >= 30) { 
@@ -518,7 +589,7 @@ cameraY = Math.max(0, Math.min(cameraY, mapHeight - canvas.height / zoom));
                     en.attackCooldown = 80;
                 }
                 
-                // Volta a perseguir apÃ³s o ataque
+                // Volta a perseguir após o ataque
                 if(en.currentFrame >= en.attackFrames) {
                     en.currentFrame = 0;
                     en.state = 'chase';
@@ -526,10 +597,10 @@ cameraY = Math.max(0, Math.min(cameraY, mapHeight - canvas.height / zoom));
             }
         }
 
-        // Cooldown e AnimaÃ§Ã£o Geral (fora dos estados)
+        // Cooldown e Animação Geral (fora dos estados)
         if(en.attackCooldown > 0) en.attackCooldown--;
 
-        // Atualiza a animaÃ§Ã£o para estados que nÃ£o sÃ£o 'attacking' (que jÃ¡ tem sua lÃ³gica acima)
+        // Atualiza a animação para estados que não são 'attacking' (que já tem sua lógica acima)
         if(en.state !== 'attacking' && en.state !== 'dead') {
             en.frameTimer++;
             if(en.frameTimer >= en.frameInterval) {
@@ -548,9 +619,9 @@ cameraY = Math.max(0, Math.min(cameraY, mapHeight - canvas.height / zoom));
 if (player.x > 6500 && !boss) {
     boss = {
         type: 'Boss',
-        x: 6700, // Ele aparece um pouco Ã  frente
+        x: 6700, // Ele aparece um pouco à frente
         y: 100, 
-        width: 100, height: 100, // Boss Ã© maior!
+        width: 100, height: 100, // Boss é maior!
         hp: 10, maxHp: 10,
         speed: 2,
         state: 'idle',
@@ -565,12 +636,12 @@ if (player.x > 6500 && !boss) {
 
         idleFrames: 5, walkFrames: 8, attackFrames: 6, hurtFrames: 2, deadFrames: 5,
         
-        // Imagens (Generalizado: vocÃª sÃ³ precisa garantir que as pastas existam)
+        // Imagens (Generalizado: você só precisa garantir que as pastas existam)
         imgIdle: new Image(), imgWalk: new Image(), imgAttack: new Image(), 
         imgHurt: new Image(), imgDead: new Image()
     };
     
-    // Carregamento automÃ¡tico das imagens (ajuste a pasta conforme seu assets)
+    // Carregamento automático das imagens (ajuste a pasta conforme seu assets)
     const folder = 'assets/Enchantress'; 
     boss.imgIdle.src = `${folder}/Idle.png`;
     boss.imgWalk.src = `${folder}/Walk.png`;
@@ -579,7 +650,7 @@ if (player.x > 6500 && !boss) {
     boss.imgDead.src = `${folder}/Dead.png`;
 }
 
-// Se o Boss existir, rodar a lÃ³gica dele
+// Se o Boss existir, rodar a lógica dele
 if (boss) {
     updateBossLogic(); 
 }
@@ -595,7 +666,7 @@ function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (gameState === 'menu') return;
 
-    // 2. DEPOIS: Desenhamos o mundo (CÃ¢mera)
+    // 2. DEPOIS: Desenhamos o mundo (Câmera)
     ctx.save();
     ctx.setTransform(
         zoom, 0, 0, zoom,
@@ -658,7 +729,7 @@ function draw() {
             }
             ctx.restore();
 
-            // BalÃ£o de fala das entidades
+            // Balão de fala das entidades
             if (obj.state !== 'dead' && obj.dialogue && obj.dialogueTimer > 0) {
                 ctx.font = "bold 16px Arial"; ctx.textAlign = "center";
                 let textWidth = ctx.measureText(obj.dialogue).width;
@@ -689,7 +760,7 @@ function draw() {
         if (d.img.complete) ctx.drawImage(d.img, d.x, d.y, d.width, d.height);
     });
 
-    ctx.restore(); // Fecha CÃ¢mera
+    ctx.restore(); // Fecha Câmera
 
     // 3. UI (Fixo na tela)
     if (gameState === 'playing') {
@@ -708,59 +779,71 @@ function draw() {
     }
 
 // --- 4. TELAS FINAIS ---
-    const screen = document.getElementById('game-over-screen');
-    const title = screen ? screen.querySelector('h1') : null;
-    const subtitle = screen ? screen.querySelector('p') : null; // Captura o parÃ¡grafo (subtÃ­tulo)
+const screen = document.getElementById('game-over-screen');
+const title = screen ? screen.querySelector('h1') : null;
+const subtitle = screen ? screen.querySelector('p') : null;
+// Captura os dois botões individualmente
+const btnReset = document.getElementById('btn-reset');
+const btnNext = document.getElementById('btn-next-chapter');
 
-    if (screen) {
-        // CASO A: DERROTA (Player morreu)
-        if (player.hp <= 0 || player.state === 'dead') {
-            screen.style.display = 'flex';
-            screen.style.backgroundColor = "rgba(139, 0, 0, 0.8)"; // Vermelho escuro
-            
-            if (title) title.innerText = "VOCÃŠ CAIU...";
-            if (subtitle) subtitle.innerText = "Aperte JOGAR para voltar para o inÃ­cio";
-        } 
+if (screen) {
+    // CASO A: DERROTA (Player morreu)
+    if (player.hp <= 0 || player.state === 'dead') {
+        screen.style.display = 'flex';
+        screen.style.backgroundColor = "rgba(139, 0, 0, 0.8)"; 
         
-        // CASO B: VITÃ“RIA (Boss morreu)
-        else if (boss && boss.state === 'dead' && boss.hp <= 0) {
-            if (screen.style.display !== 'flex') {
-                screen.style.display = 'flex';
-                screen.style.backgroundColor = "rgba(0, 0, 0, 0.8)"; // Verde escuro
-                
-                if (title) title.innerHTML = "VocÃª derrubou <br>  Enchantress";
-                if (subtitle) subtitle.innerHTML = "Mas o desequilÃ­brio permanece... <br>Algo pior espreita nas sombras.";
-            }
+        if (title) title.innerText = "VOCÊ CAIU...";
+        if (subtitle) subtitle.innerText = "Tente novamente para prosseguir";
+        
+        // MOSTRA o reset e ESCONDE o próximo capítulo
+        if (btnReset) btnReset.style.display = 'block';
+        if (btnNext) btnNext.style.display = 'none';
+    } 
+    
+    // CASO B: VITÓRIA (Boss morreu)
+    else if (boss && boss.state === 'dead' && boss.hp <= 0) {
+        if (screen.style.display !== 'flex') {
+            screen.style.display = 'flex';
+            screen.style.backgroundColor = "rgba(0, 0, 0, 0.8)"; 
+            
+            if (title) title.innerHTML = "Você derrubou <br> Enchantress";
+            if (subtitle) subtitle.innerHTML = "Mas o desequilíbrio permanece... <br>Algo pior espreita nas sombras.";
+
+            // ESCONDE o reset e MOSTRA o botão de voltar ao menu (Próxima Fase)
+            if (btnReset) btnReset.style.display = 'none';
+            if (btnNext) btnNext.style.display = 'block';
         }
     }
+}
+
 if (boss && boss.falaTimer > 0) {
     ctx.save();
     ctx.font = "italic bold 16px 'Segoe UI', Arial";
     
-    // Mede a largura do texto para centralizar o balÃ£o
+    // Mede a largura do texto para centralizar o balão
     let textWidth = ctx.measureText(boss.fala).width;
     let bx = boss.x - cameraX + (boss.width / 2) - (textWidth / 2);
-    let by = boss.y - 30; // PosiÃ§Ã£o acima da cabeÃ§a
+    let by = boss.y - 30; // Posição acima da cabeça
 
-    // Fundo do balÃ£o (Sombra/Preto)
+    // Fundo do balão (Sombra/Preto)
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(bx - 10, by - 20, textWidth + 20, 30);
     
     // Texto da fala
-    ctx.fillStyle = "#dfa9ff"; // Roxo claro/mÃ¡gico
+    ctx.fillStyle = "#dfa9ff"; // Roxo claro/mágico
     ctx.fillText(boss.fala, bx, by);
     ctx.restore();
 }
-} // FIM DA FUNÃ‡ÃƒO DRAW
+} // FIM DA FUNÇÃO DRAW
 
-// --- OUTRAS FUNÃ‡Ã•ES ---
+// --- OUTRAS FUNÇÕES ---
 function enemySay(en, type) {
     const list = en.phrases[type];
     en.dialogue = list[Math.floor(Math.random() * list.length)];
     en.dialogueTimer = 120;
 }
 
-// --- LÃ“GICA DO BOSS (ENCHANTRESS) ---
+// --- LÓGICA DO BOSS (ENCHANTRESS) ---
 function updateBossLogic() {
     if (!boss) return;
 
@@ -778,17 +861,17 @@ function updateBossLogic() {
         return; 
     }
 
-    // 2. GRAVIDADE E CHÃƒO
+    // 2. GRAVIDADE E CHÃO
     boss.velY = (boss.velY || 0) + gravity;
     boss.y += boss.velY;
 
-    // ColisÃ£o simples com o chÃ£o para o Boss
+    // Colisão simples com o chão para o Boss
     if (boss.y + boss.height > 300) {
         boss.y = 300 - boss.height;
         boss.velY = 0;
     }
 
-    // 3. ANIMAÃ‡ÃƒO E TIMERS
+    // 3. ANIMAÇÃO E TIMERS
     if (boss.falaTimer > 0) boss.falaTimer--;
     
     boss.frameTimer++;
@@ -803,7 +886,7 @@ function updateBossLogic() {
 
         boss.currentFrame++;
 
-        // VERIFICAÃ‡ÃƒO DE DANO (No frame 3 do ataque)
+        // VERIFICAÇÃO DE DANO (No frame 3 do ataque)
         if (boss.state === 'attacking' && boss.currentFrame === 3) {
             if (dist < (boss.attackRange || 100) && player.hp > 0) {
                 player.hp -= (boss.damage || 1);
@@ -826,7 +909,7 @@ function updateBossLogic() {
 
     // 4. GATILHOS DE FALA
     if (dist < 400 && !boss.viuPlayer) {
-        bossDiz("NÃ£o venha! O desequilÃ­brio...");
+        bossDiz("Não venha! O desequilíbrio...");
         boss.viuPlayer = true;
     }
 
@@ -851,23 +934,36 @@ function updateBossLogic() {
     if (boss.attackCooldown > 0) boss.attackCooldown--;
 }
 
-// --- LOOP PRINCIPAL E INPUTS ---
+// --- LOOP PRINCIPAL ---
 function gameLoop() {
     update();
     draw();
     requestAnimationFrame(gameLoop);
 }
+gameLoop(); // Inicia o loop
 
-// Inicia o loop
-gameLoop();
+// --- FUNÇÃO PARA SALVAR E VOLTAR AO MENU ---
+window.irParaMenu = function() {
+    localStorage.setItem('capitulo_1_vencido', 'true');
+    window.location.href = "../index.html"; // Sai da pasta Chapter_1 para a raiz
+};
 
+// --- INPUTS DO TECLADO ---
 window.addEventListener('keydown', (e) => {
     const k = e.key.toLowerCase();
     if (k === 'a') window.mover('left', true);
     if (k === 'd') window.mover('right', true);
     if (k === 'w' || k === ' ') window.pular();
     if (k === 'k') window.atacar();
-    if (k === 'r') { if (player.state === 'dead') window.resetGame(); }
+    
+    // Tecla R inteligente: Reinicia se morreu, ou vai para o menu se ganhou
+    if (k === 'r') { 
+        if (boss && boss.state === 'dead' && boss.hp <= 0) {
+            window.irParaMenu();
+        } else if (player.hp <= 0 || player.state === 'dead') {
+            window.resetGame();
+        }
+    }
 });
 
 window.addEventListener('keyup', (e) => {
@@ -876,11 +972,16 @@ window.addEventListener('keyup', (e) => {
     if (k === 'd') window.mover('right', false);
 });
 
-// Listener para o botÃ£o de reset (HTML)
-const btnReset = document.getElementById('btn-reset');
-if (btnReset) {
-    btnReset.addEventListener('pointerdown', (e) => {
-        e.preventDefault();
-        window.resetGame();
-    });
-}
+// --- LÓGICA DOS BOTÕES DA TELA FINAL ---
+document.addEventListener('DOMContentLoaded', () => {
+    const btnReset = document.getElementById('btn-reset');
+    const btnNext = document.getElementById('btn-next-chapter');
+
+    if (btnReset) {
+        btnReset.onclick = () => window.resetGame();
+    }
+
+    if (btnNext) {
+        btnNext.onclick = () => window.irParaMenu();
+    }
+});
