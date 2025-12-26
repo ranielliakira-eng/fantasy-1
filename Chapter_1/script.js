@@ -117,7 +117,7 @@ const playerDialogTriggers = [
     { x: 600, text: "Esses Slimes não deveriam estar aqui.", used: false },
     { x: 1800, text: "A floresta está ficando mais densa.", used: false },
     { x: 6200, text: "Floresta está cheia de Slimes...", used: false },
-	{ x: 6500, text: "Quem é você?", used: false },
+	{ x: 6400, text: "Quem é você?", used: false },
 ];
 
 // --- INIMIGOS ---
@@ -348,7 +348,7 @@ window.resetGame = function() {
     if(screen) screen.style.display='none';
     
     player.hp = player.maxHp; 
-    player.x = 170; 
+    player.x = 140; 
     player.y = 100; 
     player.velX = 0; 
     player.velY = 0; 
@@ -606,11 +606,11 @@ cameraY = Math.max(0, Math.min(cameraY, mapHeight - canvas.height / zoom));
         if(!trigger.used && player.x>trigger.x){ playerSay(trigger.text,180); trigger.used=true;}
     });
 // Gatilho para o Boss (Aparece no X: 6500)
-if (player.x > 6500 && !boss) {
+if (player.x > 6400 && !boss) {
     boss = {
         type: 'Boss',
         x: 6700, // Ele aparece um pouco à frente
-        y: 100, 
+        y: 200, 
         width: 100, height: 100, // Boss é maior!
         hp: 10, maxHp: 10,
         speed: 2,
@@ -976,6 +976,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+
 
 
 
