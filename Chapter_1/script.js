@@ -348,7 +348,7 @@ window.resetGame = function() {
     if(screen) screen.style.display='none';
     
     player.hp = player.maxHp; 
-    player.x = 200; 
+    player.x = 170; 
     player.y = 100; 
     player.velX = 0; 
     player.velY = 0; 
@@ -976,6 +976,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+
 
 
 
