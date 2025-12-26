@@ -317,7 +317,7 @@ const foregroundObjects = [
 
 // --- NPCs ---
 const oxNpc = {
-    x: 10, y: 210, width: 90, height: 90, imgIdle: new Image(),
+    x: 10, y: 210, width: 100, height: 100, imgIdle: new Image(),
     idleFrames: 4, currentFrame: 0, frameTimer: 0, frameInterval: 20,
     phrases: ["Muuu!"], dialogueIndex: 0, dialogueTimer: 0
 };
@@ -981,5 +981,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+
 
 
