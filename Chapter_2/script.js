@@ -115,22 +115,35 @@ setTimeout(() => {
 }
 
 const playerDialogTriggers = [
-    { x: 140, text: "Finalmente sai da floresta...", used: false },
-    { x: 300, text: "Enchantress estava descontrolada...", used: false },
-    { x: 450, text: "Espero que o fazendeiro cuide bem dela", used: false },
-    { x: 600, text: "Um vilarejo abandonado?", used: false },
-    { x: 2300, text: "O vilarejo foi tomado por esqueletos", used: false },
+    { x: 450, text: "Finalmente sai da floresta...", used: false },
+    { x: 600, text: "Enchantress estava descontrolada...", used: false },
+    { x: 900, text: "Espero que o fazendeiro cuide bem dela", used: false },
+    { x: 1200, text: "Um vilarejo abandonado?", used: false },
+    { x: 3650, text: "O vilarejo foi tomado por esqueletos", used: false },
 ];
 
 // --- INIMIGOS ---
 let enemies = [];
 function initEnemies() {
     enemies = [
-        { type: 'Skeleton', x: 1200, y: 200, hp: 2, speed: 0.9, attackRange: 30, frameInterval: 8, idleFrames: 7, walkFrames: 8, attackFrames: 7, hurtFrames: 3, deadFrames: 3 },
+        { type: 'Skeleton', x: 2550, y: 200, hp: 2, speed: 0.9, attackRange: 30, frameInterval: 8, idleFrames: 7, walkFrames: 8, attackFrames: 7, hurtFrames: 3, deadFrames: 3 },
         { type: 'Skeleton', x: 1700, y: 200, hp: 2, speed: 0.9, attackRange: 30, frameInterval: 8, idleFrames: 7, walkFrames: 8, attackFrames: 7, hurtFrames: 3, deadFrames: 3 },
         { type: 'Skeleton', x: 2100, y: 200, hp: 2, speed: 0.8, attackRange: 30, frameInterval: 8, idleFrames: 7, walkFrames: 8, attackFrames: 7, hurtFrames: 3, deadFrames: 3 },
         { type: 'Skeleton', x: 2200, y: 200, hp: 2, speed: 1.1, attackRange: 30, frameInterval: 8, idleFrames: 7, walkFrames: 8, attackFrames: 7, hurtFrames: 3, deadFrames: 3 },
         { type: 'Skeleton', x: 2150, y: 200, hp: 2, speed: 0.9, attackRange: 30, frameInterval: 8, idleFrames: 7, walkFrames: 8, attackFrames: 7, hurtFrames: 3, deadFrames: 3 },
+        { type: 'Skeleton', x: 3550, y: 200, hp: 2, speed: 0.9, attackRange: 30, frameInterval: 8, idleFrames: 7, walkFrames: 8, attackFrames: 7, hurtFrames: 3, deadFrames: 3 },
+
+        { type: 'Skeleton', x: 3850, y: 200, hp: 2, speed: 0.9, attackRange: 30, frameInterval: 8, idleFrames: 7, walkFrames: 8, attackFrames: 7, hurtFrames: 3, deadFrames: 3 },
+        { type: 'Skeleton', x: 3950, y: 200, hp: 2, speed: 1.1, attackRange: 30, frameInterval: 8, idleFrames: 7, walkFrames: 8, attackFrames: 7, hurtFrames: 3, deadFrames: 3 },
+
+        { type: 'Skeleton', x: 4350, y: 200, hp: 2, speed: 0.9, attackRange: 30, frameInterval: 8, idleFrames: 7, walkFrames: 8, attackFrames: 7, hurtFrames: 3, deadFrames: 3 },
+        { type: 'Skeleton', x: 4400, y: 200, hp: 2, speed: 1.2, attackRange: 30, frameInterval: 8, idleFrames: 7, walkFrames: 8, attackFrames: 7, hurtFrames: 3, deadFrames: 3 },
+
+        { type: 'Skeleton', x: 4850, y: 200, hp: 2, speed: 0.9, attackRange: 30, frameInterval: 8, idleFrames: 7, walkFrames: 8, attackFrames: 7, hurtFrames: 3, deadFrames: 3 },
+        { type: 'Skeleton', x: 4900, y: 200, hp: 2, speed: 1.2, attackRange: 30, frameInterval: 8, idleFrames: 7, walkFrames: 8, attackFrames: 7, hurtFrames: 3, deadFrames: 3 },
+        { type: 'Skeleton', x: 4950, y: 200, hp: 2, speed: 0.8, attackRange: 30, frameInterval: 8, idleFrames: 7, walkFrames: 8, attackFrames: 7, hurtFrames: 3, deadFrames: 3 },
+        { type: 'Skeleton', x: 5000, y: 200, hp: 2, speed: 1.1, attackRange: 30, frameInterval: 8, idleFrames: 7, walkFrames: 8, attackFrames: 7, hurtFrames: 3, deadFrames: 3 },
+
 ];
 
     enemies.forEach(en => {
@@ -155,7 +168,7 @@ const platforms = [
 // --- Chão parte 1 ---
     { x: 0, y: 300, w: 7000, h: 150, type: 'pattern' },
 // --- Avaranda casa 4 ---
-    { x: 1200, y: 200, w: 100, h: 10, type: 'pattern', alpha: 0 },
+    { x: 2550, y: 200, w: 110, h: 10, type: 'pattern', alpha: 0 },
 
 ];
 
@@ -165,6 +178,13 @@ fundoImg.src = 'assets/Battleground/fundo.png';
 
 const platformImg = new Image();
 platformImg.src = 'assets/Battleground/Ground.png';
+
+const middle_lane_tree2Img = new Image();
+middle_lane_tree2Img.src = 'assets/Battleground/trees/middle_lane_tree2.png';
+const middle_lane_tree5Img = new Image();
+middle_lane_tree5Img.src = 'assets/Battleground/trees/middle_lane_tree5.png';
+const middle_lane_tree6Img = new Image();
+middle_lane_tree6Img.src = 'assets/Battleground/trees/middle_lane_tree6.png';
 
 const tree5Img = new Image();
 tree5Img.src = 'assets/Battleground/trees/jungle_tree_5.png';
@@ -190,19 +210,21 @@ casa5Img.src = 'assets/Battleground/casa/casa5.png';
 
 const mesaImg = new Image();
 mesaImg.src = 'assets/Battleground/casa/mesa.png';
-
 const cadeiraImg = new Image();
 cadeiraImg.src = 'assets/Battleground/casa/cadeira.png';
-
-
 const BottleImg = new Image();
 BottleImg.src = 'assets/Battleground/casa/Bottle.png';
-
 const paoImg = new Image();
 paoImg.src = 'assets/Battleground/casa/pao.png';
-
 const Street_LanternImg = new Image();
 Street_LanternImg.src = 'assets/Battleground/casa/Street_Lantern.png';
+
+const lapideImg = new Image();
+lapideImg.src = 'assets/Battleground/casa/lapide.png';
+const cripta1Img = new Image();
+cripta1Img.src = 'assets/Battleground/casa/cripta1.png';
+const cripta2Img = new Image();
+cripta2Img.src = 'assets/Battleground/casa/cripta2.png';
 
 let platformPattern = null;
 
@@ -214,31 +236,63 @@ let keys = { left: false, right: false };
 
 const backgroundObjects = [
     { x: 0, y: 0, width: 7000, height: 2000, img: fundoImg },
-    { x: 700, y: 120, width: 350, height: 180, img: casa5Img },
-    { x: 1080, y: 5, width: 400, height: 300, img: casa4Img },
-    { x: 1500, y: 105, width: 250, height: 200, img: casa3Img },
-    { x: 1800, y: 105, width: 250, height: 200, img: casa3Img },
-    
-    { x: 2100, y: 270, width: 100, height: 30, img: mesaImg },
-    { x: 2050, y: 270, width: 50, height: 30, img: cadeiraImg },
-    { x: 2125, y: 270, width: 50, height: 30, img: cadeiraImg },
-    { x: 2200, y: 270, width: 50, height: 30, img: cadeiraImg },
-    { x: 2140, y: 245, width: 30, height: 30, img: BottleImg },
-    { x: 2125, y: 245, width: 30, height: 30, img: paoImg },
-    { x: 2225, y: 150, width: 120, height: 170, img: Street_LanternImg },
 
-    { x: 2400, y: 105, width: 250, height: 200, img: casa3Img },
+    { x: 30, y: 5, width: 200, height: 300, img: middle_lane_tree2Img },
+    { x: 100, y: 5, width: 200, height: 300, img: middle_lane_tree5Img },
+    { x: 200, y: 5, width: 200, height: 300, img: middle_lane_tree6Img },
+
+    { x: 1800, y: 105, width: 250, height: 200, img: casa3Img },
+    { x: 2050, y: 120, width: 350, height: 180, img: casa5Img },
+    { x: 2425, y: 5, width: 400, height: 300, img: casa4Img },
+    { x: 2850, y: 105, width: 250, height: 200, img: casa3Img },
+    { x: 3100, y: 105, width: 250, height: 200, img: casa3Img },
+    
+    { x: 3400, y: 270, width: 100, height: 30, img: mesaImg },
+    { x: 3350, y: 270, width: 50, height: 30, img: cadeiraImg },
+    { x: 3425, y: 270, width: 50, height: 30, img: cadeiraImg },
+    { x: 3500, y: 270, width: 50, height: 30, img: cadeiraImg },
+    { x: 3440, y: 245, width: 30, height: 30, img: BottleImg },
+    { x: 3425, y: 245, width: 30, height: 30, img: paoImg },
+    { x: 3475, y: 150, width: 120, height: 170, img: Street_LanternImg },
+    { x: 3600, y: 105, width: 250, height: 200, img: casa3Img },
+    { x: 3800, y: 105, width: 200, height: 200, img: tree5Img },
+
+    { x: 4000, y: 105, width: 200, height: 200, img: tree6Img },
+    { x: 4150, y: 105, width: 200, height: 200, img: tree6Img },
+    { x: 4300, y: 105, width: 200, height: 200, img: tree5Img },
+    { x: 4500, y: 105, width: 200, height: 200, img: tree7Img },
+    { x: 4750, y: 105, width: 200, height: 200, img: tree5Img },
+    { x: 4900, y: 105, width: 200, height: 200, img: tree5Img },
+    { x: 5125, y: 205, width: 100, height: 100, img: tree9Img },
+
+
+    { x: 5800, y: 260, width: 100, height: 50, img: lapideImg },
+    { x: 5850, y: 260, width: 100, height: 50, img: lapideImg },
+    { x: 5900, y: 260, width: 100, height: 50, img: lapideImg },
+    { x: 6000, y: 105, width: 200, height: 200, img: cripta1Img },
+    { x: 6300, y: 260, width: 100, height: 50, img: lapideImg },
+    { x: 6600, y: 260, width: 100, height: 50, img: lapideImg },
+    { x: 6800, y: 135, width: 200, height: 200, img: cripta2Img },
+
 ];
 
 const foregroundObjects = [
+    { x: 0, y: 5, width: 200, height: 300, img: middle_lane_tree2Img },
+    { x: 170, y: 5, width: 200, height: 300, img: middle_lane_tree2Img },
+    { x: 400, y: 260, width: 50, height: 50, img: tree5Img },
+    { x: 4350, y: 105, width: 200, height: 200, img: tree5Img },
+    { x: 4650, y: 105, width: 200, height: 200, img: tree7Img },
+    { x: 5025, y: 105, width: 200, height: 200, img: tree5Img },
 
-        { x: 400, y: 260, width: 50, height: 50, img: tree5Img },
+    { x: 5500, y: 250, width: 200, height: 50, img: casa4_1Img },
 
+    { x: 6150, y: 260, width: 100, height: 50, img: lapideImg },
+    { x: 6450, y: 260, width: 100, height: 50, img: lapideImg },
 ];
 
 // NPCs
 const farmerNpc = {
-    x: 1250, y: 110, width: 70, height: 90, imgIdle: new Image(),
+    x: 2560, y: 110, width: 70, height: 90, imgIdle: new Image(),
     idleFrames: 4, currentFrame: 0, frameTimer: 0, frameInterval: 16,
     phrases: [
 "Socorro!", 
@@ -261,9 +315,9 @@ function updateNPCs() {
 
         let newIndex;
 
-        if (player.x < 900) newIndex = 0;
-        else if (player.x < 1100) newIndex = 1;
-        else if (player.x < 1250) newIndex = 2;
+        if (player.x < 2350) newIndex = 0;
+        else if (player.x < 2450) newIndex = 1;
+        else if (player.x < 2550) newIndex = 2;
         else newIndex = 3;
 
         // só muda se for diferente
@@ -381,18 +435,18 @@ enemies.forEach(en => {
 function bossSummonFireSpirit() {
     if (!boss || boss.state === 'dead') return;
 
-    bossDiz("Algo está controlando meu poder", 120);
+    bossDiz("Algo está me controlando", 120);
     
     // Criar o Fire_Spirit
     const spirit = {
         type: 'Fire_Spirit',
         x: boss.x + (boss.facing === 'left' ? -10 : 10),
-        y: boss.y,
-        hp: 1, // Espíritos costumam ser frágeis, mas rápidos
-        speed: 2.5, // Mais rápido que o esqueleto
-        attackRange: 20,
+        y: boss.y +20,
+        hp: 1,
+        speed: 2.5,
+        attackRange: 30,
         frameInterval: 6,
-        idleFrames: 6, // Ajuste conforme a quantidade real de frames do seu asset
+        idleFrames: 6,
         walkFrames: 7,
         attackFrames: 14,
         hurtFrames: 3,
@@ -615,7 +669,7 @@ enemies.forEach(en => {
             en.currentFrame++;
             
             // Dano no player (frame 2 do ataque)
-            if (en.currentFrame === 2 && dist <= en.attackRange) {
+            if (en.currentFrame === 5 && dist <= en.attackRange) {
                 player.hp -= 1;
                 player.state = 'hurt'; // Faz o player reagir ao dano
                 en.attackCooldown = 80;
@@ -834,7 +888,7 @@ if (screen) {
             screen.style.backgroundColor = "rgba(0, 0, 0, 0.8)"; 
             
             if (title) title.innerHTML = "Você derrubou <br> Wizard (Possuído)";
-            if (subtitle) subtitle.innerHTML = "E você persebe que um poder que controla mentes está solto.";
+            if (subtitle) subtitle.innerHTML = "Existe algo está controlando o corpo dos seus amigos";
 
             // ESCONDE o reset e MOSTRA o botão de voltar ao menu (Próxima Fase)
             if (btnReset) btnReset.style.display = 'none';
@@ -905,7 +959,7 @@ function updateBossLogic() {
             boss.summonCooldown--;
         } else {
             bossSummonFireSpirit();
-            boss.summonCooldown = 45; // Espera 10 segundos para invocar de novo
+            boss.summonCooldown = 60; // Espera 10 segundos para invocar de novo
             boss.state = 'attacking'; // Usa a animação de ataque para invocar
             boss.currentFrame = 0;
         }
