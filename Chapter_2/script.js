@@ -7,6 +7,7 @@ canvas.height = 450;
 const bgMusic = new Audio('assets/sounds/song.mp3');
 bgMusic.loop = true;
 bgMusic.volume = 0.5;
+bgMusic.preload = "auto";
 
 const gravity = 0.8;
 const zoom = 2; 
@@ -1025,6 +1026,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+
 
 
 
