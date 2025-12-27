@@ -10,7 +10,6 @@
             background-color: #000; display: flex; justify-content: center; align-items: center; 
             overflow: hidden; font-family: 'Courier New', monospace;
         }
-
         #game-area {
             width: 800px; height: 450px;
             background-image: url('Background.png');
@@ -20,49 +19,27 @@
             border: 4px solid #333;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-
-        /* AJUSTE NO TÍTULO: Mais para cima e um pouco menor no topo */
         h1 {
             color: #ffd700; font-size: 48px; text-shadow: 4px 4px #000;
             margin: 0; position: absolute; transition: all 0.8s ease-in-out;
-            z-index: 10;
-            text-align: center;
-            width: 100%;
+            z-index: 10; text-align: center; width: 100%;
         }
-        h1.pos-top { 
-            transform: translateY(-175px); /* Subiu mais 25px para dar espaço */
-            font-size: 28px; /* Diminuiu um pouco para não apertar */
-        }
-
+        h1.pos-top { transform: translateY(-175px); font-size: 28px; }
         .container {
             background-color: rgba(0, 0, 0, 0.85);
-            padding: 20px; /* Reduzi um pouco o padding interno */
-            border-radius: 10px; border: 2px solid #ffd700;
+            padding: 20px; border-radius: 10px; border: 2px solid #ffd700;
             display: none; flex-direction: column; align-items: center;
-            animation: fadeIn 0.5s forwards;
-            min-width: 320px;
-            margin-top: 40px; /* Garante que a caixa comece abaixo do título */
+            animation: fadeIn 0.5s forwards; min-width: 320px; margin-top: 40px;
         }
-
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* Botões mais compactos para caberem todos */
         .btn {
             width: 260px; margin: 4px; padding: 10px;
             background: none; color: white; border: 1px solid white; 
             cursor: pointer; font-size: 14px; transition: 0.2s;
             font-family: 'Courier New', monospace;
         }
-        
         .btn:hover:not(.locked) { background: white; color: black; transform: scale(1.03); }
-
-        .locked { 
-            opacity: 0.4; 
-            cursor: not-allowed !important; 
-            border: 1px dashed #777;
-            color: #777;
-        }
-
+        .locked { opacity: 0.4; cursor: not-allowed !important; border: 1px dashed #777; color: #777; }
         .hero-grid { display: flex; gap: 40px; margin-top: 10px; }
         .hero-card { text-align: center; cursor: pointer; transition: 0.2s; width: 100px; }
         .sprite-container {
@@ -73,21 +50,15 @@
         .hero-card img { height: 70px; width: auto; image-rendering: pixelated; }
         .hero-card:hover .sprite-container { border-color: #ffd700; background: rgba(255,215,0,0.1); }
         .hero-card span { color: white; font-weight: bold; font-size: 13px; }
-
-        @media (max-width: 820px) { #game-area { transform: scale(0.9); } }
-        @media (max-width: 600px) { #game-area { transform: scale(0.5); } }
     </style>
 </head>
 <body>
-
     <div id="game-area">
         <h1 id="main-title">PIXEL QUEST</h1>
-
         <div id="step-players" class="container">
             <button class="btn" onclick="escolherJogadores(1)">1 JOGADOR</button>
             <button class="btn locked">2 JOGADORES (??)</button>
         </div>
-
         <div id="step-heroes" class="container">
             <h2 style="color:#ffd700; font-size: 16px; margin-top: 0;">QUEM VAI JOGAR?</h2>
             <div class="hero-grid">
@@ -102,7 +73,6 @@
             </div>
             <button onclick="location.reload()" style="margin-top:15px; background:none; border:none; color:gray; cursor:pointer; font-size: 12px;">[ VOLTAR ]</button>
         </div>
-
         <div id="step-chapters" class="container">
             <h2 style="color:white; font-size: 14px; margin-bottom: 8px;">SELECIONE O CAPÍTULO</h2>
             <button class="btn" onclick="iniciarJogo(1)">CAPÍTULO 1</button>
@@ -116,7 +86,6 @@
 
     <script>
         const title = document.getElementById('main-title');
-        
         setTimeout(() => {
             title.classList.add('pos-top');
             document.getElementById('step-players').style.display = 'flex';
@@ -137,8 +106,19 @@
         function mostrarCapitulos() {
             const menu = document.getElementById('step-chapters');
             menu.style.display = 'flex';
+            
+            // CORREÇÃO: Verifica individualmente cada progresso salvo
             if (localStorage.getItem('capitulo_1_vencido') === 'true') {
                 liberarBotao('btn-cap2', "CAPÍTULO 2");
+            }
+            if (localStorage.getItem('capitulo_2_vencido') === 'true') {
+                liberarBotao('btn-cap3', "CAPÍTULO 3");
+            }
+	    if (localStorage.getItem('capitulo_3_vencido') === 'true') {
+                liberarBotao('btn-cap4', "CAPÍTULO 4");
+            }
+	    if (localStorage.getItem('capitulo_4_vencido') === 'true') {
+                liberarBotao('btn-cap5', "CAPÍTULO 5");
             }
         }
 
@@ -155,6 +135,7 @@
         }
 
         function verificarCap(cap) {
+            // Verifica se o capítulo anterior está marcado como vencido no localStorage
             const venceuAnterior = localStorage.getItem(`capitulo_${cap-1}_vencido`) === 'true';
             if (venceuAnterior) {
                 iniciarJogo(cap);
