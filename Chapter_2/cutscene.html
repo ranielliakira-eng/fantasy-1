@@ -274,26 +274,12 @@ function draw() {
 // LOOP
 // ==================================================
 function loop() { update(); draw(); requestAnimationFrame(loop); }
-// ... todo o seu código anterior ...
-
-// ==================================================
-// INÍCIO DO JOGO
-// ==================================================
-
-// Remova o loop(); antigo e coloque isso:
-bgImage.onload = () => {
-    console.log("Imagens carregadas! Iniciando a cutscene...");
     loop(); 
-};
-
-// Caso a imagem de fundo demore muito, isso garante que o navegador
-// saiba que precisa carregar esse arquivo específico.
-bgImage.src = "assets/Battleground/fundo.png"; 
-
 </script>
 
 </body>
 </html>
+
 
 
 
