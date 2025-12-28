@@ -101,6 +101,14 @@ function updateSprite(sprite) {
 }
 
 function drawSprite(sprite, x, y, w, h, facing = "right") {
+    // Verifica se a imagem existe, se carregou e se NÃO está quebrada
+    if (!sprite.img || !sprite.img.complete || sprite.img.naturalWidth === 0) {
+        // Opcional: desenha um retângulo vermelho onde deveria estar o personagem
+        ctx.fillStyle = "red";
+        ctx.fillRect(x, y, w, h);
+        return; // Pula o desenho desta imagem e evita o erro 'broken state'
+    }
+
     const fw = sprite.img.width / sprite.frameCount;
     const fh = sprite.img.height;
     ctx.save();
@@ -113,7 +121,6 @@ function drawSprite(sprite, x, y, w, h, facing = "right") {
     }
     ctx.restore();
 }
-
 // ==================================================
 // PLAYER
 // ==================================================
@@ -289,6 +296,7 @@ bgImage.src = "assets/Battleground/fundo.png";
 
 </body>
 </html>
+
 
 
 
