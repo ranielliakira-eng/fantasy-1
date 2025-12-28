@@ -22,7 +22,7 @@ let boss = null;
 
 // --- JOGADOR (ESTRUTURA BASE) ---
 const player = {
-    x: 140, y: 200, width: 100, height: 100,
+    x: 6500, y: 200, width: 100, height: 100,
     velX: 0, velY: 0, speed: 3, jumpForce: -15,
     facing: 'right', onGround: false, state: 'idle',
     hp: 3, maxHp: 3, canAirAttack: true,
@@ -71,48 +71,22 @@ window.onload = function() {
     if(controls) controls.style.display = 'flex';
 };
 
-// --- ATUALIZAÇÃO DO STATUS DE VITÓRIA (Gatilho para o Menu Principal) ---
-function checkMeleeHit() {
-    let alcance = player.width * -0.2;
-    let hitboxX = player.facing === 'right' ? player.x + player.width : player.x - alcance;
 
-    // Colisão Inimigos Comuns
-    enemies.forEach(en => {
-        if (en.state === 'dead') return;
-        if (hitboxX < en.x + en.width && hitboxX + alcance > en.x &&
-            player.y < en.y + en.height && player.y + player.height > en.y) {
-            en.hp--;
-            en.state = 'hurt';
-            en.currentFrame = 0;
-            if (en.hp <= 0) en.state = 'dead';
-        }
-    });
+window.pular = function() { 
+    if(gameState==='playing' && player.onGround && !isPaused) { // Adicionado !isPaused
+        player.velY=player.jumpForce; 
+        player.onGround=false;
+    } 
+};
 
-    // Colisão Boss e Progresso
-    if (boss && boss.state !== 'dead') {
-        if (hitboxX < boss.x + boss.width && hitboxX + alcance > boss.x &&
-            player.y < boss.y + boss.height && player.y + player.height > boss.y) {
-            
-            boss.hp--;
-            boss.state = 'hurt';
-            boss.currentFrame = 0;
-
-            if (boss.hp <= 0) {
-                boss.state = 'dead';
-                boss.currentFrame = 0;
-                boss.dialogue = "O equilíbrio...";
-                boss.dialogueTimer = 180;
-
-                // LIBERA O CAPÍTULO 3 NO MENU PRINCIPAL
-                localStorage.setItem('capitulo_2_vencido', 'true');
-
-setTimeout(() => {
-        mostrarTelaVitoria();
-    }, 2000);
-            }
-        }
-    }
-}
+window.atacar = function() { 
+    if(player.state==='dead'){ window.resetGame(); return; } 
+    if(gameState!=='playing' || isPaused) return;
+    if(player.state==='attacking') return; 
+    player.state='attacking'; 
+    player.currentFrame=0; 
+    checkMeleeHit(); 
+};
 
 const playerDialogTriggers = [
     { x: 450, text: "Finalmente sai da floresta...", used: false },
@@ -237,7 +211,7 @@ let keys = { left: false, right: false };
 const backgroundObjects = [
     { x: 0, y: 0, width: 7000, height: 2000, img: fundoImg },
 
-    { x: 30, y: 5, width: 200, height: 300, img: middle_lane_tree2Img },
+    { x: -30, y: 5, width: 200, height: 300, img: middle_lane_tree2Img },
     { x: 100, y: 5, width: 200, height: 300, img: middle_lane_tree5Img },
     { x: 200, y: 5, width: 200, height: 300, img: middle_lane_tree6Img },
 
@@ -277,7 +251,7 @@ const backgroundObjects = [
 ];
 
 const foregroundObjects = [
-    { x: 0, y: 5, width: 200, height: 300, img: middle_lane_tree2Img },
+    { x: 30, y: 5, width: 200, height: 300, img: middle_lane_tree2Img },
     { x: 170, y: 5, width: 200, height: 300, img: middle_lane_tree2Img },
     { x: 400, y: 260, width: 50, height: 50, img: tree5Img },
     { x: 4350, y: 105, width: 200, height: 200, img: tree5Img },
@@ -298,8 +272,7 @@ const farmerNpc = {
 "Socorro!", 
 "Socorro!", 
 "Quase todos fugiram do vilarejo", 
-"Meu senhor foi para o cemitério impedir os esqueletos",
-"Ele disse que algo poderoso está lá"
+"Wizard foi impedir os esqueletos no cemitério",
 ],
     dialogueIndex: 0, dialogueTimer: 0,  lastDialogueIndex: -1,
 };
@@ -370,7 +343,7 @@ window.resetGame = function() {
 window.concluirCapituloEVoutar = function() {
     localStorage.setItem('capitulo_2_vencido', 'true');
     
-window.location.href = "../index.html"; // Volta para a pasta anterior (raiz)
+window.location.href = "cutscene.html";
 
 };
 
@@ -385,7 +358,6 @@ function checkMeleeHit() {
     let alcance = player.width * -0.2;
     let hitboxX = player.facing === 'right' ? player.x + player.width : player.x - alcance;
 
-// Dentro de la función checkMeleeHit
 enemies.forEach(en => {
     if (en.state === 'dead') return; 
 
@@ -399,7 +371,7 @@ enemies.forEach(en => {
 
         if (en.hp <= 0) {
             en.state = 'dead';
-            en.currentFrame = 0; // Empieza la caída
+            en.currentFrame = 0;
             en.frameTimer = 0;
         }
     }
@@ -410,15 +382,18 @@ enemies.forEach(en => {
         if (hitboxX < boss.x + boss.width && hitboxX + alcance > boss.x &&
             player.y < boss.y + boss.height && player.y + player.height > boss.y) {
             
-            boss.hp--; // Retira vida do Boss
-            
+            boss.hp--;
+
             if (boss.hp <= 0) {
                 boss.state = 'dead';
                 boss.currentFrame = 0;
                 boss.dialogue = "O poder...";
                 boss.dialogueTimer = 180;
 
-                // Salva progresso
+                isPaused = true;
+		enemies = [];
+		player.hp = player.maxHp;
+
                 localStorage.setItem('capitulo_2_vencido', 'true');
 
                 setTimeout(() => {
@@ -479,6 +454,19 @@ function bossSummonFireSpirit() {
 }
 // --- UPDATE ---
 function update(){
+    if (gameState !== 'playing') return;
+
+
+    if (isPaused) {
+
+        if (boss && boss.state === 'dead') {
+
+            updateBossLogic();
+ 
+        }
+
+        return;
+    }
     if(player.hp<=0){player.state='dead'; return;}
     if(gameState!=='playing'||isPaused) return;
     updateNPCs();
@@ -575,7 +563,7 @@ cameraY = Math.max(0, Math.min(cameraY, mapHeight - canvas.height / zoom));
 
 // --- LÓGICA DOS INIMIGOS (Dentro da função update) ---
 enemies.forEach(en => {
-    // 1. Definições iniciais de patrulha e gravidade
+    if (isPaused) return;
     if(en.patrolMinX === undefined){ en.patrolMinX = en.x - 120; en.patrolMaxX = en.x + 120; }
     let dist = Math.abs(player.x - en.x);
     en.velY += gravity; 
@@ -928,6 +916,8 @@ function enemySay(en, type) {
 function updateBossLogic() {
     if (!boss) return;
 
+    if (isPaused && boss.state !== 'dead') return;
+
     let dist = Math.abs((player.x + player.width / 2) - (boss.x + boss.width / 2));
 
     // 1. ESTADO DE MORTE
@@ -1039,7 +1029,7 @@ gameLoop(); // Inicia o loop
 // --- FUNÇÃO PARA SALVAR E VOLTAR AO MENU ---
 window.irParaMenu = function() {
     localStorage.setItem('capitulo_2_vencido', 'true');
-    window.location.href = "../index.html"; // Sai da pasta Chapter_1 para a raiz
+    window.location.href = "cutscene.html";
 };
 
 // --- INPUTS DO TECLADO ---
