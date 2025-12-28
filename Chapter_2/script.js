@@ -22,7 +22,7 @@ let boss = null;
 
 // --- JOGADOR (ESTRUTURA BASE) ---
 const player = {
-    x: 6500, y: 200, width: 100, height: 100,
+    x: 140, y: 200, width: 100, height: 100,
     velX: 0, velY: 0, speed: 3, jumpForce: -15,
     facing: 'right', onGround: false, state: 'idle',
     hp: 3, maxHp: 3, canAirAttack: true,
@@ -1070,6 +1070,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+
 
 
 
