@@ -4,8 +4,21 @@
 <meta charset="UTF-8">
 <title>Fantasy – Capítulo 3</title>
 <style>
-body { margin:0; background:#000; }
-canvas { display:block; margin:auto; background:#2c5; }
+  body { 
+    margin: 0; 
+    background: #000; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh; 
+    overflow: hidden; 
+  }
+  canvas { 
+    max-width: 100%; 
+    max-height: 100%; 
+    object-fit: contain; /* Mantém a proporção 16:9 */
+    background: #2c5; 
+  }
 </style>
 </head>
 <body>
@@ -259,3 +272,4 @@ loop();
 
 </body>
 </html>
+
