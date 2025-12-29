@@ -703,8 +703,8 @@ enemies.forEach(en => {
 if (player.x > 6400 && !boss) {
     boss = {
         type: 'Boss',
-        x: 140,
-        y: 6700, 
+        x: 6700,
+        y: 200, 
         width: 100,
 	height: 100,
         hp: 4, maxHp: 4,
