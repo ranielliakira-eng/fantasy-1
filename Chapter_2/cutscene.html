@@ -117,7 +117,7 @@ function drawSprite(sprite, x, y, w, h, facing = "right") {
 // PLAYER
 // ==================================================
 const player = {
-    x: 450, y: 0, w: 100, h: 100, vy: 0, speed: 3, facing: "left", onGround: false,
+    x: 400, y: 0, w: 100, h: 100, vy: 0, speed: 3, facing: "left", onGround: false,
     sprite: createSprite("assets/Swordsman/Idle.png", 8, 12)
 };
 
@@ -131,10 +131,30 @@ const wizardNPC = {
 
 const farmerNPC = {
     x: 300, y: 0, w: 75, h: 100, vy: 0, onGround: false, facing: "right",
-    sprite: createSprite("assets/Farmer/Idle.png", 4, 28)
+    sprite: createSprite("assets/Farmer/Idle.png", 4, 56)
 };
 
-const entities = [player, wizardNPC, farmerNPC];
+const womanNPC = {
+    x: 550, y: 0, w: 80, h: 95, vy: 0, onGround: false, facing: "right",
+    sprite: createSprite("assets/Farmer/woman.png", 5, 56)
+};
+
+const meninaNPC = {
+    x: 620, y: 0, w: 50, h: 60, vy: 0, onGround: false, facing: "right",
+    sprite: createSprite("assets/Farmer/menina.png", 4, 56)
+};
+
+const menNPC = {
+    x: 675, y: 0, w: 80, h: 100, vy: 0, onGround: false, facing: "right",
+    sprite: createSprite("assets/Farmer/men.png", 6, 56)
+};
+
+const men2NPC = {
+    x: 25, y: 0, w: 70, h: 75, vy: 0, onGround: false, facing: "right",
+    sprite: createSprite("assets/Farmer/men2.png", 5, 56)
+};
+
+const entities = [player, wizardNPC, farmerNPC, womanNPC, menNPC, meninaNPC, men2NPC ];
 
 // ==================================================
 // PLATAFORMAS
@@ -243,6 +263,10 @@ function draw() {
     drawSprite(wizardNPC.sprite, wizardNPC.x, wizardNPC.y, wizardNPC.w, wizardNPC.h, wizardNPC.facing);
     drawSprite(farmerNPC.sprite, farmerNPC.x, farmerNPC.y, farmerNPC.w, farmerNPC.h, farmerNPC.facing);
     drawSprite(player.sprite, player.x, player.y, player.w, player.h, player.facing);
+    drawSprite(menNPC.sprite, menNPC.x, menNPC.y, menNPC.w, menNPC.h, menNPC.facing);
+    drawSprite(womanNPC.sprite, womanNPC.x, womanNPC.y, womanNPC.w, womanNPC.h, womanNPC.facing);
+    drawSprite(meninaNPC.sprite, meninaNPC.x, meninaNPC.y, meninaNPC.w, meninaNPC.h, meninaNPC.facing);
+    drawSprite(men2NPC.sprite, men2NPC.x, men2NPC.y, men2NPC.w, men2NPC.h, men2NPC.facing);
 
     if (gameState === "dialogue") drawDialogue();
 
