@@ -366,6 +366,23 @@ enemies.forEach(en => {
         
         en.hp--; 
         en.state = 'hurt';
+
+	// --- LÓGICA DE KNOCKBACK (X e Y) ---
+	const forcaInimigoX = 25;
+
+        const forcaInimigoY = -8;
+            if (player.x < en.x) {
+
+                en.x += forcaInimigoX;
+ 
+            } else {
+
+                en.x -= forcaInimigoX;
+
+            }
+
+            en.velY = forcaInimigoY;
+
         en.currentFrame = 0;
         en.frameTimer = 0;
 
@@ -565,12 +582,20 @@ cameraY = Math.max(0, Math.min(cameraY, mapHeight - canvas.height / zoom));
 enemies.forEach(en => {
     if (isPaused) return;
     if(en.patrolMinX === undefined){ en.patrolMinX = en.x - 120; en.patrolMaxX = en.x + 120; }
+    
+    // --- 1. INICIALIZAR E APLICAR ATRITO ---
+    if (en.velX === undefined) en.velX = 0; 
+    en.velX *= 0.85; // Isso faz o knockback parar suavemente
+
     let dist = Math.abs(player.x - en.x);
     en.velY += gravity; 
+    
+    // --- 2. APLICAR VELOCIDADES À POSIÇÃO ---
+    en.x += en.velX; // Move horizontalmente (knockback + andar)
     en.y += en.velY; 
     en.onGround = false;
 
-    // Colisão com plataformas
+    // Colisão com plataformas (Mantenha como está)
     platforms.forEach(p => {
         if(en.x + 40 < p.x + p.w && en.x + 60 > p.x && en.y + en.height >= p.y && en.y + en.height <= p.y + 10){ 
             en.y = p.y - en.height; 
@@ -579,28 +604,22 @@ enemies.forEach(en => {
         }
     });
 
-    // 2. LÓGICA DE ESTADOS E ANIMAÇÃO
-    
-    // --- ESTADO MORTO (DEAD) ---
     if (en.state === 'dead') {
         en.frameTimer++;
         if (en.frameTimer >= en.frameInterval) {
             en.frameTimer = 0;
-            // "Travão": Só aumenta o frame se ainda não chegou ao último
-            if (en.currentFrame < en.deadFrames - 1) {
-                en.currentFrame++;
-            }
+            if (en.currentFrame < en.deadFrames - 1) en.currentFrame++;
         }
-        return; // IMPORTANTE: Impede que o inimigo morto ande ou ataque
+        return;
     }
 
     // --- ESTADO DE DANO (HURT) ---
     else if (en.state === 'hurt') {
         en.frameTimer++;
+        // No estado de dano, ele não força movimento, apenas desliza pelo velX
         if (en.frameTimer >= en.frameInterval) {
             en.frameTimer = 0;
             en.currentFrame++;
-            // Quando a animação de dano acaba, ele volta a perseguir
             if (en.currentFrame >= en.hurtFrames) {
                 en.state = 'chase';
                 en.currentFrame = 0;
@@ -610,16 +629,16 @@ enemies.forEach(en => {
 
     // --- ESTADO DE PATRULHA (PATROL) ---
     else if (en.state === 'patrol') {
+        // Agora usamos velX em vez de x direto
         if (en.facing === 'left') {
-            en.x -= en.speed; 
+            en.velX = -en.speed; 
             if (en.x <= en.patrolMinX) en.facing = 'right'; 
         } else {
-            en.x += en.speed; 
+            en.velX = en.speed; 
             if (en.x >= en.patrolMaxX) en.facing = 'left'; 
         }
         if (dist < 100) en.state = 'chase';
         
-        // Animação de caminhada
         en.frameTimer++;
         if(en.frameTimer >= en.frameInterval){
             en.currentFrame = (en.currentFrame + 1) % en.walkFrames;
@@ -631,9 +650,13 @@ enemies.forEach(en => {
     else if (en.state === 'chase') { 
         const minDist = 30; 
         if (dist > minDist) { 
-            if (player.x < en.x) { en.x -= en.speed * 1.2; en.facing = 'left'; } 
-            else { en.x += en.speed * 1.2; en.facing = 'right'; }
+            // Usando velX para perseguir
+            if (player.x < en.x) { en.velX = -en.speed * 1.2; en.facing = 'left'; } 
+            else { en.velX = en.speed * 1.2; en.facing = 'right'; }
+        } else {
+            en.velX = 0; // Para na frente do player
         }
+
         if (dist <= en.attackRange && en.attackCooldown <= 0) { 
             en.state = 'attacking'; 
             en.currentFrame = 0; 
@@ -641,7 +664,6 @@ enemies.forEach(en => {
         } 
         if (dist > 150) en.state = 'patrol'; 
 
-        // Animação de caminhada (chase usa walkFrames)
         en.frameTimer++;
         if(en.frameTimer >= en.frameInterval){
             en.currentFrame = (en.currentFrame + 1) % en.walkFrames;
@@ -649,21 +671,21 @@ enemies.forEach(en => {
         }
     }        
 
-    // --- ESTADO DE ATAQUE (ATTACKING) ---
+    // --- ESTADO DE ATAQUE (O seu código de knockback no PLAYER está correto aqui) ---
     else if (en.state === 'attacking') {
         en.frameTimer++;
         if (en.frameTimer >= en.frameInterval) {
             en.frameTimer = 0;
             en.currentFrame++;
             
-            // Dano no player (frame 2 do ataque)
             if (en.currentFrame === 5 && dist <= en.attackRange) {
                 player.hp -= 1;
-                player.state = 'hurt'; // Faz o player reagir ao dano
+                player.state = 'hurt';
+                player.velX = (en.x < player.x) ? 25 : -25;
+                player.velY = -6;
                 en.attackCooldown = 80;
             }
             
-            // Finaliza o ataque
             if (en.currentFrame >= en.attackFrames) {
                 en.currentFrame = 0;
                 en.state = 'chase';
