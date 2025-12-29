@@ -74,16 +74,18 @@
             <button onclick="location.reload()" style="margin-top:15px; background:none; border:none; color:gray; cursor:pointer; font-size: 12px;">[ VOLTAR ]</button>
         </div>
         <div id="step-chapters" class="container">
-            <h2 style="color:white; font-size: 14px; margin-bottom: 8px;">SELECIONE O CAPÕTULO</h2>
-            <button class="btn" onclick="iniciarJogo(1)">CAPÕTULO 1</button>
-            <button id="btn-cap2" class="btn locked" onclick="verificarCap(2)">CAPÕTULO 2 (??)</button>
-            <button id="btn-cap3" class="btn locked" onclick="verificarCap(3)">CAPÕTULO 3 (??)</button>
-            <button id="btn-cap4" class="btn locked" onclick="verificarCap(4)">CAPÕTULO 4 (??)</button>
-            <button id="btn-cap5" class="btn locked" onclick="verificarCap(5)">CAPÕTULO 5 (??)</button>
+            <h2 style="color:white; font-size: 14px; margin-bottom: 8px;">SELECIONE O CAP√çTULO</h2>
+            <button class="btn" onclick="iniciarJogo(1)">CAP√çTULO 1</button>
+            <button id="btn-cap2" class="btn locked" onclick="verificarCap(2)">CAP√çTULO 2 (??)</button>
+            <button id="btn-cap3" class="btn locked" onclick="verificarCap(3)">CAP√çTULO 3 (??)</button>
+            <button id="btn-cap4" class="btn locked" onclick="verificarCap(4)">CAP√çTULO 4 (??)</button>
+            <button id="btn-cap5" class="btn locked" onclick="verificarCap(5)">CAP√çTULO 5 (??)</button>
             <button class="btn" style="color:red; border-color:red; margin-top:10px; padding: 5px;" onclick="location.reload()">SAIR</button>
         </div>
     </div>
-
+	<audio id="bgMusic" loop>
+        <source src="Chapter_1/assets/sounds/song.wav" type="audio/wav">
+    </audio>
     <script>
         const title = document.getElementById('main-title');
         setTimeout(() => {
@@ -107,18 +109,18 @@
             const menu = document.getElementById('step-chapters');
             menu.style.display = 'flex';
             
-            // CORRE«√O: Verifica individualmente cada progresso salvo
+            // CORRE√á√ÉO: Verifica individualmente cada progresso salvo
             if (localStorage.getItem('capitulo_1_vencido') === 'true') {
-                liberarBotao('btn-cap2', "CAPÕTULO 2");
+                liberarBotao('btn-cap2', "CAP√çTULO 2");
             }
             if (localStorage.getItem('capitulo_2_vencido') === 'true') {
-                liberarBotao('btn-cap3', "CAPÕTULO 3");
+                liberarBotao('btn-cap3', "CAP√çTULO 3");
             }
 	    if (localStorage.getItem('capitulo_3_vencido') === 'true') {
-                liberarBotao('btn-cap4', "CAPÕTULO 4");
+                liberarBotao('btn-cap4', "CAP√çTULO 4");
             }
 	    if (localStorage.getItem('capitulo_4_vencido') === 'true') {
-                liberarBotao('btn-cap5', "CAPÕTULO 5");
+                liberarBotao('btn-cap5', "CAP√çTULO 5");
             }
         }
 
@@ -135,14 +137,15 @@
         }
 
         function verificarCap(cap) {
-            // Verifica se o capÌtulo anterior est· marcado como vencido no localStorage
+            // Verifica se o cap√≠tulo anterior est√° marcado como vencido no localStorage
             const venceuAnterior = localStorage.getItem(`capitulo_${cap-1}_vencido`) === 'true';
             if (venceuAnterior) {
                 iniciarJogo(cap);
             } else {
-                alert(`Bloqueado! VenÁa o CapÌtulo ${cap-1} primeiro.`);
+                alert(`Bloqueado! Ven√ßa o Cap√≠tulo ${cap-1} primeiro.`);
             }
         }
     </script>
 </body>
+
 </html>
