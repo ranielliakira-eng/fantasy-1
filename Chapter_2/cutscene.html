@@ -1,10 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Fantasy</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Cutscene</title>
 <style>
-  body { 
+body { 
     margin: 0; 
     background: #000; 
     display: flex; 
@@ -99,14 +100,6 @@ function updateSprite(sprite) {
 }
 
 function drawSprite(sprite, x, y, w, h, facing = "right") {
-    // Verifica se a imagem existe, se carregou e se NÃO está quebrada
-    if (!sprite.img || !sprite.img.complete || sprite.img.naturalWidth === 0) {
-        // Opcional: desenha um retângulo vermelho onde deveria estar o personagem
-        ctx.fillStyle = "red";
-        ctx.fillRect(x, y, w, h);
-        return; // Pula o desenho desta imagem e evita o erro 'broken state'
-    }
-
     const fw = sprite.img.width / sprite.frameCount;
     const fh = sprite.img.height;
     ctx.save();
@@ -119,6 +112,7 @@ function drawSprite(sprite, x, y, w, h, facing = "right") {
     }
     ctx.restore();
 }
+
 // ==================================================
 // PLAYER
 // ==================================================
@@ -274,15 +268,8 @@ function draw() {
 // LOOP
 // ==================================================
 function loop() { update(); draw(); requestAnimationFrame(loop); }
-    loop(); 
+loop();
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
-

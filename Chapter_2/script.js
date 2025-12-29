@@ -73,7 +73,7 @@ window.onload = function() {
 
 
 window.pular = function() { 
-    if(gameState==='playing' && player.onGround && !isPaused) { // Adicionado !isPaused
+    if(gameState==='playing' && player.onGround && !isPaused) {
         player.velY=player.jumpForce; 
         player.onGround=false;
     } 
@@ -681,12 +681,12 @@ enemies.forEach(en => {
 if (player.x > 6400 && !boss) {
     boss = {
         type: 'Boss',
-        x: 6700,
-        y: 200, 
+        x: 140,
+        y: 6700, 
         width: 100,
 	height: 100,
         hp: 4, maxHp: 4,
-        speed: 2,
+        speed: 3,
 	summonCooldown: 60,
         state: 'idle',
         facing: 'left',
@@ -780,7 +780,10 @@ function draw() {
     allEntities.forEach(obj => {
         let img = obj.imgIdle;
         let totalF = obj.idleFrames || 8;
-        if (obj.state === 'walking') { img = obj.imgWalk; totalF = obj.walkFrames; }
+
+        if (obj.state === 'walking' || obj.state === 'patrol') { img = obj.imgWalk; totalF = obj.walkFrames; }
+        else if (obj.state === 'walking') { img = obj.imgWalk; totalF = obj.walkFrames; }
+        else if (obj.state === 'chase') { img = obj.imgWalk; totalF = obj.walkFrames; }
         else if (obj.state === 'attacking') { img = obj.imgAttack; totalF = obj.attackFrames; }
         else if (obj.state === 'jumping') { img = obj.imgJump; totalF = obj.jumpFrames || 8; }
         else if (obj.state === 'hurt') { img = obj.imgHurt; totalF = obj.hurtFrames; }
@@ -1070,7 +1073,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
-
 
 
 
