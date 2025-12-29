@@ -87,6 +87,18 @@
         <source src="Chapter_1/assets/sounds/song.wav" type="audio/wav">
     </audio>
     <script>
+	const bgMusic = document.getElementById("bgMusic");
+    bgMusic.volume = 0.5;
+
+    function iniciarAudio() {
+        bgMusic.play().catch(() => {});
+        document.removeEventListener("click", iniciarAudio);
+        document.removeEventListener("keydown", iniciarAudio);
+    }
+    // Primeira interação libera o áudio
+    document.addEventListener("click", iniciarAudio);
+    document.addEventListener("keydown", iniciarAudio);
+		
         const title = document.getElementById('main-title');
         setTimeout(() => {
             title.classList.add('pos-top');
@@ -149,3 +161,4 @@
 </body>
 
 </html>
+
