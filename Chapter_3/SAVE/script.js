@@ -135,45 +135,110 @@ const foregroundObjects = [
 ];
 
 // NPCs
+// 1. Definição dos NPCs
 const farmerNpc = {
-    x: 2560, y: 110, width: 70, height: 90, imgIdle: new Image(),
-    idleFrames: 4, currentFrame: 0, frameTimer: 0, frameInterval: 16,
+    x: 2560, 
+    y: 110, 
+    width: 70, 
+    height: 90, 
+    imgIdle: new Image(),
+    idleFrames: 4, 
+    currentFrame: 0, 
+    frameTimer: 0, 
+    frameInterval: 16,
     phrases: [
-"Socorro!", 
-],
-    dialogueIndex: 0, dialogueTimer: 0,  lastDialogueIndex: -1,
+        "Socorro!", 
+        "Quase todos fugiram do vilarejo...", 
+        "O Wizard foi impedir os esqueletos no cemitério!"
+    ],
+    dialogueIndex: 0, 
+    dialogueTimer: 0, 
+    lastDialogueIndex: -1,
+    range: 250 // Raio de ativação (bolha de detecção)
+};
+
+// Exemplo de um segundo NPC em outra posição (andar diferente)
+const guardNpc = {
+    x: 1500, 
+    y: 500, 
+    width: 70, 
+    height: 90, 
+    imgIdle: new Image(),
+    idleFrames: 4, 
+    currentFrame: 0, 
+    frameTimer: 0, 
+    frameInterval: 16,
+    phrases: [
+        "Identifique-se!", 
+        "Não permitimos estranhos após o anoitecer.", 
+        "Siga para a taverna se quiser segurança."
+    ],
+    dialogueIndex: 0, 
+    dialogueTimer: 0, 
+    lastDialogueIndex: -1,
+    range: 200
 };
 
 farmerNpc.imgIdle.src = 'assets/Farmer/Idle.png';
+guardNpc.imgIdle.src = 'assets/Guard/Idle.png';
 
-const npcs = [farmerNpc];
+const npcs = [farmerNpc, guardNpc];
 
-// NPCs
-function npcSay(npc, index=0, duration=120){ npc.dialogueIndex=index; npc.dialogueTimer=duration; }
+// 2. Função de Atualização
 function updateNPCs() {
     npcs.forEach(n => {
+        // Cálculo da distância Euclidiana (Pitagórica) para evitar o problema dos andares
+        const dx = player.x - n.x;
+        const dy = player.y - n.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
 
-        let newIndex;
+        // LÓGICA DE DIÁLOGO
+        if (distance < n.range) {
+            // Calcula qual frase deve ser dita com base na proximidade (0 a phrases.length - 1)
+            let proximityIndex = Math.floor((1 - (distance / n.range)) * n.phrases.length);
+            proximityIndex = Math.max(0, Math.min(proximityIndex, n.phrases.length - 1));
 
-        if (player.x < 2350) newIndex = 0;
-        else if (player.x < 2450) newIndex = 1;
-        else if (player.x < 2550) newIndex = 2;
-        else newIndex = 3;
+            // OPÇÃO A: Apenas progride (não volta frases anteriores ao se afastar levemente)
+            if (proximityIndex > n.lastDialogueIndex) {
+                n.dialogueIndex = proximityIndex;
+                n.dialogueTimer = 160; // Tempo que a fala fica visível
+                n.lastDialogueIndex = proximityIndex;
+            }
+        } else {
+            // LÓGICA DE ESQUECIMENTO:
+            // Se o jogador se afastar mais que o triplo do range, o NPC "reseta" a conversa
+            if (distance > n.range * 3) {
+                n.lastDialogueIndex = -1;
+            }
+        }
 
-        // só muda se for diferente
-        if (newIndex !== n.lastDialogueIndex) {
-            n.dialogueIndex = newIndex;
-            n.dialogueTimer = 160;
-            n.lastDialogueIndex = newIndex;
-        } else if (n.dialogueTimer > 0) {
+        // Decrementa o timer da fala (para o balão sumir)
+        if (n.dialogueTimer > 0) {
             n.dialogueTimer--;
         }
 
-        // animação idle
+        // LÓGICA DE ANIMAÇÃO (Sprite)
         n.frameTimer++;
         if (n.frameTimer >= n.frameInterval) {
             n.frameTimer = 0;
             n.currentFrame = (n.currentFrame + 1) % n.idleFrames;
+        }
+    });
+}
+
+// 3. Exemplo de como renderizar (deve ser chamado no seu loop de desenho)
+function drawNPCDialogues(ctx) {
+    npcs.forEach(n => {
+        if (n.dialogueTimer > 0) {
+            const text = n.phrases[n.dialogueIndex];
+            
+            ctx.fillStyle = "white";
+            ctx.font = "16px Arial";
+            ctx.textAlign = "center";
+            
+            // Desenha o texto centralizado acima do NPC
+            // Ajuste o -20 conforme a altura do seu sprite
+            ctx.fillText(text, n.x + n.width / 2, n.y - 20);
         }
     });
 }
@@ -783,4 +848,5 @@ function updateBossLogic() {
 
         if (boss.currentFrame >= maxFrames) {
             boss.currentFrame = 0;
+
             if (b
