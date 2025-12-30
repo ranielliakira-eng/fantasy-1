@@ -427,7 +427,8 @@ function update() {
         return; 
     }
     if (gameState !== 'playing' || isPaused) return;
-
+	
+    updateCombatIA();
     updateNPCs();
 
     if (player.y >= 2000) { 
@@ -639,6 +640,18 @@ else if (en.state === 'hurt') {
         }
     }
 }
+	else if (en.state === 'chase_npc' && en.target) {
+            let dist = Math.abs(en.x - en.target.x);
+            
+            if (en.x < en.target.x) { en.x += en.speed; en.facing = 'right'; }
+            else { en.x -= en.speed; en.facing = 'left'; }
+
+            if (dist <= en.attackRange && en.attackCooldown <= 0) {
+                en.state = 'attacking'; 
+                en.attackCooldown = 60;
+                if (en.target.hp !== undefined) en.target.hp -= 1; 
+            }
+        }
 else if (en.state === 'patrol') {
     if (en.facing === 'left') {
         en.x -= en.speed; 
@@ -717,6 +730,34 @@ else if (en.state === 'chase') {
     if(boss) updateBossLogic();
 }
 
+function updateCombatIA() {
+    // 1. Warrior_2 procura o Warrior_3
+    enemies.forEach(en => {
+        if (en.type === 'Warrior_2' && en.state !== 'dead') {
+            // Procura o NPC Warrior_3 que não esteja morto (se você tiver HP para NPCs)
+            let targetNPC = npcs.find(n => n.type === 'Warrior_3' && n.hp > 0); 
+            
+            if (targetNPC) {
+                let distToNPC = Math.abs(en.x - targetNPC.x);
+                if (distToNPC < 300) { // Distância de detecção
+                    en.target = targetNPC;
+                    en.state = 'chase_npc';
+                }
+            }
+        }
+    });
+
+    // 2. Warrior_3 (NPC) decide revidar
+    npcs.forEach(npc => {
+        if (npc.type === 'Warrior_3') {
+            let nearestEnemy = enemies.find(en => en.state !== 'dead' && Math.abs(en.x - npc.x) < 200);
+            if (nearestEnemy) {
+                npc.target = nearestEnemy;
+                npc.state = 'attacking_enemy';
+            }
+        }
+    });
+}
 
 function draw() {
     // 1. PRIMEIRO: Limpamos a tela
@@ -1097,6 +1138,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+
 
 
 
