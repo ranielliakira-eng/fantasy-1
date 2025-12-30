@@ -1,290 +1,155 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+﻿<!DOCTYPE html>
+<html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<title>Fantasy – Capítulo 3</title>
-<style>
-body { margin:0; background:#000; }
-canvas { display:block; margin:auto; background:#2c5; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Pixel Quest</title>
+    <style>
+        body {
+            margin: 0; padding: 0;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; background-color: #111;
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            overflow: hidden; touch-action: none;
+        }
+
+        #game-container {
+            position: relative;
+            /* Responsividade: ocupa a largura da tela mas mantém o aspecto 16:9 */
+            width: 95vw; 
+            height: 53.43vw; 
+            max-width: 800px;
+            max-height: 450px;
+            background-color: #87CEEB;
+            border: 2px solid #444;
+            box-shadow: 0 0 30px rgba(0,0,0,0.7);
+            overflow: hidden;
+        }
+
+        #game-subtitle {
+	font-size: 18px;
+	color: #ccc; /* Cinza claro */
+	margin-top: -10px; /* Aproxima do título */
+	margin-bottom: 20px;
+	font-style: italic;
+}
+        canvas { display: block; width: 100%; height: 100%; }
+
+        /* Menu de Seleção Responsivo */
+        .selection-menu {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center; 
+            z-index: 100;
+        }
+
+        .btn-select {
+            padding: 12px 25px; font-size: 18px; cursor: pointer;
+            background: #e67e22; color: white; border: none;
+            border-radius: 8px; margin: 10px; transition: 0.2s;
+            touch-action: manipulation;
+        }
+
+        /* Container de Controles */
+        .controls {
+            position: absolute; bottom: 15px; left: 15px; right: 15px;
+            display: flex; justify-content: space-between; align-items: flex-end;
+            pointer-events: none; /* Deixa cliques passarem para o fundo se necessário */
+            z-index: 50;
+        }
+
+        .btn-group { display: flex; gap: 20px; pointer-events: auto; }
+
+        /* Sistema (Pause/Som) no topo direito */
+        .btn-group-system {
+            position: absolute; 
+            top: -340%; /* Ajuste dinâmico para o topo do container */
+            right: 0;
+            display: flex; gap: 10px; pointer-events: auto;
+        }
+
+        /* Botões Principais Estilizados */
+        .btn {
+            width: 70px; height: 70px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(4px);
+            border: 2px solid rgba(255, 255, 255, 0.8); 
+            border-radius: 50%;
+            color: white; font-weight: bold; font-size: 24px;
+            display: flex; justify-content: center; align-items: center;
+            user-select: none; 
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        .btn:active { background: rgba(255, 255, 255, 0.4); transform: scale(0.95); }
+
+        .btn-small {
+            padding: 8px 12px; background: rgba(0, 0, 0, 0.6);
+            border: 1px solid white; color: white;
+            border-radius: 5px; cursor: pointer; font-size: 12px;
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
 </head>
 <body>
 
-<canvas id="gameCanvas" width="800" height="450"></canvas>
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
 
-<script>
-// ==================================================
-// CANVAS
-// ==================================================
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+    <div id="game-over-screen" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+    <h1 id="game-title" style="color: white; font-size: 40px;">Uma história começa...</h1>
+    <p id="game-subtitle" style="color: #ccc; font-style: italic;"></p>
 
-// ==================================================
-// IMAGENS DO CENÁRIO
-// ==================================================
-const bgImage = new Image();
-bgImage.src = "assets/Battleground/fundo.png";
+    <button id="btn-reset" style="padding: 15px 40px; font-size: 22px; background-color: #470D1C; color: white; border: 2px solid #fff; border-radius: 50px; cursor: pointer; margin-bottom: 10px;">
+        TENTAR NOVAMENTE
+    </button>
 
-const groundImage = new Image();
-groundImage.src = "assets/Battleground/Ground.png";
+    <button id="btn-next-chapter" style="display: none; padding: 15px 40px; font-size: 22px; background-color: #27ae60; color: white; border: 2px solid #fff; border-radius: 50px; cursor: pointer;">
+        PRÓXIMA FASE
+    </button>
+</div>
+    
 
-const houseImages = {
-    casa3: new Image(),
-    casa4: new Image(),
-    casa5: new Image()
-};
+        <div id="mobile-controls" class="controls" style="display: none;">
+            
+            <div class="btn-group">
+                <div class="btn" 
+                    ontouchstart="window.mover('left', true)" ontouchend="window.mover('left', false)"
+                    onmousedown="window.mover('left', true)" onmouseup="window.mover('left', false)">←</div>
+                <div class="btn" 
+                    ontouchstart="window.mover('right', true)" ontouchend="window.mover('right', false)"
+                    onmousedown="window.mover('right', true)" onmouseup="window.mover('right', false)">→</div>
+            </div>
 
-houseImages.casa3.src = "assets/Battleground/casa/casa3.png";
-houseImages.casa4.src = "assets/Battleground/casa/casa4.png";
-houseImages.casa5.src = "assets/Battleground/casa/casa5.png";
+            <div class="btn-group-system">
+                <button class="btn-small" onclick="window.togglePause()">PAUSE</button>
+                <button id="btn-audio" class="btn-small" onclick="window.toggleSom()">SOM</button>
+            </div>
 
-const houses = [
-    { x: 500, y: 100, w: 200, h: 200, img: houseImages.casa3 },
-    { x: 700, y: 100, w: 200, h: 200, img: houseImages.casa3 },
-    { x: 150, y: 0,   w: 350, h: 300, img: houseImages.casa4 },
-    { x: -250,y: 100, w: 350, h: 200, img: houseImages.casa5 }
-];
+            <div class="btn-group">
+                <div class="btn" 
+                    ontouchstart="window.pular()" 
+                    onmousedown="window.pular()">Pulo</div>
+                <div class="btn"
+ 
+     	ontouchstart="window.atacar()"
+ 
+     	onmousedown="window.atacar()"
 
-// ==================================================
-// CONSTANTES
-// ==================================================
-const gravity = 0.8;
+     	style="cursor: pointer; display: inline-block;">
 
-// ==================================================
-// GAME STATE
-// ==================================================
-let gameState = "dialogue"; // dialogue | fadeOut | playing
+     
+    <img src="assets/espada.png" alt="Ataque" style="width: 70px; height: auto;">
 
-// ==================================================
-// FADE
-// ==================================================
-let fadeAlpha = 0;
-const fadeSpeed = 0.03;
-
-// ==================================================
-// SPRITES
-// ==================================================
-function createSprite(src, frameCount, frameSpeed) {
-    const img = new Image();
-    img.src = src;
-    return { img, frameCount, frameSpeed, frameIndex: 0, timer: 0 };
-}
-
-function updateSprite(sprite) {
-    sprite.timer++;
-    if (sprite.timer >= sprite.frameSpeed) {
-        sprite.timer = 0;
-        sprite.frameIndex = (sprite.frameIndex + 1) % sprite.frameCount;
-    }
-}
-
-function drawSprite(sprite, x, y, w, h, facing = "right") {
-    const fw = sprite.img.width / sprite.frameCount;
-    const fh = sprite.img.height;
-
-    ctx.save();
-    if (facing === "left") {
-        ctx.translate(x + w, y);
-        ctx.scale(-1, 1);
-        ctx.drawImage(sprite.img, fw * sprite.frameIndex, 0, fw, fh, 0, 0, w, h);
-    } else {
-        ctx.drawImage(sprite.img, fw * sprite.frameIndex, 0, fw, fh, x, y, w, h);
-    }
-    ctx.restore();
-}
-
-// ==================================================
-// PLAYER
-// ==================================================
-const player = {
-    x: 450,
-    y: 0,
-    w: 100,
-    h: 100,
-    vy: 0,
-    speed: 3,
-    facing: "left",
-    onGround: false,
-    sprite: createSprite("assets/Swordsman/Idle.png", 8, 12)
-};
-
-// ==================================================
-// NPCs
-// ==================================================
-const wizardNPC = {
-    x: 200, y: 0, w: 100, h: 100,
-    vy: 0, onGround: false, facing: "right",
-    sprite: createSprite("assets/Wizard/idle.png", 6, 14)
-};
-
-const farmerNPC = {
-    x: 300, y: 0, w: 75, h: 100,
-    vy: 0, onGround: false, facing: "right",
-    sprite: createSprite("assets/Farmer/idle.png", 4, 28)
-};
-
-const entities = [player, wizardNPC, farmerNPC];
-
-// ==================================================
-// PLATAFORMAS
-// ==================================================
-const platforms = [
-    { x: 0, y: 300, w: canvas.width, h: 150 }
-];
-
-// ==================================================
-// DIÁLOGO
-// ==================================================
-const chapter3Dialogue = [
-    { speaker: "Wizard", text: "Ainda sinto o eco daquela possessão..." },
-    { speaker: "Wizard", text: "A energia vinha de além das montanhas." },
-    { speaker: "Farmer", text: "Temo pelo que ainda pode acontecer." },
-    { speaker: "Hero", text: "Eu irei investigar." },
-    { speaker: "Hero", text: "Não deixarei que o que aconteceu com você e Enchantress se repita com mais ninguém." }
-];
-
-let dialogueIndex = 0;
-
-// ==================================================
-// INPUT
-// ==================================================
-const keys = {};
-const touch = { left: false, right: false };
-
-window.addEventListener("keydown", e => {
-    keys[e.key] = true;
-
-    if (gameState === "dialogue" && e.key === "Enter") {
-        nextDialogue();
-    }
-});
-window.addEventListener("keyup", e => keys[e.key] = false);
-
-canvas.addEventListener("touchstart", e => {
-    e.preventDefault();
-    const t = e.touches[0];
-    const x = t.clientX - canvas.getBoundingClientRect().left;
-
-    if (gameState === "dialogue") {
-        nextDialogue();
-        return;
-    }
-
-    if (x < canvas.width / 2) touch.left = true;
-    else touch.right = true;
-});
-
-canvas.addEventListener("touchend", () => {
-    touch.left = false;
-    touch.right = false;
-});
-
-// ==================================================
-// FUNÇÕES
-// ==================================================
-function nextDialogue() {
-    dialogueIndex++;
-    if (dialogueIndex >= chapter3Dialogue.length) {
-        gameState = "fadeOut";
-    }
-}
-
-function applyPhysics(e) {
-    e.vy += gravity;
-    e.y += e.vy;
-    e.onGround = false;
-
-    platforms.forEach(p => {
-        if (
-            e.x < p.x + p.w &&
-            e.x + e.w > p.x &&
-            e.y + e.h > p.y &&
-            e.y + e.h < p.y + p.h &&
-            e.vy >= 0
-        ) {
-            e.y = p.y - e.h;
-            e.vy = 0;
-            e.onGround = true;
-        }
-    });
-}
-
-// ==================================================
-// UPDATE
-// ==================================================
-function update() {
-    entities.forEach(e => {
-        updateSprite(e.sprite);
-        applyPhysics(e);
-    });
-
-    if (gameState === "fadeOut") {
-        fadeAlpha += fadeSpeed;
- if (fadeAlpha >= 1) {
-    window.location.href = "Chapter_3.html";
-}
-    }
-
-    if (gameState === "playing") {
-        if (keys["ArrowLeft"] || touch.left) {
-            player.x -= player.speed;
-            player.facing = "left";
-        }
-        if (keys["ArrowRight"] || touch.right) {
-            player.x += player.speed;
-            player.facing = "right";
-        }
-    }
-}
-
-// ==================================================
-// DRAW
-// ==================================================
-function drawDialogue() {
-    const d = chapter3Dialogue[dialogueIndex];
-    ctx.fillStyle = "rgba(0,0,0,0.75)";
-    ctx.fillRect(40, canvas.height - 120, canvas.width - 80, 90);
-    ctx.fillStyle = "#fff";
-    ctx.font = "18px Arial";
-    ctx.fillText(d.speaker + ":", 60, canvas.height - 90);
-    ctx.fillText(d.text, 60, canvas.height - 60);
-}
-
-function draw() {
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-
-    ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
-
-    houses.forEach(h => ctx.drawImage(h.img, h.x, h.y, h.w, h.h));
-
-    platforms.forEach(p => {
-        for (let x = p.x; x < p.x + p.w; x += 64) {
-            ctx.drawImage(groundImage, x, p.y, 64, p.h);
-        }
-    });
-
-    drawSprite(wizardNPC.sprite, wizardNPC.x, wizardNPC.y, wizardNPC.w, wizardNPC.h, wizardNPC.facing);
-    drawSprite(farmerNPC.sprite, farmerNPC.x, farmerNPC.y, farmerNPC.w, farmerNPC.h, farmerNPC.facing);
-    drawSprite(player.sprite, player.x, player.y, player.w, player.h, player.facing);
-
-    if (gameState === "dialogue") drawDialogue();
-
-    if (gameState === "fadeOut") {
-        ctx.fillStyle = `rgba(0,0,0,${fadeAlpha})`;
-        ctx.fillRect(0,0,canvas.width,canvas.height);
-    }
-}
-
-// ==================================================
-// LOOP
-// ==================================================
-function loop() {
-    update();
-    draw();
-    requestAnimationFrame(loop);
-}
-loop();
-</script>
-
+    
+</div>
+        </div>
+    <script src="script.js"></script>
 </body>
 </html>
+
+
+

@@ -4,13 +4,13 @@ canvas.width = 800;
 canvas.height = 450;
 
 // --- CONFIGURAÇÕES GLOBAIS ---
-const bgMusic = new Audio('assets/sounds/song.mp3');
+const bgMusic = new Audio('assets/sounds/song.wav');
 bgMusic.loop = true;
 bgMusic.volume = 0.5;
 bgMusic.preload = "auto";
 
 const gravity = 0.8;
-const zoom = 2; 
+const zoom = 1.6; 
 const mapWidth = 7000;
 const mapHeight = 2000;
 let cameraX = 0;
@@ -22,14 +22,15 @@ let boss = null;
 
 // --- JOGADOR (ESTRUTURA BASE) ---
 const player = {
-    x: 140, y: 200, width: 100, height: 100,
+    x: 140, y: 900, width: 100, height: 100,
     velX: 0, velY: 0, speed: 3, jumpForce: -15,
     facing: 'right', onGround: false, state: 'idle',
-    hp: 3, maxHp: 3, canAirAttack: true,
-    imgWalk: new Image(), imgDead: new Image(), imgJump: new Image(), imgHurt: new Image(),
+    hp: 4, maxHp: 4, canAirAttack: true,
+    imgWalk: new Image(), imgRun: new Image(), imgDead: new Image(), imgJump: new Image(), imgHurt: new Image(),
     imgAttack: new Image(), imgIdle: new Image(),
-    attackFrames: 6, walkFrames: 8, idleFrames: 8, jumpFrames: 8, deadFrames: 4,
-    currentFrame: 0, frameTimer: 0, frameInterval: 6, dialogue: "", dialogueTimer: 0,
+    attackFrames: 6, runFrames: 8, walkFrames: 8, idleFrames: 8, jumpFrames: 8, deadFrames: 4,
+    currentFrame: 0, frameTimer: 0, frameInterval: 6, dialogue: "", dialogueTimer: 0, 
+    holdLeft: 0, holdRight: 0, runThreshold: 180, runningSpeedMultiplier: 1.8,
 };
 
 // --- INICIALIZAÇÃO AUTOMÁTICA (PADRÃO SWORDSMAN / KNIGHT) ---
@@ -46,6 +47,7 @@ window.onload = function() {
     // 3. Configura Frames Específicos
     // Knight (Baronesa) tem 6 frames de Idle/Jump, Swordsman tem 8
     player.idleFrames = (heroiPadrao === 'Knight') ? 6 : 8;
+    player.runFrames = (heroiPadrao === 'Knight') ? 7 : 8;
     player.walkFrames = 8;
     player.jumpFrames = (heroiPadrao === 'Knight') ? 6 : 8;
     player.hurtFrames = 3;
@@ -55,6 +57,7 @@ window.onload = function() {
     // 4. Carrega os Assets da pasta correta
     player.imgIdle.src = `assets/${heroiPadrao}/Idle.png`;
     player.imgWalk.src = `assets/${heroiPadrao}/Walk.png`;
+    player.imgRun.src = `assets/${heroiPadrao}/Run.png`;
     player.imgJump.src = `assets/${heroiPadrao}/Jump.png`;
     player.imgHurt.src = `assets/${heroiPadrao}/Hurt.png`;
     player.imgDead.src = `assets/${heroiPadrao}/Dead.png`;
@@ -72,23 +75,21 @@ window.onload = function() {
 };
 
 const playerDialogTriggers = [
-    { x: 450, text: "Finalmente sai da floresta...", used: false },
-    { x: 600, text: "Enchantress estava descontrolada...", used: false },
-    { x: 900, text: "Espero que o fazendeiro cuide bem dela", used: false },
-    { x: 1200, text: "Um vilarejo abandonado?", used: false },
-    { x: 3650, text: "O vilarejo foi tomado por esqueletos", used: false },
+    { x: 140, text: "", used: false },
+
 ];
 
 // --- INIMIGOS ---
 let enemies = [];
 function initEnemies() {
     enemies = [
-        { type: 'Skeleton', x: 2550, y: 200, hp: 2, speed: 0.9, attackRange: 30, frameInterval: 8, idleFrames: 7, walkFrames: 8, attackFrames: 7, hurtFrames: 3, deadFrames: 3 },
+        { type: 'Warrior_1', x: 500, y: 1800, hp: 3, speed: 1.8, attackRange: 50, frameInterval: 8, idleFrames: 6, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4 },
 ];
 
     enemies.forEach(en => {
         en.imgIdle = new Image(); en.imgIdle.src = `assets/${en.type}/Idle.png`;
         en.imgWalk = new Image(); en.imgWalk.src = `assets/${en.type}/Walk.png`;
+        en.imgRun = new Image(); en.imgRun.src = `assets/${en.type}/Run.png`;
         en.imgAttack = new Image(); en.imgAttack.src = `assets/${en.type}/Attack_1.png`;
         en.imgHurt = new Image(); en.imgHurt.src = `assets/${en.type}/Hurt.png`;
         en.imgDead = new Image(); en.imgDead.src = `assets/${en.type}/Dead.png`;
@@ -106,7 +107,45 @@ function initEnemies() {
 const platforms = [
 
 // --- Chão parte 1 ---
-    { x: 0, y: 300, w: 7000, h: 150, type: 'pattern' },
+    { x: 0, y: 1000, w: 2000, h: 100, type: 'pattern' },
+
+    { x: 2000, y: 1050, w: 200, h: 600, type: 'pattern' },
+    { x: 2150, y: 1150, w: 3000, h: 100, type: 'pattern' },
+
+    { x: 5150, y: 550, w: 200, h: 700, type: 'pattern' },
+
+    { x: 5000, y: 1050, w: 150, h: 25, type: 'pattern' },
+    { x: 4750, y: 950, w: 150, h: 25, type: 'pattern' },
+    { x: 2250, y: 850, w: 2500, h: 100, type: 'pattern' },
+
+    { x: 2150, y: 0, w: 200, h: 950, type: 'pattern' },
+
+    { x: 2350, y: 750, w: 150, h: 25, type: 'pattern' },
+    { x: 2600, y: 650, w: 150, h: 25, type: 'pattern' },
+    { x: 2750, y: 550, w: 2500, h: 100, type: 'pattern' },
+
+    { x: 5700, y: 0, w: 200, h: 1600, type: 'pattern' },
+
+    { x: 5350, y: 650, w: 100, h: 25, type: 'pattern' },
+    { x: 5400, y: 750, w: 100, h: 25, type: 'pattern' },
+    { x: 5600, y: 850, w: 100, h: 25, type: 'pattern' },
+    { x: 5550, y: 950, w: 100, h: 25, type: 'pattern' },
+    { x: 5350, y: 1050, w: 100, h: 25, type: 'pattern' },
+    { x: 5400, y: 1150, w: 100, h: 25, type: 'pattern' },
+    { x: 5600, y: 1250, w: 100, h: 25, type: 'pattern' },
+    { x: 5550, y: 1350, w: 100, h: 25, type: 'pattern' },
+    { x: 5450, y: 1450, w: 100, h: 25, type: 'pattern' },
+
+    { x: 2750, y: 1550, w: 3000, h: 100, type: 'pattern' },
+
+    { x: 2600, y: 1650, w: 100, h: 25, type: 'pattern' },
+    { x: 2500, y: 1750, w: 100, h: 25, type: 'pattern' },
+    { x: 2300, y: 1850, w: 100, h: 100, type: 'pattern' },
+
+    { x: 0, y: 1950, w: 7000, h: 100, type: 'pattern' },
+
+
+
 ];
 
 // --- Cenário ---
@@ -114,7 +153,11 @@ const fundoImg = new Image();
 fundoImg.src = 'assets/Battleground/fundo.png';
 
 const platformImg = new Image();
-platformImg.src = 'assets/Battleground/Ground.png';
+platformImg.src = 'assets/Battleground/Ground1.png';
+
+const crystal_blue4Img = new Image();
+crystal_blue4Img.src = 'assets/Battleground/Crystals/crystals_blue/crystal_blue4.png';
+
 
 let platformPattern = null;
 
@@ -126,65 +169,52 @@ let keys = { left: false, right: false };
 
 const backgroundObjects = [
     { x: 0, y: 0, width: 7000, height: 2000, img: fundoImg },
-
 ];
 
 const foregroundObjects = [
-    { x: 0, y: 5, width: 200, height: 300, img: middle_lane_tree2Img },
+
+        { x: 400, y: 260, width: 50, height: 50, img: crystal_blue4Img },
 
 ];
 
 // NPCs
-// 1. Definição dos NPCs
-const farmerNpc = {
-    x: 2560, 
-    y: 110, 
-    width: 70, 
-    height: 90, 
-    imgIdle: new Image(),
-    idleFrames: 4, 
-    currentFrame: 0, 
-    frameTimer: 0, 
-    frameInterval: 16,
+const Warrior_3Npc = {
+    x: 1900, y: 900, width: 100, height: 100, imgIdle: new Image(),
+    idleFrames: 5, currentFrame: 0, frameTimer: 0, frameInterval: 16,
+    range: 200, velY: 0, onGround: false, facing: 'left',
     phrases: [
-        "Socorro!", 
-        "Quase todos fugiram do vilarejo...", 
-        "O Wizard foi impedir os esqueletos no cemitério!"
-    ],
-    dialogueIndex: 0, 
-    dialogueTimer: 0, 
-    lastDialogueIndex: -1,
-    range: 250 // Raio de ativação (bolha de detecção)
+"Alto lá!",
+"Está ocorrendo uma guerra",
+"Bom... Você está por sua conta...",
+],
+    dialogueIndex: 0, dialogueTimer: 0,  lastDialogueIndex: -1,
 };
 
-// Exemplo de um segundo NPC em outra posição (andar diferente)
-const guardNpc = {
-    x: 1500, 
-    y: 500, 
-    width: 70, 
-    height: 90, 
+Warrior_3Npc.imgIdle.src = 'assets/Warrior_3/Idle.png';
+
+const Warrior_3_1Npc = {
+    x: 3900, y: 1050, width: 100, height: 100, 
     imgIdle: new Image(),
-    idleFrames: 4, 
-    currentFrame: 0, 
-    frameTimer: 0, 
-    frameInterval: 16,
-    phrases: [
-        "Identifique-se!", 
-        "Não permitimos estranhos após o anoitecer.", 
-        "Siga para a taverna se quiser segurança."
-    ],
-    dialogueIndex: 0, 
-    dialogueTimer: 0, 
-    lastDialogueIndex: -1,
-    range: 200
+    idleFrames: 5, currentFrame: 0, frameTimer: 0, frameInterval: 16,
+    velY: 0, onGround: false, facing: 'right',phrases: [ ],
+    dialogueIndex: 0, dialogueTimer: 0, lastDialogueIndex: -1,
 };
+Warrior_3_1Npc.imgIdle.src = 'assets/Warrior_3/Idle.png';
 
-farmerNpc.imgIdle.src = 'assets/Farmer/Idle.png';
-guardNpc.imgIdle.src = 'assets/Guard/Idle.png';
+const Warrior_3_2Npc = {
+    x: 4000, y: 1050, width: 100, height: 100, 
+    imgIdle: new Image(),
+    idleFrames: 5, currentFrame: 0, frameTimer: 0, frameInterval: 16,
+    range: 200, velY: 0, onGround: false, facing: 'left',
+    phrases: ["Não conseguimos passar da metade da montanha", "Eles continuam dizendo que foi a gente" ],
+    dialogueIndex: 0, dialogueTimer: 0, lastDialogueIndex: -1,
+};
+Warrior_3_2Npc.imgIdle.src = 'assets/Warrior_3/Idle.png';
 
-const npcs = [farmerNpc, guardNpc];
+const npcs = [Warrior_3Npc, Warrior_3_1Npc, Warrior_3_2Npc];
 
-// 2. Função de Atualização
+// NPCs
+function npcSay(npc, index=0, duration=120){ npc.dialogueIndex=index; npc.dialogueTimer=duration; }
 function updateNPCs() {
     npcs.forEach(n => {
         // Cálculo da distância Euclidiana (Pitagórica) para evitar o problema dos andares
@@ -226,25 +256,35 @@ function updateNPCs() {
     });
 }
 
-// 3. Exemplo de como renderizar (deve ser chamado no seu loop de desenho)
 function drawNPCDialogues(ctx) {
     npcs.forEach(n => {
         if (n.dialogueTimer > 0) {
             const text = n.phrases[n.dialogueIndex];
-            
-            ctx.fillStyle = "white";
-            ctx.font = "16px Arial";
+            ctx.font = "bold 16px Arial";
             ctx.textAlign = "center";
             
-            // Desenha o texto centralizado acima do NPC
-            // Ajuste o -20 conforme a altura do seu sprite
-            ctx.fillText(text, n.x + n.width / 2, n.y - 20);
+            // Medir o texto para o fundo
+            const textWidth = ctx.measureText(text).width;
+            const padding = 10;
+            
+
+            const posX = n.x + n.width / 2;
+            const posY = n.y - 20; 
+
+            // Fundo do balão
+            ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+            ctx.fillRect(posX - (textWidth/2) - padding, posY - 20, textWidth + (padding * 2), 30);
+
+            // Texto
+            ctx.fillStyle = "white";
+            ctx.fillText(text, posX, posY);
         }
     });
 }
 
+
 // --- FUNÇÃO GLOBAL PARA FALA DO PLAYER ---
-window.playerSay = function(text, duration = 160) {
+window.playerSay = function(text, duration = 80) {
     player.dialogue = text;
     player.dialogueTimer = duration;
 };
@@ -258,7 +298,7 @@ window.resetGame = function() {
     
     player.hp = player.maxHp; 
     player.x = 140; 
-    player.y = 100; 
+    player.y = 900; 
     player.velX = 0; 
     player.velY = 0; 
     player.state = 'idle';
@@ -273,7 +313,7 @@ window.resetGame = function() {
 // Função para salvar o progresso e voltar ao menu raiz
 
 window.concluirCapituloEVoutar = function() {
-    localStorage.setItem('capitulo_2_vencido', 'true');
+    localStorage.setItem('capitulo_3_vencido', 'true');
     
 window.location.href = "../index.html"; // Volta para a pasta anterior (raiz)
 
@@ -284,13 +324,11 @@ window.mover = function(dir, estado) { if(gameState!=='playing'||player.state===
 window.pular = function() { if(gameState==='playing' && player.onGround && !isPaused){player.velY=player.jumpForce; player.onGround=false;} };
 window.atacar = function() { if(player.state==='dead'){window.resetGame(); return;} if(gameState!=='playing'||isPaused)return; if(player.state==='attacking')return; if(!player.onGround && !player.canAirAttack)return; player.state='attacking'; player.currentFrame=0; if(!player.onGround) player.canAirAttack=false; checkMeleeHit(); };
 
-
 // HIT MELEE
 function checkMeleeHit() {
     let alcance = player.width * -0.2;
     let hitboxX = player.facing === 'right' ? player.x + player.width : player.x - alcance;
 
-// Dentro de la función checkMeleeHit
 enemies.forEach(en => {
     if (en.state === 'dead') return; 
 
@@ -299,6 +337,23 @@ enemies.forEach(en => {
         
         en.hp--; 
         en.state = 'hurt';
+
+	// --- LÓGICA DE KNOCKBACK (X e Y) ---
+	const forcaInimigoX = 25;
+
+        const forcaInimigoY = -8;
+            if (player.x < en.x) {
+
+                en.x += forcaInimigoX;
+ 
+            } else {
+
+                en.x -= forcaInimigoX;
+
+            }
+
+            en.velY = forcaInimigoY;
+
         en.currentFrame = 0;
         en.frameTimer = 0;
 
@@ -338,56 +393,88 @@ enemies.forEach(en => {
     }
 }
 
+// --- CONFIGURAÇÕES INICIAIS DO PLAYER (uma vez no setup)
+player.holdLeft = 0;
+player.holdRight = 0;
+player.runThreshold = 180; // frames pressionado antes de correr
+player.runningSpeedMultiplier = 1.8; // velocidade de corrida
+
 // --- UPDATE ---
-function update(){
-    if(player.hp<=0){player.state='dead'; return;}
-    if(gameState!=='playing'||isPaused) return;
+function update() {
+    if (player.hp <= 0) { 
+        player.state = 'dead'; 
+        return; 
+    }
+    if (gameState !== 'playing' || isPaused) return;
+
     updateNPCs();
 
-    if(player.y>=450){ player.hp=0; player.state='dead'; return;}
+    if (player.y >= 2000) { 
+        player.hp = 0; 
+        player.state = 'dead'; 
+        return;
+    }
 
-    if(player.state!=='attacking'){ if(keys.left) player.velX=-player.speed; else if(keys.right) player.velX=player.speed; else player.velX*=0.7; } else player.velX=0;
 
-    if(player.dialogueTimer>0){ player.dialogueTimer--; if(player.dialogueTimer<=0) player.dialogue=""; }
+    // ===== FÍSICA VERTICAL =====
+    player.onGround = false;
+    player.velY += gravity;
+    if (player.velY > 20) player.velY = 20; // limite de queda
+    player.y += player.velY;
 
-// ===== FÍSICA VERTICAL =====
-// assume que está no ar
-player.onGround = false;
-
-// aplica gravidade
-player.velY += gravity;
-if (player.velY > 20) player.velY = 20;
-
-// move verticalmente
-player.y += player.velY;
-
-// --- colisão com plataformas retas ---
+// --- colisão com plataformas retas (Sólida em todos os lados) ---
 platforms.forEach(p => {
-    if(p.type === 'sloped') return; // ignora slopes aqui
+    if(p.type === 'sloped') return; // Continua ignorando as rampas aqui
 
-    const playerBottom = player.y + player.height;
-    const playerPrevBottom = playerBottom - player.velY;
+    // Calcula a distância entre os centros do player e da plataforma
+    let pCenterX = p.x + p.w / 2;
+    let pCenterY = p.y + p.h / 2;
+    let playerCenterX = player.x + player.width / 2;
+    let playerCenterY = player.y + player.height / 2;
 
-    const overlapX =
-        player.x + player.width > p.x &&
-        player.x < p.x + p.w;
+    let diffX = playerCenterX - pCenterX;
+    let diffY = playerCenterY - pCenterY;
 
-    if (overlapX && playerPrevBottom <= p.y && playerBottom >= p.y) {
-        player.y = p.y - player.height;
-        player.velY = 0;
-        player.onGround = true;
+    // Distância mínima para haver colisão
+    let minXDist = p.w / 2 + player.width / 2;
+    let minYDist = p.h / 2 + player.height / 2;
+
+    if (Math.abs(diffX) < minXDist && Math.abs(diffY) < minYDist) {
+        let overlapX = minXDist - Math.abs(diffX);
+        let overlapY = minYDist - Math.abs(diffY);
+
+        // Resolve a colisão pelo lado de menor penetração
+        if (overlapX >= overlapY) {
+            if (diffY > 0) { // Colisão vindo de baixo (Teto)
+                player.y += overlapY;
+                player.velY = 0;
+            } else { // Colisão vindo de cima (Chão)
+                player.y -= overlapY;
+                player.velY = 0;
+                player.onGround = true;
+            }
+        } else { // Colisão lateral (Paredes)
+            if (diffX > 0) player.x += overlapX;
+            else player.x -= overlapX;
+            player.velX = 0;
+        }
     }
 });
 
-// --- colisão com slopes ---
+// --- colisão com rampas (Sloped) ---
 platforms.forEach(p => {
-    if(p.type !== 'sloped') return;
+    if(p.type !== 'sloped') return; // Só processa o que for rampa
 
-    let relativeX = player.x + player.width/2 - p.x;
-    let slopeY = p.y - relativeX * p.slope;
+    // Calcula a posição horizontal relativa do player dentro da rampa
+    let relativeX = (player.x + player.width / 2) - p.x;
 
-    if(player.x + player.width > p.x && player.x < p.x + p.w) {
-        if(player.y + player.height > slopeY && player.y + player.height - player.velY <= slopeY) {
+    // Se o player estiver dentro dos limites horizontais da rampa
+    if (relativeX >= 0 && relativeX <= p.w) {
+        // y_no_chao = ponto_inicial_y - (distancia_percorrida * inclinação)
+        let slopeY = p.y - (relativeX * (p.slope || 0));
+
+        // Verifica se o player está tocando ou descendo na rampa
+        if (player.y + player.height >= slopeY && player.y + player.height - player.velY <= slopeY + 20) {
             player.y = slopeY - player.height;
             player.velY = 0;
             player.onGround = true;
@@ -395,46 +482,95 @@ platforms.forEach(p => {
     }
 });
 
-// ===== MOVIMENTO HORIZONTAL =====
-player.x += player.velX;
+    // ===== MOVIMENTO HORIZONTAL =====
+    player.x += player.velX;
 
-// limites do mapa
-if (player.x < 0) player.x = 0;
-if (player.x + player.width > mapWidth)
-    player.x = mapWidth - player.width; 
+    // limites do mapa
+    if(player.x < 0) player.x = 0;
+    if(player.x + player.width > mapWidth)
+        player.x = mapWidth - player.width;
 
-    if(player.onGround) player.canAirAttack=true;
+    if(player.onGround) player.canAirAttack = true;
 
-    // ANIMAÇÃO PLAYER
-    player.frameTimer++;
-    if(player.frameTimer>=player.frameInterval){
-        player.frameTimer=0;
-        if(player.state==='attacking'){
-            player.currentFrame++; 
-            if(player.currentFrame>=player.attackFrames){
-                if(!player.onGround) player.state='jumping'; 
-                else if(Math.abs(player.velX)>0.5) player.state='walking'; 
-                else player.state='idle';
-                player.currentFrame=0;
-            }
-        } else if(!player.onGround){ player.state='jumping'; player.currentFrame=(player.currentFrame+1)%player.jumpFrames; }
-        else if(Math.abs(player.velX)>0.5){ player.state='walking'; player.currentFrame=(player.currentFrame+1)%player.walkFrames; }
-        else{ player.state='idle'; player.currentFrame=(player.currentFrame+1)%player.idleFrames;}
+/// --- MOVIMENTO HORIZONTAL E ESTADO ---
+if(player.state !== 'attacking') {
+    // 1. Atualiza contadores de tecla
+    if(keys.left) player.holdLeft++; else player.holdLeft = 0;
+    if(keys.right) player.holdRight++; else player.holdRight = 0;
+
+    // 2. Calcula velocidade base
+    let speed = player.speed;
+
+    // 3. Prioridade corrida
+    let running = (player.holdLeft > player.runThreshold || player.holdRight > player.runThreshold);
+    if(running) speed *= player.runningSpeedMultiplier;
+
+    // 4. Aplica velocidade horizontal
+    if(keys.left) player.velX = -speed;
+    else if(keys.right) player.velX = speed;
+    else player.velX *= 0.7; // desacelera se não estiver pressionando
+
+    // 5. Atualiza estado do player
+    if(!player.onGround) {
+        player.state = 'jumping';
+    } else if(running) {
+        player.state = 'running';
+    } else if(Math.abs(player.velX) > 0.5) {
+        player.state = 'walking';
+    } else {
+        player.state = 'idle';
     }
+} else {
+    player.velX = 0; // não se move se atacando
+}
 
-// --- CÂMERA DINÂMICA ---
-let targetX = (player.x + player.width / 2) - (canvas.width / (2 * zoom));
-let targetY = (player.y + player.height / 2) - (canvas.height / (2 * zoom));
 
-// Suavização
-cameraX += (targetX - cameraX) * 0.1;
-cameraY += (targetY - cameraY) * 0.1;
+// ===== ANIMAÇÃO PLAYER =====
+player.frameTimer++;
+if(player.frameTimer >= player.frameInterval){
+    player.frameTimer = 0;
 
-// Limites da câmera
-cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width / zoom));
-cameraY = Math.max(0, Math.min(cameraY, mapHeight - canvas.height / zoom));
+    if(player.state === 'attacking'){
+        player.currentFrame++; 
+        if(player.currentFrame >= player.attackFrames){
+            if(!player.onGround) player.state='jumping';
+            else if(player.holdLeft > player.runThreshold || player.holdRight > player.runThreshold) player.state='running';
+            else if(Math.abs(player.velX) > 0.5) player.state='walking';
+            else player.state='idle';
+            player.currentFrame=0;
+        }
+    }
+    else if(!player.onGround){
+        player.state='jumping'; 
+        player.currentFrame=(player.currentFrame+1)%player.jumpFrames;
+    }
+    else if(player.state === 'running'){ 
+        player.currentFrame = (player.currentFrame+1) % player.runFrames; 
+    }
+    else if(player.state === 'walking'){ 
+        player.currentFrame = (player.currentFrame+1) % player.walkFrames; 
+    }
+    else{ 
+        player.state='idle'; 
+        player.currentFrame=(player.currentFrame+1)%player.idleFrames;
+    }
+}
 
-// --- LÓGICA DOS INIMIGOS (Dentro da função update) ---
+
+
+
+
+    // ===== CÂMERA DINÂMICA =====
+    let targetX = (player.x + player.width / 2) - (canvas.width / (2 * zoom));
+    let targetY = (player.y + player.height / 2) - (canvas.height / (2 * zoom));
+
+    cameraX += (targetX - cameraX) * 0.1;
+    cameraY += (targetY - cameraY) * 0.1;
+
+    cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width / zoom));
+    cameraY = Math.max(0, Math.min(cameraY, mapHeight - canvas.height / zoom));
+
+    // ===== LÓGICA DOS INIMIGOS =====
 enemies.forEach(en => {
     // 1. Definições iniciais de patrulha e gravidade
     if(en.patrolMinX === undefined){ en.patrolMinX = en.x - 120; en.patrolMaxX = en.x + 120; }
@@ -451,92 +587,79 @@ enemies.forEach(en => {
             en.onGround = true; 
         }
     });
-
-    // 2. LÓGICA DE ESTADOS E ANIMAÇÃO
-    
-    // --- ESTADO MORTO (DEAD) ---
-    if (en.state === 'dead') {
-        en.frameTimer++;
-        if (en.frameTimer >= en.frameInterval) {
-            en.frameTimer = 0;
-            // "Travão": Só aumenta o frame se ainda não chegou ao último
-            if (en.currentFrame < en.deadFrames - 1) {
-                en.currentFrame++;
-            }
-        }
-        return; // IMPORTANTE: Impede que o inimigo morto ande ou ataque
-    }
-
-    // --- ESTADO DE DANO (HURT) ---
-    else if (en.state === 'hurt') {
-        en.frameTimer++;
-        if (en.frameTimer >= en.frameInterval) {
-            en.frameTimer = 0;
+// --- LÓGICA DE ESTADOS E ANIMAÇÃO (DEAD, HURT, PATROL, CHASE, ATTACKING) ---
+if (en.state === 'dead') {
+    en.frameTimer++;
+    if (en.frameTimer >= en.frameInterval) {
+        en.frameTimer = 0;
+        if (en.currentFrame < en.deadFrames - 1) {
             en.currentFrame++;
-            // Quando a animação de dano acaba, ele volta a perseguir
-            if (en.currentFrame >= en.hurtFrames) {
-                en.state = 'chase';
-                en.currentFrame = 0;
-            }
         }
     }
-
-    // --- ESTADO DE PATRULHA (PATROL) ---
-    else if (en.state === 'patrol') {
-        if (en.facing === 'left') {
-            en.x -= en.speed; 
-            if (en.x <= en.patrolMinX) en.facing = 'right'; 
-        } else {
-            en.x += en.speed; 
-            if (en.x >= en.patrolMaxX) en.facing = 'left'; 
-        }
-        if (dist < 100) en.state = 'chase';
-        
-        // Animação de caminhada
-        en.frameTimer++;
-        if(en.frameTimer >= en.frameInterval){
-            en.currentFrame = (en.currentFrame + 1) % en.walkFrames;
-            en.frameTimer = 0;
+    return; // inimigo morto não faz mais nada
+}
+else if (en.state === 'hurt') {
+    en.frameTimer++;
+    if (en.frameTimer >= en.frameInterval) {
+        en.frameTimer = 0;
+        en.currentFrame++;
+        if (en.currentFrame >= en.hurtFrames) {
+            en.state = 'chase';
+            en.currentFrame = 0;
         }
     }
+}
+else if (en.state === 'patrol') {
+    if (en.facing === 'left') {
+        en.x -= en.speed; 
+        if (en.x <= en.patrolMinX) en.facing = 'right'; 
+    } else {
+        en.x += en.speed; 
+        if (en.x >= en.patrolMaxX) en.facing = 'left'; 
+    }
 
-    // --- ESTADO DE PERSEGUIÇÃO (CHASE) ---
-    else if (en.state === 'chase') { 
-        const minDist = 30; 
-        if (dist > minDist) { 
-            if (player.x < en.x) { en.x -= en.speed * 1.2; en.facing = 'left'; } 
-            else { en.x += en.speed * 1.2; en.facing = 'right'; }
-        }
-        if (dist <= en.attackRange && en.attackCooldown <= 0) { 
-            en.state = 'attacking'; 
-            en.currentFrame = 0; 
-            en.frameTimer = 0;
-        } 
-        if (dist > 150) en.state = 'patrol'; 
+    if (dist < 100) en.state = 'chase';
 
-        // Animação de caminhada (chase usa walkFrames)
-        en.frameTimer++;
-        if(en.frameTimer >= en.frameInterval){
-            en.currentFrame = (en.currentFrame + 1) % en.walkFrames;
-            en.frameTimer = 0;
-        }
-    }        
+    en.frameTimer++;
+    if(en.frameTimer >= en.frameInterval){
+        en.currentFrame = (en.currentFrame + 1) % en.walkFrames;
+        en.frameTimer = 0;
+    }
+}
+else if (en.state === 'chase') { 
+    const minDist = 30; 
+    if (dist > minDist) { 
+        if (player.x < en.x) { en.x -= en.speed * 1.2; en.facing = 'left'; } 
+        else { en.x += en.speed * 1.2; en.facing = 'right'; }
+    }
+    if (dist <= en.attackRange && en.attackCooldown <= 0) { 
+        en.state = 'attacking'; 
+        en.currentFrame = 0; 
+        en.frameTimer = 0;
+    } 
+    if (dist > 150) en.state = 'patrol'; 
 
-    // --- ESTADO DE ATAQUE (ATTACKING) ---
+    // Animação de corrida
+    en.frameTimer++;
+    if(en.frameTimer >= en.frameInterval){
+        en.currentFrame = (en.currentFrame + 1) % en.runFrames;
+        en.frameTimer = 0;
+    }
+}        
     else if (en.state === 'attacking') {
         en.frameTimer++;
         if (en.frameTimer >= en.frameInterval) {
             en.frameTimer = 0;
             en.currentFrame++;
             
-            // Dano no player (frame 2 do ataque)
             if (en.currentFrame === 5 && dist <= en.attackRange) {
                 player.hp -= 1;
-                player.state = 'hurt'; // Faz o player reagir ao dano
+                player.state = 'hurt';
+                player.velX = (en.x < player.x) ? 25 : -25;
+                player.velY = -6;
                 en.attackCooldown = 80;
             }
             
-            // Finaliza o ataque
             if (en.currentFrame >= en.attackFrames) {
                 en.currentFrame = 0;
                 en.state = 'chase';
@@ -546,61 +669,24 @@ enemies.forEach(en => {
 
     if (en.attackCooldown > 0) en.attackCooldown--;
 });
-    // PLAYER DIALOG
-    playerDialogTriggers.forEach(trigger=>{
-        if(!trigger.used && player.x>trigger.x){ playerSay(trigger.text,180); trigger.used=true;}
+
+
+    // ===== TRIGGERS DE DIÁLOGO =====
+    playerDialogTriggers.forEach(trigger => {
+        if(!trigger.used && player.x > trigger.x) {
+            playerSay(trigger.text, 180);
+            trigger.used = true;
+        }
     });
-// Gatilho para o Boss (Aparece no X: 6400)
-if (player.x > 6400 && !boss) {
-    boss = {
-        type: 'Boss',
-        x: 6700,
-        y: 200, 
-        width: 100,
-	height: 100,
-        hp: 5, maxHp: 5,
-        speed: 4,
-        state: 'idle',
-        facing: 'left',
-        damage: 1,
-        attackRange: 60,
-        attackCooldown: 0,
-        currentFrame: 0,
-        frameTimer: 0,
-        frameInterval: 8,
-	fala: "",
-        falaTimer: 0,
 
-        idleFrames: 6,
-	walkFrames: 7,
-	attackFrames: 10,
-	hurtFrames: 4,
-	deadFrames: 4,
-        
-        // Imagens (Generalizado: você só precisa garantir que as pastas existam)
-        imgIdle: new Image(), imgWalk: new Image(), imgAttack: new Image(), 
-        imgHurt: new Image(), imgDead: new Image()
-    };
-    
-    // Carregamento automático das imagens (ajuste a pasta conforme seu assets)
-    const folder = 'assets/Archer'; 
-    boss.imgIdle.src = `${folder}/Idle.png`;
-    boss.imgWalk.src = `${folder}/Walk.png`;
-    boss.imgAttack.src = `${folder}/Attack_1.png`;
-    boss.imgHurt.src = `${folder}/Hurt.png`;
-    boss.imgDead.src = `${folder}/Dead.png`;
+    // ===== GATILHO DO BOSS =====
+    if(player.x > 6400 && player.y < 100 && !boss) {
+        spawnBoss();
+    }
+
+    if(boss) updateBossLogic();
 }
 
-// Se o Boss existir, rodar a lógica dele
-if (boss) {
-    updateBossLogic(); 
-}
-}
-
-function bossDiz(texto, tempo = 120) {
-boss.dialogue = texto;
-    boss.dialogueTimer = tempo;
-}
 
 function draw() {
     // 1. PRIMEIRO: Limpamos a tela
@@ -633,15 +719,34 @@ function draw() {
                 ctx.fillRect(0, 0, p.w, p.h);
             }
         } else if (p.type === 'sloped') {
-            ctx.fillStyle = "brown";
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(p.x + p.w, p.y + p.w * p.slope);
-            ctx.lineTo(p.x + p.w, p.y + p.w * p.slope + p.h);
-            ctx.lineTo(p.x, p.y + p.h);
-            ctx.closePath();
-            ctx.fill();
-        }
+    // Forçamos uma cor forte para teste
+    ctx.fillStyle = "red"; 
+    ctx.strokeStyle = "yellow";
+    ctx.lineWidth = 5;
+
+    ctx.beginPath();
+    
+    // Ponto A: Início da rampa
+    let x1 = p.x - cameraX;
+    let y1 = p.y - cameraY;
+    
+    // Ponto B: Fim da inclinação
+    let x2 = (p.x + p.w) - cameraX;
+    let y2 = (p.y - (p.w * (p.slope || 0))) - cameraY;
+
+    // Desenhar um triângulo simples e alto para garantir visibilidade
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.lineTo(x2, y1 + 200);
+    ctx.lineTo(x1, y1 + 200); 
+
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    
+    // DEBUG NO CONSOLE: Abre o F12 no navegador e vê se estes números aparecem
+    // console.log(`Rampa em: X:${x1} Y:${y1} até X:${x2} Y:${y2}`);
+}
         ctx.restore();
     });
 
@@ -650,13 +755,42 @@ function draw() {
     if (boss) allEntities.push(boss);
 
     allEntities.forEach(obj => {
-        let img = obj.imgIdle;
-        let totalF = obj.idleFrames || 8;
-        if (obj.state === 'walking') { img = obj.imgWalk; totalF = obj.walkFrames; }
-        else if (obj.state === 'attacking') { img = obj.imgAttack; totalF = obj.attackFrames; }
-        else if (obj.state === 'jumping') { img = obj.imgJump; totalF = obj.jumpFrames || 8; }
-        else if (obj.state === 'hurt') { img = obj.imgHurt; totalF = obj.hurtFrames; }
-        else if (obj.state === 'dead') { img = obj.imgDead; totalF = obj.deadFrames; }
+    let img = obj.imgIdle;
+    let totalF = obj.idleFrames || 8;
+
+    if (obj.state === 'walking' || obj.state === 'patrol') {
+    
+    img = obj.imgWalk;
+ 
+       totalF = obj.walkFrames;
+    
+}
+    else if (obj.state === 'running' || obj.state === 'chase') {
+
+        img = obj.imgRun;
+ 
+       totalF = obj.runFrames; 
+    }
+    else if (obj.state === 'running') {
+        img = obj.imgRun; 
+        totalF = obj.runFrames; 
+    }
+    else if (obj.state === 'attacking') { 
+        img = obj.imgAttack; 
+        totalF = obj.attackFrames; 
+    }
+    else if (obj.state === 'jumping') { 
+        img = obj.imgJump; 
+        totalF = obj.jumpFrames || 8; 
+    }
+    else if (obj.state === 'hurt') { 
+        img = obj.imgHurt; 
+        totalF = obj.hurtFrames; 
+    }
+    else if (obj.state === 'dead') { 
+        img = obj.imgDead; 
+        totalF = obj.deadFrames; 
+    }
 
         if (img.complete && img.width > 0) {
             const fw = img.width / totalF;
@@ -674,33 +808,33 @@ function draw() {
             if (obj.state !== 'dead' && obj.dialogue && obj.dialogueTimer > 0) {
                 ctx.font = "bold 16px Arial"; ctx.textAlign = "center";
                 let textWidth = ctx.measureText(obj.dialogue).width;
-                ctx.fillStyle = "white"; ctx.fillRect(obj.x + obj.width / 2 - textWidth / 2 - 5, obj.y - 35, textWidth + 10, 20);
-                ctx.strokeStyle = "black"; ctx.strokeRect(obj.x + obj.width / 2 - textWidth / 2 - 5, obj.y - 35, textWidth + 10, 20);
-                ctx.fillStyle = "black"; ctx.fillText(obj.dialogue, obj.x + obj.width / 2, obj.y - 20);
+                ctx.fillStyle = "white"; ctx.fillRect(obj.x + obj.width / 2 - textWidth / 2 - 5, obj.y - 15, textWidth + 10, 20);
+                ctx.strokeStyle = "black"; ctx.strokeRect(obj.x + obj.width / 2 - textWidth / 2 - 5, obj.y - 15, textWidth + 10, 20);
+                ctx.fillStyle = "black"; ctx.fillText(obj.dialogue, obj.x + obj.width / 2, obj.y);
             }
         }
     });
 
     // NPCs
-    npcs.forEach(n => {
-        if (!n.imgIdle.complete) return;
-        const fw = n.imgIdle.width / n.idleFrames;
-        const fh = n.imgIdle.height;
-        ctx.drawImage(n.imgIdle, n.currentFrame * fw, 0, fw, fh, n.x, n.y, n.width, n.height);
-        if (n.dialogueTimer > 0) {
-            const text = n.phrases[n.dialogueIndex];
-            ctx.font = "bold 14px Arial"; ctx.textAlign = "center";
-            const textWidth = ctx.measureText(text).width;
-            ctx.fillStyle = "white"; ctx.fillRect(n.x  + n.width/2 - textWidth/2 - 5, n.y +85, textWidth + 10, 20);
-            ctx.fillStyle = "black"; ctx.fillText(text, n.x  + n.width/2, n.y +100);
-        }
-    });
+npcs.forEach(n => {
+    if (!n.imgIdle.complete) return;
+    const fw = n.imgIdle.width / n.idleFrames;
+    const fh = n.imgIdle.height;
 
-    // Foreground
-    foregroundObjects.forEach(d => {
-        if (d.img.complete) ctx.drawImage(d.img, d.x, d.y, d.width, d.height);
-    });
+    ctx.save();
+    if (n.facing === 'left') {
+        ctx.translate(n.x + n.width, n.y);
+        ctx.scale(-1, 1);
+        ctx.drawImage(n.imgIdle, (n.currentFrame % n.idleFrames) * fw, 0, fw, fh, 0, 0, n.width, n.height);
+    } else {
+        ctx.drawImage(n.imgIdle, (n.currentFrame % n.idleFrames) * fw, 0, fw, fh, n.x, n.y, n.width, n.height);
+    }
 
+    ctx.restore();
+});
+
+
+    drawNPCDialogues(ctx);
     ctx.restore(); // Fecha Câmera
 
     // 3. UI (Fixo na tela)
@@ -748,7 +882,7 @@ if (screen) {
             screen.style.backgroundColor = "rgba(0, 0, 0, 0.8)"; 
             
             if (title) title.innerHTML = "Você derrubou <br> Archer";
-            if (subtitle) subtitle.innerHTML = "O que ele fez bagunçou o clã dos anões, <br> mas o que você procura está além";
+            if (subtitle) subtitle.innerHTML = "Vingou a morte do rei anão";
 
             // ESCONDE o reset e MOSTRA o botão de voltar ao menu (Próxima Fase)
             if (btnReset) btnReset.style.display = 'none';
@@ -812,18 +946,7 @@ function updateBossLogic() {
 
     // 3. ANIMAÇÃO E TIMERS
     if (boss.falaTimer > 0) boss.falaTimer--;
-    
-    // --- LÓGICA DE SUMMONING ---
-    if (boss.state !== 'hurt' && boss.state !== 'dead') {
-        if (boss.summonCooldown > 0) {
-            boss.summonCooldown--;
-        } else {
-            bossSummonFireSpirit();
-            boss.summonCooldown = 60; // Espera 10 segundos para invocar de novo
-            boss.state = 'attacking'; // Usa a animação de ataque para invocar
-            boss.currentFrame = 0;
-        }
-    }
+
 
     boss.frameTimer++;
     if (boss.frameTimer >= boss.frameInterval) {
@@ -848,5 +971,104 @@ function updateBossLogic() {
 
         if (boss.currentFrame >= maxFrames) {
             boss.currentFrame = 0;
+            if (boss.state === 'hurt' || boss.state === 'attacking') {
+                boss.state = 'idle';
+                if (boss.state === 'attacking') boss.attackCooldown = 100;
+            }
+        }
+    }
 
-            if (b
+    // 4. GATILHOS DE FALA
+    if (dist < 400 && !boss.viuPlayer) {
+        bossDiz("O rei está morto!");
+        boss.viuPlayer = true;
+    }
+if (dist < 400) {
+
+    boss.state = 'walking';
+
+    boss.x += (player.x < boss.x) ? boss.speed : -boss.speed; 
+// Move na direção oposta ao player
+
+}
+    // 5. IA DE MOVIMENTO
+    if (boss.state !== 'hurt' && boss.state !== 'attacking') {
+        boss.facing = (player.x < boss.x) ? 'left' : 'right';
+
+        if (dist > (boss.attackRange || 80)) {
+            boss.state = 'walking';
+            boss.x += (player.x < boss.x) ? -boss.speed : boss.speed;
+        } else {
+            if ((boss.attackCooldown || 0) <= 0) {
+                boss.state = 'attacking';
+                boss.currentFrame = 0;
+            } else {
+                boss.state = 'idle';
+            }
+        }
+    }
+
+    if (boss.attackCooldown > 0) boss.attackCooldown--;
+}
+
+// --- LOOP PRINCIPAL ---
+function gameLoop() {
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+}
+gameLoop(); // Inicia o loop
+
+// --- FUNÇÃO PARA SALVAR E VOLTAR AO MENU ---
+window.irParaMenu = function() {
+    localStorage.setItem('capitulo_2_vencido', 'true');
+    window.location.href = "../index.html"; // Sai da pasta Chapter_1 para a raiz
+};
+
+// --- INPUTS DO TECLADO ---
+window.addEventListener('keydown', (e) => {
+    const k = e.key.toLowerCase();
+    if (k === 'a') window.mover('left', true);
+    if (k === 'd') window.mover('right', true);
+    if (k === 'w' || k === ' ') window.pular();
+    if (k === 'k') window.atacar();
+    
+    // Tecla R inteligente: Reinicia se morreu, ou vai para o menu se ganhou
+    if (k === 'r') { 
+        if (boss && boss.state === 'dead' && boss.hp <= 0) {
+            window.irParaMenu();
+        } else if (player.hp <= 0 || player.state === 'dead') {
+            window.resetGame();
+        }
+    }
+});
+
+window.addEventListener('keyup', (e) => {
+    const k = e.key.toLowerCase();
+    if (k === 'a') window.mover('left', false);
+    if (k === 'd') window.mover('right', false);
+});
+
+// --- LÓGICA DOS BOTÕES DA TELA FINAL ---
+document.addEventListener('DOMContentLoaded', () => {
+    const btnReset = document.getElementById('btn-reset');
+    const btnNext = document.getElementById('btn-next-chapter');
+
+    if (btnReset) {
+        btnReset.onclick = () => window.resetGame();
+    }
+
+    if (btnNext) {
+        btnNext.onclick = () => window.irParaMenu();
+    }
+
+});
+
+
+
+
+
+
+
+
+
