@@ -84,13 +84,16 @@ let enemies = [];
 function initEnemies() {
     enemies = [
         { type: 'Warrior_1', x: 500, y: 1800, hp: 3, speed: 1.8, attackRange: 50, frameInterval: 8, idleFrames: 6, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4 },
-];
+        { type: 'Warrior_2', x: 500, y: 1800, hp: 3, speed: 1.8, attackRange: 50, frameInterval: 8, idleFrames: 6, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4 , blockFrames: 2, isBlocking: false, blockChance: 0.3, state: 'patrol'},
+
+	];
 
     enemies.forEach(en => {
         en.imgIdle = new Image(); en.imgIdle.src = `assets/${en.type}/Idle.png`;
         en.imgWalk = new Image(); en.imgWalk.src = `assets/${en.type}/Walk.png`;
         en.imgRun = new Image(); en.imgRun.src = `assets/${en.type}/Run.png`;
         en.imgAttack = new Image(); en.imgAttack.src = `assets/${en.type}/Attack_1.png`;
+		en.imgProtect = new Image(); en.imgProtect.src = `assets/${en.type}/Protect.png`;
         en.imgHurt = new Image(); en.imgHurt.src = `assets/${en.type}/Hurt.png`;
         en.imgDead = new Image(); en.imgDead.src = `assets/${en.type}/Dead.png`;
 
@@ -334,6 +337,24 @@ enemies.forEach(en => {
 
     if (hitboxX < en.x + en.width && hitboxX + alcance > en.x &&
         player.y < en.y + en.height && player.y + player.height > en.y) {
+
+		// --- LÓGICA DE BLOQUEIO DO WARRIOR_2 ---
+            if (en.type === 'Warrior_2') {
+                // Se ele já estiver bloqueando, o dano é zero
+                if (en.state === 'blocking') {
+                    playerSay("Bloqueado!", 40);
+                    return; 
+                }
+                
+                // Chance de ativar o bloqueio no momento do hit
+                if (Math.random() < en.blockChance) {
+                    en.state = 'blocking';
+                    en.currentFrame = 0;
+                    en.frameTimer = 0;
+                    playerSay("Defendeu!", 40);
+                    return;
+                }
+            }
         
         en.hp--; 
         en.state = 'hurt';
@@ -556,10 +577,6 @@ if(player.frameTimer >= player.frameInterval){
     }
 }
 
-
-
-
-
     // ===== CÂMERA DINÂMICA =====
     let targetX = (player.x + player.width / 2) - (canvas.width / (2 * zoom));
     let targetY = (player.y + player.height / 2) - (canvas.height / (2 * zoom));
@@ -597,6 +614,19 @@ if (en.state === 'dead') {
         }
     }
     return; // inimigo morto não faz mais nada
+}
+	else if (en.state === 'blocking') {
+    en.frameTimer++;
+    if (en.frameTimer >= en.frameInterval) {
+        en.frameTimer = 0;
+        if (en.currentFrame < en.blockFrames - 1) {
+            en.currentFrame++;
+        } else {
+            // Após terminar a animação de bloco, ele volta a perseguir ou lutar
+            en.state = 'chase'; 
+            en.currentFrame = 0;
+        }
+    }
 }
 else if (en.state === 'hurt') {
     en.frameTimer++;
@@ -771,6 +801,10 @@ function draw() {
  
        totalF = obj.runFrames; 
     }
+		else if (obj.state === 'protect') {
+    img = obj.imgProtect;
+    totalF = obj.protectFrames || 2;
+}
     else if (obj.state === 'running') {
         img = obj.imgRun; 
         totalF = obj.runFrames; 
@@ -1063,6 +1097,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+
 
 
 
