@@ -83,8 +83,9 @@ const playerDialogTriggers = [
 let enemies = [];
 function initEnemies() {
     enemies = [
-        { type: 'Warrior_1', x: 500, y: 1800, hp: 3, speed: 1.8, attackRange: 50, frameInterval: 8, idleFrames: 6, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4 },
-        { type: 'Warrior_2', x: 500, y: 1800, hp: 3, speed: 1.8, attackRange: 50, frameInterval: 8, idleFrames: 6, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4 , blockFrames: 2, isBlocking: false, blockChance: 0.3, state: 'patrol'},
+        { type: 'Warrior_1', x: 500, y: 1800, hp: 4, speed: 1.8, attackRange: 50, frameInterval: 8, idleFrames: 6, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4 },
+        { type: 'Warrior_2', x: 500, y: 1800, hp: 3, speed: 1.5, attackRange: 50, frameInterval: 8, idleFrames: 4, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 3, deadFrames: 4 , blockFrames: 2, isBlocking: false, blockChance: 0.3, state: 'patrol'},
+        { type: 'Warrior_3', x: 500, y: 1800, hp: 3, speed: 1.2, attackRange: 80, frameInterval: 8, idleFrames: 5, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4 , blockFrames: 3, isBlocking: false, blockChance: 0.3, state: 'patrol'},
 
 	];
 
@@ -892,19 +893,27 @@ function draw() {
 
     // NPCs
 npcs.forEach(n => {
-    if (!n.imgIdle.complete) return;
-    const fw = n.imgIdle.width / n.idleFrames;
-    const fh = n.imgIdle.height;
+    // Escolhe a imagem e frames com base no estado
+    let img = n.imgIdle;
+    let totalF = n.idleFrames;
+
+    if (n.state === 'protect') {
+        img = n.imgProtect;
+        totalF = n.protectFrames;
+    }
+
+    if (!img.complete) return;
+    const fw = img.width / totalF;
+    const fh = img.height;
 
     ctx.save();
     if (n.facing === 'left') {
         ctx.translate(n.x + n.width, n.y);
         ctx.scale(-1, 1);
-        ctx.drawImage(n.imgIdle, (n.currentFrame % n.idleFrames) * fw, 0, fw, fh, 0, 0, n.width, n.height);
+        ctx.drawImage(img, (n.currentFrame % totalF) * fw, 0, fw, fh, 0, 0, n.width, n.height);
     } else {
-        ctx.drawImage(n.imgIdle, (n.currentFrame % n.idleFrames) * fw, 0, fw, fh, n.x, n.y, n.width, n.height);
+        ctx.drawImage(img, (n.currentFrame % totalF) * fw, 0, fw, fh, n.x, n.y, n.width, n.height);
     }
-
     ctx.restore();
 });
 
@@ -1138,6 +1147,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+
 
 
 
