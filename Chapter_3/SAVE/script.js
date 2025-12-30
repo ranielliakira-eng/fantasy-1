@@ -22,7 +22,7 @@ let boss = null;
 
 // --- JOGADOR (ESTRUTURA BASE) ---
 const player = {
-    x: 700, y: 1800, width: 100, height: 100,
+    x: 1100, y:1900, width: 100, height: 100,
     velX: 0, velY: 0, speed: 3, jumpForce: -15,
     facing: 'right', onGround: false, state: 'idle',
     hp: 4, maxHp: 4, canAirAttack: true,
@@ -79,14 +79,34 @@ const playerDialogTriggers = [
 
 ];
 
+const potionImg = new Image();
+potionImg.src = 'assets/Potion/LifePotionSmall.png';
+
+let potions = [
+    { x: 500, y: 1900, width: 32, height: 32, active: true },
+];
 // --- INIMIGOS ---
 let enemies = [];
 function initEnemies() {
     enemies = [
-        { type: 'Warrior_1', x: 500, y: 1800, hp: 4, maxHP: 4, width: 100, height: 100, speed: 1.8, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 6, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4, state: 'patrol' },
-        { type: 'Warrior_2', x: 550, y: 1800, hp: 3, maxHP: 3, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 4, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 3, deadFrames: 4 , blockFrames: 2, isBlocking: false, blockChance: 0.3, state: 'patrol' },
-        { type: 'Warrior_3', x: 600, y: 1800, hp: 3, maxHP: 3, width: 100, height: 100, speed: 1.2, faction: 'ally', attackRange: 80, frameInterval: 8, idleFrames: 5, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4 , blockFrames: 3, isBlocking: false, blockChance: 0.3, state: 'patrol' },
+        { type: 'Warrior_1', x: 2400, y: 1800, hp: 4, maxHP: 4, width: 100, height: 100, speed: 1.8, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 6, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4, state: 'patrol' },
+        { type: 'Warrior_1', x: 2700, y: 1800, hp: 4, maxHP: 4, width: 100, height: 100, speed: 1.8, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 6, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4, state: 'patrol' },
+        { type: 'Warrior_1', x: 3000, y: 1800, hp: 4, maxHP: 4, width: 100, height: 100, speed: 1.8, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 6, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4, state: 'patrol' },
 
+        { type: 'Warrior_2', x: 3000, y: 1450, hp: 3, maxHP: 3, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 4, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 3, deadFrames: 4 , blockFrames: 2, isBlocking: false, blockChance: 0.3, state: 'patrol' },
+        { type: 'Warrior_2', x: 3200, y: 1450, hp: 3, maxHP: 3, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 4, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 3, deadFrames: 4 , blockFrames: 2, isBlocking: false, blockChance: 0.3, state: 'patrol' },
+        { type: 'Warrior_2', x: 3400, y: 1450, hp: 3, maxHP: 3, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 4, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 3, deadFrames: 4 , blockFrames: 2, isBlocking: false, blockChance: 0.3, state: 'patrol' },
+        { type: 'Warrior_2', x: 3800, y: 1450, hp: 3, maxHP: 3, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 4, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 3, deadFrames: 4 , blockFrames: 2, isBlocking: false, blockChance: 0.3, state: 'patrol' },
+        { type: 'Warrior_2', x: 4000, y: 1450, hp: 3, maxHP: 3, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 4, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 3, deadFrames: 4 , blockFrames: 2, isBlocking: false, blockChance: 0.3, state: 'patrol' },
+
+        { type: 'Warrior_2', x: 3950, y: 1450, hp: 3, maxHP: 3, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 4, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 3, deadFrames: 4 , blockFrames: 2, isBlocking: false, blockChance: 0.3, state: 'patrol' },
+        { type: 'Warrior_2', x: 3750, y: 1450, hp: 3, maxHP: 3, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 4, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 3, deadFrames: 4 , blockFrames: 2, isBlocking: false, blockChance: 0.3, state: 'patrol' },
+        { type: 'Warrior_2', x: 4050, y: 1450, hp: 3, maxHP: 3, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 4, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 3, deadFrames: 4 , blockFrames: 2, isBlocking: false, blockChance: 0.3, state: 'patrol' },
+
+        { type: 'Warrior_3', x: 3900, y: 1450, hp: 3, maxHP: 3, width: 100, height: 100, speed: 1.2, faction: 'ally', attackRange: 80, frameInterval: 8, idleFrames: 5, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4 , blockFrames: 3, isBlocking: false, blockChance: 0.3, state: 'patrol' },
+        { type: 'Warrior_3', x: 3950, y: 1450, hp: 3, maxHP: 3, width: 100, height: 100, speed: 1.2, faction: 'ally', attackRange: 80, frameInterval: 8, idleFrames: 5, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4 , blockFrames: 3, isBlocking: false, blockChance: 0.3, state: 'patrol' },
+        { type: 'Warrior_3', x: 3750, y: 1450, hp: 3, maxHP: 3, width: 100, height: 100, speed: 1.2, faction: 'ally', attackRange: 80, frameInterval: 8, idleFrames: 5, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4 , blockFrames: 3, isBlocking: false, blockChance: 0.3, state: 'patrol' },
+        { type: 'Warrior_3', x: 3850, y: 1450, hp: 3, maxHP: 3, width: 100, height: 100, speed: 1.2, faction: 'ally', attackRange: 80, frameInterval: 8, idleFrames: 5, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4 , blockFrames: 3, isBlocking: false, blockChance: 0.3, state: 'patrol' },
 	];
 
     enemies.forEach(en => {
@@ -94,7 +114,7 @@ function initEnemies() {
         en.imgWalk = new Image(); en.imgWalk.src = `assets/${en.type}/Walk.png`;
         en.imgRun = new Image(); en.imgRun.src = `assets/${en.type}/Run.png`;
         en.imgAttack = new Image(); en.imgAttack.src = `assets/${en.type}/Attack_1.png`;
-		en.imgProtect = new Image(); en.imgProtect.src = `assets/${en.type}/Protect.png`;
+        en.imgProtect = new Image(); en.imgProtect.src = `assets/${en.type}/Protect.png`;
         en.imgHurt = new Image(); en.imgHurt.src = `assets/${en.type}/Hurt.png`;
         en.imgDead = new Image(); en.imgDead.src = `assets/${en.type}/Dead.png`;
 
@@ -259,7 +279,27 @@ function updateNPCs() {
         }
     });
 }
-
+function updatePotions() {
+    potions.forEach(p => {
+        if (p.active) {
+            // Verifica colisão entre o player e a poção
+            if (player.x < p.x + p.width &&
+                player.x + player.width > p.x &&
+                player.y < p.y + p.height &&
+                player.y + player.height > p.y) {
+                
+                if (player.hp < player.maxHp) {
+                    player.hp = Math.min(player.hp + 1, player.maxHp);
+                    p.active = false; // Desativa a poção coletada
+                    window.playerSay("HP +1", 60); 
+                } else {
+                    // Opcional: avisar que a vida já está cheia
+                    if (player.dialogueTimer <= 0) window.playerSay("Vida Cheia", 30);
+                }
+            }
+        }
+    });
+}
 function isEnemy(a, b) {
     if (!a || !b) return false;
     return a.faction !== b.faction;
@@ -311,7 +351,7 @@ window.resetGame = function() {
     player.velX = 0; 
     player.velY = 0; 
     player.state = 'idle';
-    
+    potions.forEach(p => p.active = true);
     cameraX = 0; 
     isPaused = false; 
     gameState = 'playing';
@@ -604,7 +644,26 @@ if(player.frameTimer >= player.frameInterval){
 
 // ===== LÓGICA DOS INIMIGOS =====
 enemies.forEach(en => {
-
+// 1. VERIFICAÇÃO PRIORITÁRIA DE MORTE (Coloque aqui!)
+    if (en.hp <= 0) {
+        if (en.state !== 'dead') {
+            en.state = 'dead';
+            en.currentFrame = 0;
+            en.frameTimer = 0;
+        }
+        if (en.target && en.target.hp <= 0) {
+    en.target = null;
+    en.state = 'patrol';
+}
+        en.frameTimer++;
+        if (en.frameTimer >= en.frameInterval) {
+            en.frameTimer = 0;
+            if (en.currentFrame < en.deadFrames - 1) {
+                en.currentFrame++;
+            }
+        }
+        return; // Sai da função deste inimigo específico, ignorando IA de movimento/ataque
+    }
     // ----------------------------
     // 1. GRAVIDADE E PATRULHA BASE
     // ----------------------------
@@ -732,41 +791,53 @@ if (!alvo || alvo.state === 'dead' || !isEnemy(en, alvo)) {
     // ----------------------------
     // 5. HURT
     // ----------------------------
-    else if (en.state === 'hurt') {
-        en.frameTimer++;
-        if (en.frameTimer >= en.frameInterval) {
-            en.frameTimer = 0;
-            en.currentFrame++;
-            if (en.currentFrame >= en.hurtFrames) {
-                en.currentFrame = 0;
-                en.state = 'chase';
-            }
+else if (en.state === 'hurt') {
+    en.frameTimer++;
+    if (en.frameTimer >= en.frameInterval) {
+        en.frameTimer = 0;
+        en.currentFrame++;
+        if (en.currentFrame >= en.hurtFrames) {
+            en.currentFrame = 0;
+            en.state = 'patrol'; // Sempre volta para patrulha primeiro
+            en.target = null;    // Limpa o alvo para forçar uma nova busca no próximo frame
         }
     }
+}
 
     // ----------------------------
     // 6. PATROL
     // ----------------------------
-    else if (en.state === 'patrol') {
+  else if (en.state === 'patrol') {
+    // Garante que o alvo foi limpo
+    en.target = null;
 
-        if (en.facing === 'left') {
-            en.x -= en.speed;
-            if (en.x <= en.patrolMinX) en.facing = 'right';
-        } else {
-            en.x += en.speed;
-            if (en.x >= en.patrolMaxX) en.facing = 'left';
+    // Movimentação de patrulha baseada nos limites
+    if (en.facing === 'left') {
+        en.x -= en.speed;
+        if (en.x <= en.patrolMinX) {
+            en.facing = 'right';
         }
-
-        if (distH < 120) {
-            en.state = 'chase';
-        }
-
-        en.frameTimer++;
-        if (en.frameTimer >= en.frameInterval) {
-            en.currentFrame = (en.currentFrame + 1) % en.walkFrames;
-            en.frameTimer = 0;
+    } else {
+        en.x += en.speed;
+        if (en.x >= en.patrolMaxX) {
+            en.facing = 'left';
         }
     }
+
+    // Se o player entrar no alcance, muda para Chase
+    const distToPlayer = Math.abs(player.x - en.x);
+    if (distToPlayer < 200 && player.hp > 0) {
+        en.target = player;
+        en.state = 'chase';
+    }
+
+    // Atualiza animação de caminhada
+    en.frameTimer++;
+    if (en.frameTimer >= en.frameInterval) {
+        en.currentFrame = (en.currentFrame + 1) % en.walkFrames;
+        en.frameTimer = 0;
+    }
+}
 
     // ----------------------------
     // 7. CHASE (PLAYER OU NPC)
@@ -802,6 +873,7 @@ if (distH > 400 || distV > 150 || alvo.hp <= 0) {
     en.target = null;
     en.state = 'patrol';
     en.currentFrame = 0;
+    en.frameTimer = 0;
     return; // ← ISSO É FUNDAMENTAL
 }
 
@@ -852,14 +924,15 @@ if (distH > 400 || distV > 150 || alvo.hp <= 0) {
         //FIM DA ANIMAÇÃO
 if (en.currentFrame >= en.attackFrames) {
     en.currentFrame = 0;
+    en.attackCooldown = 80;
 
-    if (alvo && alvo.hp > 0 && isEnemy(en, alvo)) {
-        en.state = 'chase';
-    } else {
+    // Se o alvo morreu no ataque, volta a patrulhar imediatamente
+    if (!en.target || en.target.hp <= 0) {
         en.target = null;
         en.state = 'patrol';
+    } else {
+        en.state = 'chase';
     }
-
     return;
 }
     }
@@ -1024,7 +1097,11 @@ npcs.forEach(n => {
     if (!img.complete) return;
     const fw = img.width / totalF;
     const fh = img.height;
-
+potions.forEach(p => {
+    if (p.active && potionImg.complete) {
+        ctx.drawImage(potionImg, p.x, p.y, p.width, p.height);
+    }
+});
     ctx.save();
     if (n.facing === 'left') {
         ctx.translate(n.x + n.width, n.y);
