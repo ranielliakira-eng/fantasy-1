@@ -22,12 +22,12 @@ let boss = null;
 
 // --- JOGADOR (ESTRUTURA BASE) ---
 const player = {
-    x: 140, y: 900, width: 100, height: 100,
+    x: 700, y: 1800, width: 100, height: 100,
     velX: 0, velY: 0, speed: 3, jumpForce: -15,
     facing: 'right', onGround: false, state: 'idle',
     hp: 4, maxHp: 4, canAirAttack: true,
     imgWalk: new Image(), imgRun: new Image(), imgDead: new Image(), imgJump: new Image(), imgHurt: new Image(),
-    imgAttack: new Image(), imgIdle: new Image(),
+    imgAttack: new Image(), imgIdle: new Image(), faction: 'player', 
     attackFrames: 6, runFrames: 8, walkFrames: 8, idleFrames: 8, jumpFrames: 8, deadFrames: 4,
     currentFrame: 0, frameTimer: 0, frameInterval: 6, dialogue: "", dialogueTimer: 0, 
     holdLeft: 0, holdRight: 0, runThreshold: 180, runningSpeedMultiplier: 1.8,
@@ -83,9 +83,9 @@ const playerDialogTriggers = [
 let enemies = [];
 function initEnemies() {
     enemies = [
-        { type: 'Warrior_1', x: 500, y: 1800, hp: 4, speed: 1.8, attackRange: 50, frameInterval: 8, idleFrames: 6, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4 },
-        { type: 'Warrior_2', x: 500, y: 1800, hp: 3, speed: 1.5, attackRange: 50, frameInterval: 8, idleFrames: 4, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 3, deadFrames: 4 , blockFrames: 2, isBlocking: false, blockChance: 0.3, state: 'patrol'},
-        { type: 'Warrior_3', x: 500, y: 1800, hp: 3, speed: 1.2, attackRange: 80, frameInterval: 8, idleFrames: 5, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4 , blockFrames: 3, isBlocking: false, blockChance: 0.3, state: 'patrol'},
+        { type: 'Warrior_1', x: 500, y: 1800, hp: 4, maxHP: 4, width: 100, height: 100, speed: 1.8, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 6, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4, state: 'patrol' },
+        { type: 'Warrior_2', x: 550, y: 1800, hp: 3, maxHP: 3, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 4, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 3, deadFrames: 4 , blockFrames: 2, isBlocking: false, blockChance: 0.3, state: 'patrol' },
+        { type: 'Warrior_3', x: 600, y: 1800, hp: 3, maxHP: 3, width: 100, height: 100, speed: 1.2, faction: 'ally', attackRange: 80, frameInterval: 8, idleFrames: 5, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4 , blockFrames: 3, isBlocking: false, blockChance: 0.3, state: 'patrol' },
 
 	];
 
@@ -260,6 +260,11 @@ function updateNPCs() {
     });
 }
 
+function isEnemy(a, b) {
+    if (!a || !b) return false;
+    return a.faction !== b.faction;
+}
+
 function drawNPCDialogues(ctx) {
     npcs.forEach(n => {
         if (n.dialogueTimer > 0) {
@@ -428,8 +433,16 @@ function update() {
         return; 
     }
     if (gameState !== 'playing' || isPaused) return;
-	
-    updateCombatIA();
+
+// ===============================
+// ATUALIZA DIÁLOGO DO PLAYER
+// ===============================
+if (player.dialogueTimer > 0) {
+    player.dialogueTimer--;
+    if (player.dialogueTimer <= 0) {
+        player.dialogue = "";
+    }
+}
     updateNPCs();
 
     if (player.y >= 2000) { 
@@ -589,194 +602,283 @@ if(player.frameTimer >= player.frameInterval){
     cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width / zoom));
     cameraY = Math.max(0, Math.min(cameraY, mapHeight - canvas.height / zoom));
 
-    // ===== LÓGICA DOS INIMIGOS =====
+// ===== LÓGICA DOS INIMIGOS =====
 enemies.forEach(en => {
-    // 1. Definições iniciais de patrulha e gravidade
-    if(en.patrolMinX === undefined){ en.patrolMinX = en.x - 120; en.patrolMaxX = en.x + 120; }
-    let dist = Math.abs(player.x - en.x);
-    en.velY += gravity; 
-    en.y += en.velY; 
+
+    // ----------------------------
+    // 1. GRAVIDADE E PATRULHA BASE
+    // ----------------------------
+    if (en.patrolMinX === undefined) {
+        en.patrolMinX = en.x - 120;
+        en.patrolMaxX = en.x + 120;
+    }
+
+    en.velY += gravity;
+    en.y += en.velY;
     en.onGround = false;
 
     // Colisão com plataformas
     platforms.forEach(p => {
-        if(en.x + 40 < p.x + p.w && en.x + 60 > p.x && en.y + en.height >= p.y && en.y + en.height <= p.y + 10){ 
-            en.y = p.y - en.height; 
-            en.velY = 0; 
-            en.onGround = true; 
+        if (
+            en.x + 40 < p.x + p.w &&
+            en.x + 60 > p.x &&
+            en.y + en.height >= p.y &&
+            en.y + en.height <= p.y + 10
+        ) {
+            en.y = p.y - en.height;
+            en.velY = 0;
+            en.onGround = true;
         }
     });
-// --- LÓGICA DE ESTADOS E ANIMAÇÃO (DEAD, HURT, PATROL, CHASE, ATTACKING) ---
-if (en.state === 'dead') {
-    en.frameTimer++;
-    if (en.frameTimer >= en.frameInterval) {
-        en.frameTimer = 0;
-        if (en.currentFrame < en.deadFrames - 1) {
-            en.currentFrame++;
-        }
-    }
-    return; // inimigo morto não faz mais nada
-}
-	else if (en.state === 'blocking') {
-    en.frameTimer++;
-    if (en.frameTimer >= en.frameInterval) {
-        en.frameTimer = 0;
-        if (en.currentFrame < en.blockFrames - 1) {
-            en.currentFrame++;
-        } else {
-            // Após terminar a animação de bloco, ele volta a perseguir ou lutar
-            en.state = 'chase'; 
-            en.currentFrame = 0;
-        }
-    }
-}
-else if (en.state === 'hurt') {
-    en.frameTimer++;
-    if (en.frameTimer >= en.frameInterval) {
-        en.frameTimer = 0;
-        en.currentFrame++;
-        if (en.currentFrame >= en.hurtFrames) {
-            en.state = 'chase';
-            en.currentFrame = 0;
-        }
-    }
-}
-	else if (en.state === 'chase_npc' && en.target) {
-            let dist = Math.abs(en.x - en.target.x);
-            
-            if (en.x < en.target.x) { en.x += en.speed; en.facing = 'right'; }
-            else { en.x -= en.speed; en.facing = 'left'; }
+// ===============================
+// ESCOLHA DE ALVO POR FACÇÃO
+// ===============================
+if (!en.target || en.target.state === 'dead' || !isEnemy(en, en.target)) {
 
-            if (dist <= en.attackRange && en.attackCooldown <= 0) {
-                en.state = 'attacking'; 
-                en.attackCooldown = 60;
-                if (en.target.hp !== undefined) en.target.hp -= 1; 
+    let possibleTargets = [];
+
+    // Player
+    if (isEnemy(en, player)) {
+        possibleTargets.push(player);
+    }
+
+    // Outros inimigos / NPCs
+    enemies.forEach(other => {
+        if (other !== en && isEnemy(en, other) && other.state !== 'dead') {
+            possibleTargets.push(other);
+        }
+    });
+
+    // NPCs aliados (se existir array separado)
+    if (typeof npcs !== 'undefined') {
+        npcs.forEach(npc => {
+            if (isEnemy(en, npc) && npc.state !== 'dead') {
+                possibleTargets.push(npc);
+            }
+        });
+    }
+
+    // Escolhe o mais próximo
+    let nearest = null;
+    let minDist = Infinity;
+
+    possibleTargets.forEach(t => {
+        let d = Math.abs(t.x - en.x);
+        if (d < minDist && d < 350) {
+            minDist = d;
+            nearest = t;
+        }
+    });
+
+    if (nearest) {
+        en.target = nearest;
+        en.state = 'chase';
+    } else {
+        en.target = null;
+        en.state = 'patrol';
+    }
+}
+// ===============================
+// DEFINIÇÃO DE ALVO E DISTÂNCIAS
+// ===============================
+const alvo = en.target;
+
+let distH = Infinity;
+let distV = Infinity;
+
+if (alvo) {
+    distH = Math.abs(alvo.x - en.x);
+    distV = Math.abs(alvo.y - en.y);
+}
+// ===============================
+// VALIDAÇÃO DE ALVO (ANTI-TRAVA)
+// ===============================
+if (!alvo || alvo.state === 'dead' || !isEnemy(en, alvo)) {
+    en.target = null;
+    en.state = 'patrol';
+    en.currentFrame = 0;
+}
+
+    // ----------------------------
+    // 3. DEAD
+    // ----------------------------
+    if (en.state === 'dead') {
+        en.frameTimer++;
+        if (en.frameTimer >= en.frameInterval) {
+            en.frameTimer = 0;
+            if (en.currentFrame < en.deadFrames - 1) {
+                en.currentFrame++;
             }
         }
-else if (en.state === 'patrol') {
-    if (en.facing === 'left') {
-        en.x -= en.speed; 
-        if (en.x <= en.patrolMinX) en.facing = 'right'; 
-    } else {
-        en.x += en.speed; 
-        if (en.x >= en.patrolMaxX) en.facing = 'left'; 
+        return;
     }
 
-    if (dist < 100) en.state = 'chase';
-
-    en.frameTimer++;
-    if(en.frameTimer >= en.frameInterval){
-        en.currentFrame = (en.currentFrame + 1) % en.walkFrames;
-        en.frameTimer = 0;
-    }
-}
-else if (en.state === 'chase') { 
-    const minDist = 30; 
-    const distY = Math.abs(player.y - en.y); // Diferença de altura
-
-    // 1. MOVIMENTO HORIZONTAL
-    if (dist > minDist) { 
-        if (player.x < en.x) { en.x -= en.speed * 1.2; en.facing = 'left'; } 
-        else { en.x += en.speed * 1.2; en.facing = 'right'; }
+    // ----------------------------
+    // 4. BLOCKING
+    // ----------------------------
+    else if (en.state === 'blocking') {
+        en.frameTimer++;
+        if (en.frameTimer >= en.frameInterval) {
+            en.frameTimer = 0;
+            if (en.currentFrame < en.blockFrames - 1) {
+                en.currentFrame++;
+            } else {
+                en.state = 'chase';
+                en.currentFrame = 0;
+            }
+        }
     }
 
-    // 2. MOVIMENTO VERTICAL (Pulo)
-    // Só pula se você estiver acima dele, mas não MAIS que 300px (limite de visão vertical)
-    if (player.y < en.y - 60 && distY < 300 && en.onGround) {
-        en.velY = -13; 
-        en.onGround = false;
-    }
-
-    // 3. ATAQUE INTELIGENTE
-    // Só ataca se estiver perto em X E perto em Y (distY < 50)
-    if (dist <= en.attackRange && distY < 50 && en.attackCooldown <= 0) { 
-        en.state = 'attacking'; 
-        en.currentFrame = 0; 
-        en.frameTimer = 0;
-    } 
-
-    // 4. DESISTÊNCIA (Se você sumir pra cima ou pra longe)
-    if (dist > 300 || distY > 300) {
-        en.state = 'patrol'; 
-    }
-
-    // Animação de corrida
-    en.frameTimer++;
-    if(en.frameTimer >= en.frameInterval){
-        en.currentFrame = (en.currentFrame + 1) % en.runFrames;
-        en.frameTimer = 0;
-    }
-}
-    else if (en.state === 'attacking') {
+    // ----------------------------
+    // 5. HURT
+    // ----------------------------
+    else if (en.state === 'hurt') {
         en.frameTimer++;
         if (en.frameTimer >= en.frameInterval) {
             en.frameTimer = 0;
             en.currentFrame++;
-            
-            if (en.currentFrame === 5 && dist <= en.attackRange) {
-                player.hp -= 1;
-                player.state = 'hurt';
-                player.velX = (en.x < player.x) ? 25 : -25;
-                player.velY = -6;
-                en.attackCooldown = 80;
-            }
-            
-            if (en.currentFrame >= en.attackFrames) {
+            if (en.currentFrame >= en.hurtFrames) {
                 en.currentFrame = 0;
                 en.state = 'chase';
             }
         }
     }
 
-    if (en.attackCooldown > 0) en.attackCooldown--;
-});
+    // ----------------------------
+    // 6. PATROL
+    // ----------------------------
+    else if (en.state === 'patrol') {
 
-
-    // ===== TRIGGERS DE DIÁLOGO =====
-    playerDialogTriggers.forEach(trigger => {
-        if(!trigger.used && player.x > trigger.x) {
-            playerSay(trigger.text, 180);
-            trigger.used = true;
+        if (en.facing === 'left') {
+            en.x -= en.speed;
+            if (en.x <= en.patrolMinX) en.facing = 'right';
+        } else {
+            en.x += en.speed;
+            if (en.x >= en.patrolMaxX) en.facing = 'left';
         }
-    });
 
-    // ===== GATILHO DO BOSS =====
-    if(player.x > 6400 && player.y < 100 && !boss) {
-        spawnBoss();
+        if (distH < 120) {
+            en.state = 'chase';
+        }
+
+        en.frameTimer++;
+        if (en.frameTimer >= en.frameInterval) {
+            en.currentFrame = (en.currentFrame + 1) % en.walkFrames;
+            en.frameTimer = 0;
+        }
     }
 
-    if(boss) updateBossLogic();
-}
+    // ----------------------------
+    // 7. CHASE (PLAYER OU NPC)
+    // ----------------------------
+    else if ((en.state === 'chase' || en.state === 'chase_npc') && alvo) {
 
-function updateCombatIA() {
-    // 1. Warrior_2 procura o Warrior_3
-    enemies.forEach(en => {
-        if (en.type === 'Warrior_2' && en.state !== 'dead') {
-            // Procura o NPC Warrior_3 que não esteja morto (se você tiver HP para NPCs)
-            let targetNPC = npcs.find(n => n.type === 'Warrior_3' && n.hp > 0); 
-            
-            if (targetNPC) {
-                let distToNPC = Math.abs(en.x - targetNPC.x);
-                if (distToNPC < 300) { // Distância de detecção
-                    en.target = targetNPC;
-                    en.state = 'chase_npc';
-                }
+        // Movimento horizontal
+        if (distH > 30) {
+            if (alvo.x < en.x) {
+                en.x -= en.speed * 1.2;
+                en.facing = 'left';
+            } else {
+                en.x += en.speed * 1.2;
+                en.facing = 'right';
             }
         }
-    });
 
-    // 2. Warrior_3 (NPC) decide revidar
-    npcs.forEach(npc => {
-        if (npc.type === 'Warrior_3') {
-            let nearestEnemy = enemies.find(en => en.state !== 'dead' && Math.abs(en.x - npc.x) < 200);
-            if (nearestEnemy) {
-                npc.target = nearestEnemy;
-                npc.state = 'attacking_enemy';
-            }
+        // Pulo inteligente
+        if (alvo.y < en.y - 60 && distV < 300 && en.onGround) {
+            en.velY = -13;
+            en.onGround = false;
         }
-    });
+
+        // Ataque
+        if (distH <= en.attackRange && distV < 50 && en.attackCooldown <= 0) {
+            en.state = 'attacking';
+            en.currentFrame = 0;
+            en.frameTimer = 0;
+        }
+
+        // Desistência
+if (distH > 400 || distV > 150 || alvo.hp <= 0) {
+    en.target = null;
+    en.state = 'patrol';
+    en.currentFrame = 0;
+    return; // ← ISSO É FUNDAMENTAL
 }
 
+        // Animação corrida
+        en.frameTimer++;
+        if (en.frameTimer >= en.frameInterval) {
+            en.currentFrame = (en.currentFrame + 1) % en.runFrames;
+            en.frameTimer = 0;
+        }
+    }
+
+    // ----------------------------
+    // 8. ATTACKING
+    // ----------------------------
+    else if (en.state === 'attacking') {
+    en.velX = 0;
+    // CANCELA ATAQUE INVÁLIDO
+    if (!alvo || alvo.hp <= 0 || !isEnemy(en, alvo)) {
+        en.state = 'patrol';
+        en.target = null;
+        en.currentFrame = 0;
+        return;
+    }
+
+    en.frameTimer++;
+    if (en.frameTimer >= en.frameInterval) {
+        en.frameTimer = 0;
+        en.currentFrame++;
+
+        // FRAME DE IMPACTO
+        if (
+            en.currentFrame === 3 &&
+            distH <= en.attackRange &&
+            isEnemy(en, alvo)
+        ) {
+            if (alvo.hp !== undefined && alvo.hp > 0) {
+                alvo.hp -= 1;
+
+                if (alvo.state !== undefined) alvo.state = 'hurt';
+                if (alvo.velX !== undefined)
+                    alvo.velX = (en.x < alvo.x) ? 22 : -22;
+                if (alvo.velY !== undefined) alvo.velY = -6;
+            }
+
+            en.attackCooldown = 80;
+        }
+
+        //FIM DA ANIMAÇÃO
+if (en.currentFrame >= en.attackFrames) {
+    en.currentFrame = 0;
+
+    if (alvo && alvo.hp > 0 && isEnemy(en, alvo)) {
+        en.state = 'chase';
+    } else {
+        en.target = null;
+        en.state = 'patrol';
+    }
+
+    return;
+}
+    }
+}
+
+
+    // ----------------------------
+    // 9. COOLDOWN
+    // ----------------------------
+    if (en.attackCooldown > 0) en.attackCooldown--;
+});
+}
+function bossDiz(texto) {
+    if(boss) {
+        boss.fala = texto;
+        boss.falaTimer = 180;
+    }
+}
+// === Desenho ===
 function draw() {
     // 1. PRIMEIRO: Limpamos a tela
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1164,16 +1266,3 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
