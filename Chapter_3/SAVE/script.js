@@ -672,16 +672,33 @@ else if (en.state === 'patrol') {
 }
 else if (en.state === 'chase') { 
     const minDist = 30; 
+    const distY = Math.abs(player.y - en.y); // Diferença de altura
+
+    // 1. MOVIMENTO HORIZONTAL
     if (dist > minDist) { 
         if (player.x < en.x) { en.x -= en.speed * 1.2; en.facing = 'left'; } 
         else { en.x += en.speed * 1.2; en.facing = 'right'; }
     }
-    if (dist <= en.attackRange && en.attackCooldown <= 0) { 
+
+    // 2. MOVIMENTO VERTICAL (Pulo)
+    // Só pula se você estiver acima dele, mas não MAIS que 300px (limite de visão vertical)
+    if (player.y < en.y - 60 && distY < 300 && en.onGround) {
+        en.velY = -13; 
+        en.onGround = false;
+    }
+
+    // 3. ATAQUE INTELIGENTE
+    // Só ataca se estiver perto em X E perto em Y (distY < 50)
+    if (dist <= en.attackRange && distY < 50 && en.attackCooldown <= 0) { 
         en.state = 'attacking'; 
         en.currentFrame = 0; 
         en.frameTimer = 0;
     } 
-    if (dist > 150) en.state = 'patrol'; 
+
+    // 4. DESISTÊNCIA (Se você sumir pra cima ou pra longe)
+    if (dist > 300 || distY > 300) {
+        en.state = 'patrol'; 
+    }
 
     // Animação de corrida
     en.frameTimer++;
@@ -689,7 +706,7 @@ else if (en.state === 'chase') {
         en.currentFrame = (en.currentFrame + 1) % en.runFrames;
         en.frameTimer = 0;
     }
-}        
+}
     else if (en.state === 'attacking') {
         en.frameTimer++;
         if (en.frameTimer >= en.frameInterval) {
@@ -1147,6 +1164,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+
 
 
 
