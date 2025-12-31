@@ -90,21 +90,25 @@ window.arrowImg = new Image();
 window.arrowImg.src = 'assets/Archer/Arrow.png';
 
 let potions = [
-    { x: 500, y: 1900, width: 32, height: 32, active: true },
+    { x: 930, y: 1870, width: 32, height: 32, active: true },
 ];
 // --- INIMIGOS ---
 let enemies = [];
 function initEnemies() {
     enemies = [
-        { type: 'Warrior_1', x: 2400, y: 1800, hp: 4, maxHP: 4, width: 100, height: 100, speed: 1.8, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 6, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4, state: 'patrol' },
+        { type: 'Warrior_1', x: 2800, y: 1800, hp: 4, maxHP: 4, width: 100, height: 100, speed: 1.8, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 6, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4, state: 'patrol' },
         { type: 'Warrior_1', x: 2700, y: 1800, hp: 4, maxHP: 4, width: 100, height: 100, speed: 1.8, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 6, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4, state: 'patrol' },
 
         { type: 'Warrior_2', x: 2900, y: 1450, hp: 3, maxHP: 3, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 4, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 3, deadFrames: 4 , blockFrames: 2, isBlocking: false, blockChance: 0.3, state: 'patrol' },
         { type: 'Warrior_2', x: 3100, y: 1450, hp: 3, maxHP: 3, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 4, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 3, deadFrames: 4 , blockFrames: 2, isBlocking: false, blockChance: 0.3, state: 'patrol' },
-        { type: 'Warrior_2', x: 3200, y: 1450, hp: 3, maxHP: 3, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 4, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 3, deadFrames: 4 , blockFrames: 2, isBlocking: false, blockChance: 0.3, state: 'patrol' },
+        { type: 'Warrior_2', x: 3050, y: 1450, hp: 3, maxHP: 3, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 4, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 3, deadFrames: 4 , blockFrames: 2, isBlocking: false, blockChance: 0.3, state: 'patrol' },
 
-        { type: 'Warrior_2', x: 5200, y: 1800, hp: 3, maxHP: 3, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 4, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 3, deadFrames: 4 , blockFrames: 2, isBlocking: false, blockChance: 0.3, state: 'patrol' },
-        { type: 'Warrior_2', x: 5000, y: 1800, hp: 3, maxHP: 3, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 4, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 3, deadFrames: 4 , blockFrames: 2, isBlocking: false, blockChance: 0.3, state: 'patrol' },
+        { type: 'Warrior_2', x: 4000, y: 1450, hp: 3, maxHP: 3, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 4, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 3, deadFrames: 4 , blockFrames: 2, isBlocking: false, blockChance: 0.3, state: 'patrol' },
+        { type: 'Warrior_2', x: 3900, y: 1450, hp: 3, maxHP: 3, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 4, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 3, deadFrames: 4 , blockFrames: 2, isBlocking: false, blockChance: 0.3, state: 'patrol' },
+        { type: 'Warrior_2', x: 3950, y: 1450, hp: 3, maxHP: 3, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 4, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 3, deadFrames: 4 , blockFrames: 2, isBlocking: false, blockChance: 0.3, state: 'patrol' },
+
+        { type: 'Warrior_2', x: 5600, y: 1800, hp: 3, maxHP: 3, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 4, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 3, deadFrames: 4 , blockFrames: 2, isBlocking: false, blockChance: 0.3, state: 'patrol' },
+        { type: 'Warrior_2', x: 5500, y: 1800, hp: 3, maxHP: 3, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 50, frameInterval: 8, idleFrames: 4, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 3, deadFrames: 4 , blockFrames: 2, isBlocking: false, blockChance: 0.3, state: 'patrol' },
 
 ];
 
@@ -112,49 +116,42 @@ boss = {
 
     type: 'Archer',
 
-    x: 6000, y: 1850,
- 
-   velY: 0, width: 100, height: 100,
-
-    hp: 5, maxHp: 5, speed: 1.5,
-
+    x: 6000,
+    y: 1850,
+    velY: 0,
+    width: 100,
+    height: 100,
+    hp: 5,
+    maxHp: 5,
+    speed: 1.5,
     attackRange: 500,
-    state: 'idle', facing: 'left',
+    state: 'idle',
+    facing: 'left',
+    viuPlayer: false,
+    dialogue: "",
+    dialogueTimer: 0,
+    currentFrame: 0,
+    frameTimer: 0,
+    frameInterval: 6,
+    idleFrames: 6,
+    walkFrames: 8, 
+    attackFrames: 14,
+    hurtFrames: 3,
+    deadFrames: 3,
+    phrases: [ "EU DERROTEI O REI ANÃO! HAHAHA", "VOCÊ SERÁ O PRÓXIMO!", "MUAHAHAHA" ],
+    dialogueIndex: 0,
 
-    viuPlayer: false, dialogue: "", dialogueTimer: 0,
-
-    
-
-    // Frames e Imagens
-
-    currentFrame: 0, frameTimer: 0, frameInterval: 6,
-
-    idleFrames: 6, walkFrames: 8, 
- 
-   attackFrames: 14, // Animação de carregar o arco costuma ser longa
-
-    hurtFrames: 3, deadFrames: 3,
-
-    
-
-    imgIdle: new Image(), imgWalk: new Image(),
-
-    imgAttack: new Image(), // Aqui usaremos o Shot_1.png
-
-    imgHurt: new Image(), imgDead: new Image()
-
+    imgIdle: new Image(),
+    imgWalk: new Image(),
+    imgAttack: new Image(),
+    imgHurt: new Image(),
+    imgDead: new Image()
 };
 
-// Carregamento das imagens do Boss (Usando Shot_1.png)
-
     boss.imgIdle.src = `assets/Archer/Idle.png`;
-
     boss.imgWalk.src = `assets/Archer/Walk.png`;
-
     boss.imgAttack.src = `assets/Archer/Shot_1.png`;
- 
     boss.imgHurt.src = `assets/Archer/Hurt.png`;
-
     boss.imgDead.src = `assets/Archer/Dead.png`;
 
 
@@ -347,6 +344,28 @@ const backgroundObjects = [
     { x: 4050, y: 1450, width: 100, height: 100, img: DeadWarrior_2Img },
     { x: 4150, y: 1450, width: 100, height: 100, img: DeadWarrior_2Img },
 
+    { x: 3050, y: 400, width: 50, height: 50, img: Shield3Img },
+
+    { x: 3090, y: 425, width: 100, height: 100, img: DeadWarrior_3Img },
+    { x: 3100, y: 525, width: 75, height: 25, img: mesaImg },
+    { x: 3190, y: 425, width: 100, height: 100, img: DeadWarrior_3Img },
+    { x: 3200, y: 525, width: 75, height: 25, img: mesaImg },
+
+    { x: 3300, y: 500, width: 50, height: 50, img: Wooden_BarrelImg },
+    { x: 3350, y: 500, width: 50, height: 50, img: Wooden_CrateImg },
+
+    { x: 1900, y: 1800, width: 50, height: 50, img: Shield3Img },
+
+    { x: 490, y: 1825, width: 100, height: 100, img: DeadWarrior_2Img },
+    { x: 500, y: 1925, width: 75, height: 25, img: mesaImg },
+    { x: 690, y: 1825, width: 100, height: 100, img: DeadWarrior_2Img },
+    { x: 700, y: 1925, width: 75, height: 25, img: mesaImg },
+
+    { x: 850, y: 1900, width: 50, height: 50, img: Wooden_BarrelImg },
+    { x: 925, y: 1900, width: 50, height: 50, img: Wooden_CrateImg },
+
+    { x: 3000, y: 1850, width: 100, height: 100, img: Tool_BoardImg },
+
 ];
 
 const foregroundObjects = [
@@ -365,6 +384,12 @@ const foregroundObjects = [
     { x: 1250, y: 800, width: 150, height: 200, img: tree5Img },
     { x: 1325, y: 800, width: 150, height: 200, img: tree4Img },
     { x: 1400, y: 800, width: 150, height: 200, img: tree5Img },
+
+    { x: 4200, y: 1450, width: 100, height: 100, img: DeadWarrior_2Img },
+    { x: 4250, y: 1450, width: 100, height: 100, img: DeadWarrior_3Img },
+
+    { x: 590, y: 1825, width: 100, height: 100, img: DeadWarrior_2Img },
+    { x: 600, y: 1925, width: 75, height: 25, img: mesaImg },
 
 ];
 
@@ -422,7 +447,38 @@ const Warrior_3_4Npc = {
 };
 Warrior_3_4Npc.imgIdle.src = 'assets/Warrior_3/Idle.png';
 
-const npcs = [Warrior_3Npc, Warrior_3_1Npc, Warrior_3_2Npc, Warrior_3_3Npc,  Warrior_3_4Npc];
+const Warrior_3_5Npc = {
+    x: 4000, y: 450, width: 100, height: 100, 
+    imgIdle: new Image(),
+    idleFrames: 5, currentFrame: 0, frameTimer: 0, frameInterval: 16,
+    range: 200, velY: 0, onGround: false, facing: 'left',
+    phrases: [ "" ],
+    dialogueIndex: 0, dialogueTimer: 0, lastDialogueIndex: -1,
+};
+Warrior_3_5Npc.imgIdle.src = 'assets/Warrior_3/Idle.png';
+
+const Warrior_3_6Npc = {
+    x: 4050, y: 450, width: 100, height: 100, 
+    imgIdle: new Image(),
+    idleFrames: 5, currentFrame: 0, frameTimer: 0, frameInterval: 16,
+    range: 200, velY: 0, onGround: false, facing: 'left',
+    phrases: [ "Se preparem para luta" ],
+    dialogueIndex: 0, dialogueTimer: 0, lastDialogueIndex: -1,
+};
+Warrior_3_6Npc.imgIdle.src = 'assets/Warrior_3/Idle.png';
+
+const Warrior_3_7Npc = {
+    x: 4100, y: 450, width: 100, height: 100, 
+    imgIdle: new Image(),
+    idleFrames: 5, currentFrame: 0, frameTimer: 0, frameInterval: 16,
+    range: 200, velY: 0, onGround: false, facing: 'right',
+    phrases: [ "" ],
+    dialogueIndex: 0, dialogueTimer: 0, lastDialogueIndex: -1,
+};
+Warrior_3_7Npc.imgIdle.src = 'assets/Warrior_3/Idle.png';
+
+
+const npcs = [Warrior_3Npc, Warrior_3_1Npc, Warrior_3_2Npc, Warrior_3_3Npc,  Warrior_3_4Npc, Warrior_3_5Npc, Warrior_3_6Npc, Warrior_3_7Npc];
 
 // NPCs
 function npcSay(npc, index=0, duration=120){ npc.dialogueIndex=index; npc.dialogueTimer=duration; }
@@ -670,8 +726,7 @@ function update() {
         updateBossLogic();
 
     }
-    
-// =================================
+  
 
 // ===============================
 // ATUALIZA DIÁLOGO DO PLAYER
@@ -943,17 +998,24 @@ if (!en.target || en.target.state === 'dead' || !isEnemy(en, en.target)) {
         });
     }
 
-    // Escolhe o mais próximo
-    let nearest = null;
-    let minDist = Infinity;
+// Escolhe o mais próximo
+let nearest = null;
+let minDist = Infinity;
 
-    possibleTargets.forEach(t => {
-        let d = Math.abs(t.x - en.x);
-        if (d < minDist && d < 350) {
-            minDist = d;
+possibleTargets.forEach(t => {
+    // 1. Calcula a distância horizontal e vertical
+    let distH = Math.abs(t.x - en.x);
+    let distV = Math.abs(t.y - en.y); // Diferença de altura
+
+    // 2. Verifica se está dentro do limite de X (350) E do limite de Y (ex: 100)
+    if (distH < 350 && distV < 100) {
+        // 3. Escolhe o que for horizontalmente mais próximo
+        if (distH < minDist) {
+            minDist = distH;
             nearest = t;
         }
-    });
+    }
+});
 
     if (nearest) {
         en.target = nearest;
@@ -1051,11 +1113,13 @@ else if (en.state === 'hurt') {
     }
 
     // Se o player entrar no alcance, muda para Chase
-    const distToPlayer = Math.abs(player.x - en.x);
-    if (distToPlayer < 200 && player.hp > 0) {
-        en.target = player;
-        en.state = 'chase';
-    }
+    const distH = Math.abs(player.x - en.x);
+    const distV = Math.abs(player.y - en.y);
+
+    if (distH < 200 && distV < 100 && player.hp > 0) {
+    en.target = player;
+    en.state = 'chase';
+}
 
     // Atualiza animação de caminhada
     en.frameTimer++;
@@ -1082,7 +1146,7 @@ else if (en.state === 'hurt') {
         }
 
         // Pulo inteligente
-        if (alvo.y < en.y - 60 && distV < 300 && en.onGround) {
+        if (alvo.y < en.y - 60 && distV < 150 && en.onGround) {
             en.velY = -13;
             en.onGround = false;
         }
@@ -1095,7 +1159,7 @@ else if (en.state === 'hurt') {
         }
 
         // Desistência
-if (distH > 400 || distV > 150 || alvo.hp <= 0) {
+if (distH > 400 || distV > 100 || alvo.hp <= 0) {
     en.target = null;
     en.state = 'patrol';
     en.currentFrame = 0;
@@ -1502,21 +1566,26 @@ function updateBossLogic() {
     }
 
     // --- 3. INTELIGÊNCIA ARTIFICIAL (IA) ---
-    // Distância Horizontal (X)
     let distX = Math.abs((player.x + player.width / 2) - (boss.x + boss.width / 2));
-    // Distância Vertical (Y) - NOVO!
     let distY = Math.abs((player.y + player.height / 2) - (boss.y + boss.height / 2));
 
-    // Ativar o Boss (Agora checa X e Y)
+    // --- LÓGICA DE FALAS (SEQUENCIAL) ---
     if (!boss.viuPlayer) {
-        // Se estiver perto horizontalmente E verticalmente
         if (distX < 300 && distY < 100) {
             boss.viuPlayer = true;
-            boss.dialogue = "EU DERROTEI O REI E CULPEI O CLÃ AMARELO!", "VOCÊ SERÁ O PRÓXIMO!", "MUAHAHAHA" ;
-			boss.dialogueTimer = 180; // CORRIGIDO (era dialogueTime)
+            boss.dialogueIndex = 0; // Começa da primeira
+            boss.dialogue = boss.phrases[boss.dialogueIndex];
+            boss.dialogueTimer = 180; 
         } else {
             boss.state = 'idle';
             return; 
+        }
+    } else {
+        // Se o Boss já viu o player, gerencia a passagem das falas
+        if (boss.dialogueTimer <= 0 && boss.dialogueIndex < boss.phrases.length - 1) {
+            boss.dialogueIndex++;
+            boss.dialogue = boss.phrases[boss.dialogueIndex];
+            boss.dialogueTimer = 180;
         }
     }
 
@@ -1526,17 +1595,14 @@ function updateBossLogic() {
 
         // Lógica de combate
         if (distX < 500 && (boss.attackCooldown || 0) <= 0 && distY < 100) {
-            // Só ataca se estiver alinhado verticalmente também (distY < 100)
             boss.state = 'attacking';
             boss.currentFrame = 0;
             boss.canShoot = true; 
         } else if (distX < 200) {
-            // Foge
             boss.state = 'walking';
             let moveDir = (player.x < boss.x) ? boss.speed : -boss.speed;
             if (boss.x + moveDir > 4000 && boss.x + moveDir < mapWidth - 100) boss.x += moveDir;
         } else if (distX > 500) {
-            // Persegue
             boss.state = 'walking';
             boss.x += (player.x < boss.x) ? -boss.speed : boss.speed;
         } else {
@@ -1545,22 +1611,21 @@ function updateBossLogic() {
     }
 
     // Atualiza timers
-    if (boss.dialogueTimer > 0) boss.dialogueTimer--; // CORRIGIDO (era falaTimer)
+    if (boss.dialogueTimer > 0) boss.dialogueTimer--; 
     if (boss.attackCooldown > 0) boss.attackCooldown--;
 
-    // --- 4. ANIMAÇÃO ---
+    // --- 4. ANIMAÇÃO (Mantido conforme seu código original) ---
     boss.frameTimer++;
     if (boss.frameTimer >= boss.frameInterval) {
         boss.frameTimer = 0;
 
-        // Lógica do Tiro
         if (boss.state === 'attacking' && boss.currentFrame === 9 && boss.canShoot) {
             if (window.arrows) {
                 let dir = boss.facing === 'left' ? -1 : 1;
                 window.arrows.push({
                     x: boss.x + (boss.width / 2) + (dir * 40), 
                     y: boss.y + 60, 
-                    velX: dir * 15, // Aumentei a velocidade (1.5 era muito lento)
+                    velX: dir * 15, 
                     width: 30,
                     height: 10
                 });
@@ -1579,7 +1644,7 @@ function updateBossLogic() {
             boss.currentFrame = 0;
             if (boss.state === 'attacking') {
                 boss.state = 'idle';
-                boss.attackCooldown = 150;
+                boss.attackCooldown = 100;
             }
             else if (boss.state === 'hurt') {
                 boss.state = 'idle';
