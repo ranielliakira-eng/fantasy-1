@@ -406,7 +406,7 @@ const Warrior_3_3Npc = {
     imgIdle: new Image(),
     idleFrames: 5, currentFrame: 0, frameTimer: 0, frameInterval: 16,
     range: 200, velY: 0, onGround: false, facing: 'right',
-    phrases: [ "Um anão nunca mataria seu rei..." ],
+    phrases: [ "Um anão não derrubaria o rei..." ],
     dialogueIndex: 0, dialogueTimer: 0, lastDialogueIndex: -1,
 };
 Warrior_3_3Npc.imgIdle.src = 'assets/Warrior_3/Idle.png';
@@ -1642,4 +1642,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 });
+
 
