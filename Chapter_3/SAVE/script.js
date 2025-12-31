@@ -1511,8 +1511,8 @@ function updateBossLogic() {
     if (!boss.viuPlayer) {
         if (dist < 250) {
             boss.viuPlayer = true;
-boss.dialogue = "EU MATEI O REI E CULPEI O CLÃ TORN!";
-boss.dialogueTime = 150;
+			boss.dialogue = "EU MATEI O REI E CULPEI O CLÃ TORN!";
+			boss.dialogueTime = 150;
         } else {
             boss.state = 'idle'
             return; 
@@ -1655,3 +1655,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 });
+
