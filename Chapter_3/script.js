@@ -1427,7 +1427,7 @@ if (screen) {
             screen.style.backgroundColor = "rgba(0, 0, 0, 0.8)"; 
             
             if (title) title.innerHTML = "Você derrubou <br> Archer";
-            if (subtitle) subtitle.innerHTML = "Vingou a morte do rei anão";
+            if (subtitle) subtitle.innerHTML = "Vingou o Rei Anão";
 
             // ESCONDE o reset e MOSTRA o botão de voltar ao menu (Próxima Fase)
             if (btnReset) btnReset.style.display = 'none';
@@ -1642,6 +1642,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 });
+
 
 
 
