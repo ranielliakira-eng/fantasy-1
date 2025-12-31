@@ -1147,12 +1147,6 @@ if (en.currentFrame >= en.attackFrames) {
     if (en.attackCooldown > 0) en.attackCooldown--;
 });
 }
-function bossDiz(texto) {
-    if(boss) {
-        boss.dialogue = bostexto;
-        boss.dialogueTimer = 180;
-    }
-}
 // === Desenho ===
 function draw() {
     // 1. PRIMEIRO: Limpamos a tela
@@ -1417,25 +1411,6 @@ if (screen) {
         }
     }
 }
-
-if (boss && boss.falaTimer > 0) {
-    ctx.save();
-    ctx.font = "italic bold 16px 'Segoe UI', Arial";
-    
-    // Mede a largura do texto para centralizar o balão
-    let textWidth = ctx.measureText(boss.fala).width;
-    let bx = boss.x - cameraX + (boss.width / 2) - (textWidth / 2);
-    let by = boss.y - 30; // Posição acima da cabeça
-
-    // Fundo do balão (Sombra/Preto)
-    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-    ctx.fillRect(bx - 10, by - 20, textWidth + 20, 30);
-    
-    // Texto da fala
-    ctx.fillStyle = "#dfa9ff"; // Roxo claro/mágico
-    ctx.fillText(boss.fala, bx, by);
-    ctx.restore();
-}
 } // FIM DA FUNÇÃO DRAW
 
 // --- OUTRAS FUNÇÕES ---
@@ -1471,7 +1446,6 @@ function updateArrows() {
     }
 }
 
-
 function updateBossLogic() {
     if (!boss) return;
 
@@ -1491,7 +1465,6 @@ function updateBossLogic() {
         if (boss.state !== 'dead') {
             boss.state = 'dead';
             boss.currentFrame = 0;
-            // Aguarda um pouco antes de mostrar vitória/trocar fase
             setTimeout(() => { 
                 if(window.concluirCapituloEVoutar) window.concluirCapituloEVoutar(); 
             }, 3000);
@@ -1501,20 +1474,24 @@ function updateBossLogic() {
             boss.frameTimer = 0;
             if (boss.currentFrame < (boss.deadFrames || 3) - 1) boss.currentFrame++;
         }
-        return; // Sai da função se estiver morto
+        return; 
     }
 
     // --- 3. INTELIGÊNCIA ARTIFICIAL (IA) ---
-    let dist = Math.abs((player.x + player.width / 2) - (boss.x + boss.width / 2));
+    // Distância Horizontal (X)
+    let distX = Math.abs((player.x + player.width / 2) - (boss.x + boss.width / 2));
+    // Distância Vertical (Y) - NOVO!
+    let distY = Math.abs((player.y + player.height / 2) - (boss.y + boss.height / 2));
 
-    // Ativar o Boss quando o player chegar perto
+    // Ativar o Boss (Agora checa X e Y)
     if (!boss.viuPlayer) {
-        if (dist < 250) {
+        // Se estiver perto horizontalmente E verticalmente
+        if (distX < 300 && distY < 100) {
             boss.viuPlayer = true;
-			boss.dialogue = "EU MATEI O REI E CULPEI O CLÃ TORN!";
-			boss.dialogueTime = 150;
+            boss.dialogue = "EU MATEI O REI E CULPEI O CLÃ TORN!";
+            boss.dialogueTimer = 180; // CORRIGIDO (era dialogueTime)
         } else {
-            boss.state = 'idle'
+            boss.state = 'idle';
             return; 
         }
     }
@@ -1523,17 +1500,18 @@ function updateBossLogic() {
     if (boss.state !== 'hurt' && boss.state !== 'attacking') {
         boss.facing = (player.x < boss.x) ? 'left' : 'right';
 
-        if (dist < 500 && (boss.attackCooldown || 0) <= 0) {
-            // Inicia o ataque
+        // Lógica de combate
+        if (distX < 500 && (boss.attackCooldown || 0) <= 0 && distY < 100) {
+            // Só ataca se estiver alinhado verticalmente também (distY < 100)
             boss.state = 'attacking';
             boss.currentFrame = 0;
-            boss.canShoot = true; // Prepara o gatilho da flecha
-        } else if (dist < 200) {
-            // Foge se estiver muito perto
+            boss.canShoot = true; 
+        } else if (distX < 200) {
+            // Foge
             boss.state = 'walking';
             let moveDir = (player.x < boss.x) ? boss.speed : -boss.speed;
             if (boss.x + moveDir > 4000 && boss.x + moveDir < mapWidth - 100) boss.x += moveDir;
-        } else if (dist > 500) {
+        } else if (distX > 500) {
             // Persegue
             boss.state = 'walking';
             boss.x += (player.x < boss.x) ? -boss.speed : boss.speed;
@@ -1543,60 +1521,45 @@ function updateBossLogic() {
     }
 
     // Atualiza timers
-    if (boss.falaTimer > 0) boss.falaTimer--;
+    if (boss.dialogueTimer > 0) boss.dialogueTimer--; // CORRIGIDO (era falaTimer)
     if (boss.attackCooldown > 0) boss.attackCooldown--;
 
-    // --- 4. ANIMAÇÃO E LOGICA DE TIRO ---
+    // --- 4. ANIMAÇÃO ---
     boss.frameTimer++;
     if (boss.frameTimer >= boss.frameInterval) {
         boss.frameTimer = 0;
 
-        // Lógica do Tiro (No frame 9 da animação)
-if (boss.state === 'attacking' && boss.currentFrame === 9 && boss.canShoot) {
-    if (window.arrows) {
-        // Define a direção: 1 para direita, -1 para esquerda
-        let dir = boss.facing === 'left' ? -1 : 1;
-        
-        window.arrows.push({
-            // Ajuste fino do X: Sai um pouco mais do centro (boss.width / 2)
-            x: boss.x + (boss.width / 2) + (dir * 40), 
-            
-            // Ajuste fino do Y: Altura do peito/arco (aprox. 45px do topo)
-            y: boss.y + 60, 
-            
-            // Velocidade da flecha
-            velX: dir * 1.5, 
-            
-            // Tamanho da hitbox da flecha
-            width: 30,  // Aumentei um pouco para ficar mais visível
-            height: 10
-        });
-        
-        boss.canShoot = false; // Impede disparos múltiplos no mesmo frame
-    }
-}
+        // Lógica do Tiro
+        if (boss.state === 'attacking' && boss.currentFrame === 9 && boss.canShoot) {
+            if (window.arrows) {
+                let dir = boss.facing === 'left' ? -1 : 1;
+                window.arrows.push({
+                    x: boss.x + (boss.width / 2) + (dir * 40), 
+                    y: boss.y + 60, 
+                    velX: dir * 15, // Aumentei a velocidade (1.5 era muito lento)
+                    width: 30,
+                    height: 10
+                });
+                boss.canShoot = false;
+            }
+        }
 
         boss.currentFrame++;
 
-        // --- DEFINIR TOTAL DE FRAMES POR ESTADO ---
-        let maxFrames = 6; // Padrão (Idle)
+        let maxFrames = 6; 
         if (boss.state === 'attacking') maxFrames = 14; 
         else if (boss.state === 'walking') maxFrames = 8;
-        else if (boss.state === 'hurt') maxFrames = boss.hurtFrames; // Geralmente 3
+        else if (boss.state === 'hurt') maxFrames = boss.hurtFrames;
 
-        // --- FIM DA ANIMAÇÃO (LOOP OU TRANSIÇÃO) ---
         if (boss.currentFrame >= maxFrames) {
             boss.currentFrame = 0;
-
-            // Se terminou o ataque, volta para Idle
             if (boss.state === 'attacking') {
                 boss.state = 'idle';
                 boss.attackCooldown = 150;
             }
-            // CORREÇÃO AQUI: Se terminou de tomar dano, volta para Idle
             else if (boss.state === 'hurt') {
                 boss.state = 'idle';
-                boss.attackCooldown = 20; // Pequeno tempo antes de ele poder atacar de novo
+                boss.attackCooldown = 20;
             }
         }
     }
