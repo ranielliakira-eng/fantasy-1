@@ -22,7 +22,7 @@ let boss = null;
 
 // --- JOGADOR (ESTRUTURA BASE) ---
 const player = {
-    x: 1100, y:1900, width: 100, height: 100,
+    x: 140, y: 900, width: 100, height: 100,
     velX: 0, velY: 0, speed: 3, jumpForce: -15,
     facing: 'right', onGround: false, state: 'idle',
     hp: 4, maxHp: 4, canAirAttack: true,
@@ -75,12 +75,19 @@ window.onload = function() {
 };
 
 const playerDialogTriggers = [
-    { x: 140, text: "", used: false },
+    { x: 100, text: "", used: false },
 
 ];
 
 const potionImg = new Image();
 potionImg.src = 'assets/Potion/LifePotionSmall.png';
+
+// Torna a lista de flechas globalmente acessível
+window.arrows = []; 
+
+// Configura a imagem da flecha globalmente
+window.arrowImg = new Image();
+window.arrowImg.src = 'assets/Archer/Arrow.png';
 
 let potions = [
     { x: 500, y: 1900, width: 32, height: 32, active: true },
@@ -109,7 +116,59 @@ function initEnemies() {
         { type: 'Warrior_3', x: 3850, y: 1450, hp: 3, maxHP: 3, width: 100, height: 100, speed: 1.2, faction: 'ally', attackRange: 80, frameInterval: 8, idleFrames: 5, walkFrames: 8, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4 , blockFrames: 3, isBlocking: false, blockChance: 0.3, state: 'patrol' },
 	];
 
-    enemies.forEach(en => {
+boss = {
+
+    type: 'Archer',
+
+    x: 6000, y: 1850,
+ 
+   velY: 0, width: 100, height: 100,
+
+    hp: 5, maxHp: 5, speed: 1.5,
+
+    attackRange: 500,
+    state: 'idle', facing: 'left',
+
+    viuPlayer: false, fala: "", falaTimer: 0,
+
+    
+
+    // Frames e Imagens
+
+    currentFrame: 0, frameTimer: 0, frameInterval: 6,
+
+    idleFrames: 6, walkFrames: 8, 
+ 
+   attackFrames: 14, // Animação de carregar o arco costuma ser longa
+
+    hurtFrames: 3, deadFrames: 3,
+
+    
+
+    imgIdle: new Image(), imgWalk: new Image(),
+
+    imgAttack: new Image(), // Aqui usaremos o Shot_1.png
+
+    imgHurt: new Image(), imgDead: new Image()
+
+};
+
+// Carregamento das imagens do Boss (Usando Shot_1.png)
+
+    boss.imgIdle.src = `assets/Archer/Idle.png`;
+
+    boss.imgWalk.src = `assets/Archer/Walk.png`;
+
+    boss.imgAttack.src = `assets/Archer/Shot_1.png`;
+ 
+    boss.imgHurt.src = `assets/Archer/Hurt.png`;
+
+    boss.imgDead.src = `assets/Archer/Dead.png`;
+
+
+    
+    
+enemies.forEach(en => {
         en.imgIdle = new Image(); en.imgIdle.src = `assets/${en.type}/Idle.png`;
         en.imgWalk = new Image(); en.imgWalk.src = `assets/${en.type}/Walk.png`;
         en.imgRun = new Image(); en.imgRun.src = `assets/${en.type}/Run.png`;
@@ -168,8 +227,8 @@ const platforms = [
 
     { x: 0, y: 1950, w: 7000, h: 100, type: 'pattern' },
 
-
-
+    { x: 6000, y: 1825, w: 50, h: 10, type: 'pattern' },
+    { x: 6300, y: 1825, w: 50, h: 10, type: 'pattern' },
 ];
 
 // --- Cenário ---
@@ -179,9 +238,65 @@ fundoImg.src = 'assets/Battleground/fundo.png';
 const platformImg = new Image();
 platformImg.src = 'assets/Battleground/Ground1.png';
 
-const crystal_blue4Img = new Image();
-crystal_blue4Img.src = 'assets/Battleground/Crystals/crystals_blue/crystal_blue4.png';
+const tree4Img = new Image();
+tree4Img.src = 'assets/Battleground/trees/winter_conifer_tree_4.png';
+const tree5Img = new Image();
+tree5Img.src = 'assets/Battleground/trees/winter_conifer_tree_5.png';
+const tree7Img = new Image();
+tree7Img.src = 'assets/Battleground/trees/winter_conifer_tree_7.png';
 
+const BottleImg = new Image();
+BottleImg.src = 'assets/Battleground/casa/Bottle.png';
+const cadeiraImg = new Image();
+cadeiraImg.src = 'assets/Battleground/casa/cadeira.png';
+const Banner1Img = new Image();
+Banner1Img.src = 'assets/Battleground/casa/Banner1.png';
+const Banner2Img = new Image();
+Banner2Img.src = 'assets/Battleground/casa/Banner2.png';
+const Barrel1Img = new Image();
+Barrel1Img.src = 'assets/Battleground/casa/Barrel1.png';
+const BoardImg = new Image();
+BoardImg.src = 'assets/Battleground/casa/Board.png';
+const Crate1Img = new Image();
+Crate1Img.src = 'assets/Battleground/casa/Crate1.png';
+const CuirassImg = new Image();
+CuirassImg.src = 'assets/Battleground/casa/Cuirass.png';
+const Cuirass1Img = new Image();
+Cuirass1Img.src = 'assets/Battleground/casa/Cuirass1.png';
+const HelmentImg = new Image();
+HelmentImg.src = 'assets/Battleground/casa/Helment.png';
+const Helment1Img = new Image();
+Helment1Img.src = 'assets/Battleground/casa/Helment1.png';
+const mesaImg = new Image();
+mesaImg.src = 'assets/Battleground/casa/mesa.png';
+const paoImg = new Image();
+paoImg.src = 'assets/Battleground/casa/pao.png';
+const SackImg = new Image();
+SackImg.src = 'assets/Battleground/casa/Sack.png';
+const Shield1Img = new Image();
+Shield1Img.src = 'assets/Battleground/casa/Shield1.png';
+const Shield2Img = new Image();
+Shield2Img.src = 'assets/Battleground/casa/Shield2.png';
+const Shield3Img = new Image();
+Shield3Img.src = 'assets/Battleground/casa/Shield3.png';
+const Storage1Img = new Image();
+Storage1Img.src = 'assets/Battleground/casa/Storage1.png';
+const SwordImg = new Image();
+SwordImg.src = 'assets/Battleground/casa/Sword.png';
+const Sword1Img = new Image();
+Sword1Img.src = 'assets/Battleground/casa/Sword1.png';
+const Sword2Img = new Image();
+Sword2Img.src = 'assets/Battleground/casa/Sword2.png';
+const Sword3Img = new Image();
+Sword3Img.src = 'assets/Battleground/casa/Sword3.png';
+const Tool_BoardImg = new Image();
+Tool_BoardImg.src = 'assets/Battleground/casa/Tool_Board.png';
+const Weapon1Img = new Image();
+Weapon1Img.src = 'assets/Battleground/casa/Weapon1.png';
+const Wooden_BarrelImg = new Image();
+Wooden_BarrelImg.src = 'assets/Battleground/casa/Wooden_Barrel.png';
+const Wooden_CrateImg = new Image();
+Wooden_CrateImg.src = 'assets/Battleground/casa/Wooden_Crate.png';
 
 let platformPattern = null;
 
@@ -193,11 +308,59 @@ let keys = { left: false, right: false };
 
 const backgroundObjects = [
     { x: 0, y: 0, width: 7000, height: 2000, img: fundoImg },
+    { x: 0, y: 800, width: 150, height: 200, img: tree4Img },
+    { x: 100, y: 800, width: 150, height: 200, img: tree5Img },
+    { x: 200, y: 800, width: 150, height: 200, img: tree5Img },
+    { x: 300, y: 800, width: 150, height: 200, img: tree4Img },
+    { x: 425, y: 800, width: 150, height: 200, img: tree5Img },
+    { x: 550, y: 800, width: 150, height: 200, img: tree4Img },
+    { x: 675, y: 800, width: 150, height: 200, img: tree5Img },
+    { x: 800, y: 800, width: 150, height: 200, img: tree5Img },
+    { x: 900, y: 800, width: 150, height: 200, img: tree4Img },
+    { x: 1025, y: 800, width: 150, height: 200, img: tree5Img },
+    { x: 1100, y: 800, width: 150, height: 200, img: tree5Img },
+    { x: 1200, y: 800, width: 150, height: 200, img: tree5Img },
+    { x: 1275, y: 800, width: 150, height: 200, img: tree4Img },
+    { x: 1350, y: 800, width: 150, height: 200, img: tree5Img },
+
+    { x: 2500, y: 1050, width: 100, height: 100, img: BoardImg },
+    { x: 2600, y: 1100, width: 50, height: 50, img: Barrel1Img },
+    { x: 2750, y: 1105, width: 50, height: 50, img: Crate1Img },
+    { x: 3300, y: 1100, width: 50, height: 50, img: SackImg },
+    { x: 3600, y: 1050, width: 50, height: 50, img: Shield2Img },
+    { x: 4000, y: 1125, width: 25, height: 25, img: cadeiraImg },
+    { x: 4025, y: 1125, width: 75, height: 25, img: mesaImg },
+    { x: 4100, y: 1125, width: 25, height: 25, img: cadeiraImg },
+    { x: 4500, y: 1100, width: 50, height: 50, img: Sword1Img },
+    { x: 4600, y: 1100, width: 50, height: 50, img: Sword2Img },
+
+    { x: 4000, y: 825, width: 25, height: 25, img: cadeiraImg },
+    { x: 4025, y: 825, width: 75, height: 25, img: mesaImg },
+    { x: 4100, y: 825, width: 25, height: 25, img: cadeiraImg },
+    { x: 4050, y: 810, width: 25, height: 25, img: HelmentImg },
+
+    { x: 3300, y: 800, width: 50, height: 50, img: Barrel1Img },
+    { x: 3600, y: 805, width: 50, height: 50, img: Crate1Img },
+    { x: 4200, y: 750, width: 100, height: 100, img: Storage1Img },
+
 ];
 
 const foregroundObjects = [
 
-        { x: 400, y: 260, width: 50, height: 50, img: crystal_blue4Img },
+    { x: -25, y: 800, width: 150, height: 200, img: tree4Img },
+    { x: 25, y: 800, width: 150, height: 200, img: tree5Img },
+    { x: 250, y: 800, width: 150, height: 200, img: tree5Img },
+    { x: 350, y: 800, width: 150, height: 200, img: tree4Img },
+    { x: 475, y: 800, width: 150, height: 200, img: tree5Img },
+    { x: 600, y: 800, width: 150, height: 200, img: tree4Img },
+    { x: 700, y: 800, width: 150, height: 200, img: tree5Img },
+    { x: 850, y: 800, width: 150, height: 200, img: tree5Img },
+    { x: 950, y: 800, width: 150, height: 200, img: tree4Img },
+    { x: 1075, y: 800, width: 150, height: 200, img: tree5Img },
+    { x: 1150, y: 800, width: 150, height: 200, img: tree5Img },
+    { x: 1250, y: 800, width: 150, height: 200, img: tree5Img },
+    { x: 1325, y: 800, width: 150, height: 200, img: tree4Img },
+    { x: 1400, y: 800, width: 150, height: 200, img: tree5Img },
 
 ];
 
@@ -474,6 +637,18 @@ function update() {
     }
     if (gameState !== 'playing' || isPaused) return;
 
+    updatePotions();
+    updateNPCs();
+// === ADICIONE ESTAS LINHAS AQUI ===
+
+    if (boss) {
+
+        updateBossLogic();
+
+    }
+    
+// =================================
+
 // ===============================
 // ATUALIZA DIÁLOGO DO PLAYER
 // ===============================
@@ -483,7 +658,7 @@ if (player.dialogueTimer > 0) {
         player.dialogue = "";
     }
 }
-    updateNPCs();
+
 
     if (player.y >= 2000) { 
         player.hp = 0; 
@@ -642,6 +817,33 @@ if(player.frameTimer >= player.frameInterval){
     cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width / zoom));
     cameraY = Math.max(0, Math.min(cameraY, mapHeight - canvas.height / zoom));
 
+// Dentro da função update(), procure a parte das flechas e use esta lógica:
+if (window.arrows) {
+    for (let i = window.arrows.length - 1; i >= 0; i--) {
+        let arrow = window.arrows[i];
+        arrow.x += arrow.velX;
+
+        // Colisão com o Player
+        if (arrow.x < player.x + player.width &&
+            arrow.x + 20 > player.x &&
+            arrow.y < player.y + player.height &&
+            arrow.y + 4 > player.y) {
+            
+            if (player.state !== 'hurt' && player.state !== 'dead') {
+                player.hp -= 1;
+                player.state = 'hurt';
+                player.currentFrame = 0;
+                window.arrows.splice(i, 1);
+                continue;
+            }
+        }
+
+        // Remove se sair da tela ou do limite do Boss
+        if (Math.abs(arrow.x - boss.x) > 1000 || arrow.x < 0 || arrow.x > mapWidth) {
+            window.arrows.splice(i, 1);
+        }
+    }
+}
 // ===== LÓGICA DOS INIMIGOS =====
 enemies.forEach(en => {
 // 1. VERIFICAÇÃO PRIORITÁRIA DE MORTE (Coloque aqui!)
@@ -1083,6 +1285,16 @@ function draw() {
         }
     });
 
+
+potions.forEach(p => {
+
+    if (p.active && potionImg.complete) {
+
+        ctx.drawImage(potionImg, p.x, p.y, p.width, p.height);
+
+    }
+});
+
     // NPCs
 npcs.forEach(n => {
     // Escolhe a imagem e frames com base no estado
@@ -1097,11 +1309,7 @@ npcs.forEach(n => {
     if (!img.complete) return;
     const fw = img.width / totalF;
     const fh = img.height;
-potions.forEach(p => {
-    if (p.active && potionImg.complete) {
-        ctx.drawImage(potionImg, p.x, p.y, p.width, p.height);
-    }
-});
+
     ctx.save();
     if (n.facing === 'left') {
         ctx.translate(n.x + n.width, n.y);
@@ -1112,26 +1320,65 @@ potions.forEach(p => {
     }
     ctx.restore();
 });
+// --- DESENHAR FOREGROUND OBJECTS ---
+
+    foregroundObjects.forEach(f => {
+
+        if (f.img.complete) {
+
+            ctx.drawImage(f.img, f.x, f.y, f.width, f.height);
+
+        }
+
+    });
+
+// Dentro da função draw(), substitua o bloco das arrows por este:
+if (window.arrows) {
+    window.arrows.forEach(arrow => {
+        // Verifica se a imagem existe e foi carregada
+        if (window.arrowImg.complete && window.arrowImg.naturalWidth > 0) {
+            ctx.save();
+            // Inverte a flecha se estiver indo para a esquerda
+            if (arrow.velX < 0) {
+                ctx.translate(arrow.x + arrow.width, arrow.y);
+                ctx.scale(-1, 1);
+                ctx.drawImage(window.arrowImg, 0, 0, arrow.width, arrow.height);
+            } else {
+                ctx.drawImage(window.arrowImg, arrow.x, arrow.y, arrow.width, arrow.height);
+            }
+            ctx.restore();
+        } else {
+            // --- MODO DE SEGURANÇA (Se não tiver imagem) ---
+            // Desenha um retângulo VERMELHO brilhante para você ver a hitbox
+            ctx.fillStyle = "red";
+            ctx.fillRect(arrow.x, arrow.y, arrow.width, arrow.height);
+            
+            ctx.strokeStyle = "yellow";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(arrow.x, arrow.y, arrow.width, arrow.height);
+        }
+    });
+}
 
 
     drawNPCDialogues(ctx);
     ctx.restore(); // Fecha Câmera
 
     // 3. UI (Fixo na tela)
-    if (gameState === 'playing') {
-        // Vida Player
-        ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(20, 20, 150, 15);
-        ctx.fillStyle = "red"; ctx.fillRect(20, 20, (player.hp / player.maxHp) * 150, 15);
+if (gameState === 'playing') {
+    // Vida Player
+    ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(20, 20, 150, 15);
+    ctx.fillStyle = "red"; ctx.fillRect(20, 20, (player.hp / player.maxHp) * 150, 15);
 
-        // Vida Boss
-        if (boss && boss.hp > 0) {
-            ctx.fillStyle = "rgba(0,0,0,0.7)"; ctx.fillRect(canvas.width/2 - 200, 40, 400, 20);
-            ctx.fillStyle = "purple"; ctx.fillRect(canvas.width/2 - 200, 40, (boss.hp / boss.maxHp) * 400, 20);
-            ctx.strokeStyle = "white"; ctx.strokeRect(canvas.width/2 - 200, 40, 400, 20);
-            ctx.fillStyle = "white"; ctx.font = "bold 14px Arial"; ctx.textAlign = "center";
-            ctx.fillText("ARCHER", canvas.width/2, 35);
-        }
+    // Vida Boss - ADICIONADO boss.viuPlayer PARA SÓ APARECER NO COMBATE
+    if (boss && boss.hp > 0 && boss.viuPlayer) {
+        ctx.fillStyle = "rgba(0,0,0,0.7)"; ctx.fillRect(canvas.width/2 - 200, 40, 400, 20);
+        ctx.fillStyle = "purple"; ctx.fillRect(canvas.width/2 - 200, 40, (boss.hp / boss.maxHp) * 400, 20);
+        ctx.strokeStyle = "white"; ctx.strokeRect(canvas.width/2 - 200, 40, 400, 20);
+        ctx.fillStyle = "white"; ctx.font = "bold 14px Arial"; ctx.textAlign = "center";
+        ctx.fillText("ARCHER", canvas.width/2, 35);
     }
+}
 
 // --- 4. TELAS FINAIS ---
 const screen = document.getElementById('game-over-screen');
@@ -1199,96 +1446,160 @@ function enemySay(en, type) {
 }
 
 // --- LÓGICA DO BOSS ---
+function updateArrows() {
+    for (let i = arrows.length - 1; i >= 0; i--) {
+        arrows[i].x += arrows[i].velX;
+
+        // Colisão simples com o player
+        if (arrows[i].x < player.x + player.width &&
+            arrows[i].x + 20 > player.x &&
+            arrows[i].y < player.y + player.height &&
+            arrows[i].y + 4 > player.y) {
+            
+            if (player.state !== 'dead') {
+                player.hp -= 1;
+                player.state = 'hurt';
+                arrows.splice(i, 1);
+                continue;
+            }
+        }
+
+        // Remove se sair do mapa
+        if (arrows[i].x < 0 || arrows[i].x > mapWidth) {
+            arrows.splice(i, 1);
+        }
+    }
+}
+
+
 function updateBossLogic() {
     if (!boss) return;
 
-    let dist = Math.abs((player.x + player.width / 2) - (boss.x + boss.width / 2));
+    // --- 1. FÍSICA (Gravidade) ---
+    boss.velY = (boss.velY || 0) + 0.8;
+    boss.y += boss.velY;
 
-    // 1. ESTADO DE MORTE
-    if (boss.state === 'dead') {
+    let groundLevel = 1950; 
+    if (boss.y + boss.height > groundLevel) { 
+        boss.y = groundLevel - boss.height;
+        boss.velY = 0;
+        boss.onGround = true;
+    }
+
+    // --- 2. MORTE ---
+    if (boss.hp <= 0) {
+        if (boss.state !== 'dead') {
+            boss.state = 'dead';
+            boss.currentFrame = 0;
+            // Aguarda um pouco antes de mostrar vitória/trocar fase
+            setTimeout(() => { 
+                if(window.concluirCapituloEVoutar) window.concluirCapituloEVoutar(); 
+            }, 3000);
+        }
         boss.frameTimer++;
         if (boss.frameTimer >= boss.frameInterval) {
             boss.frameTimer = 0;
-            if (boss.currentFrame < boss.deadFrames - 1) {
-                boss.currentFrame++;
-            }
+            if (boss.currentFrame < (boss.deadFrames || 3) - 1) boss.currentFrame++;
         }
-        return; 
+        return; // Sai da função se estiver morto
     }
 
-    // 2. GRAVIDADE E CHÃO
-    boss.velY = (boss.velY || 0) + 0.8;
-    boss.y += boss.velY;
-    if (boss.y + boss.height > 300) {
-        boss.y = 300 - boss.height;
-        boss.velY = 0;
-    }
+    // --- 3. INTELIGÊNCIA ARTIFICIAL (IA) ---
+    let dist = Math.abs((player.x + player.width / 2) - (boss.x + boss.width / 2));
 
-    // 3. ANIMAÇÃO E TIMERS
-    if (boss.falaTimer > 0) boss.falaTimer--;
-
-
-    boss.frameTimer++;
-    if (boss.frameTimer >= boss.frameInterval) {
-        boss.frameTimer = 0;
-        
-        let maxFrames = 1;
-        if (boss.state === 'idle') maxFrames = boss.idleFrames;
-        else if (boss.state === 'walking') maxFrames = boss.walkFrames;
-        else if (boss.state === 'attacking') maxFrames = boss.attackFrames;
-        else if (boss.state === 'hurt') maxFrames = boss.hurtFrames;
-
-        boss.currentFrame++;
-
-        if (boss.state === 'attacking' && boss.currentFrame === 9) {
-            if (dist < (boss.attackRange || 100) && player.hp > 0) {
-                player.hp -= (boss.damage || 1);
-                player.state = 'hurt';
-                player.currentFrame = 0;
-                player.x += (player.x < boss.x) ? -40 : 40;
-            }
-        }
-
-        if (boss.currentFrame >= maxFrames) {
-            boss.currentFrame = 0;
-            if (boss.state === 'hurt' || boss.state === 'attacking') {
-                boss.state = 'idle';
-                if (boss.state === 'attacking') boss.attackCooldown = 100;
-            }
+    // Ativar o Boss quando o player chegar perto
+    if (!boss.viuPlayer) {
+        if (dist < 600) {
+            boss.viuPlayer = true;
+            boss.fala = "O REI ESTÁ MORTO! VOCÊ É O PRÓXIMO!";
+            boss.falaTimer = 150;
+        } else {
+            boss.state = 'idle';
+            return; 
         }
     }
 
-    // 4. GATILHOS DE FALA
-    if (dist < 400 && !boss.viuPlayer) {
-        bossDiz("O rei está morto!");
-        boss.viuPlayer = true;
-    }
-if (dist < 400) {
-
-    boss.state = 'walking';
-
-    boss.x += (player.x < boss.x) ? boss.speed : -boss.speed; 
-// Move na direção oposta ao player
-
-}
-    // 5. IA DE MOVIMENTO
+    // Só decide movimento se NÃO estiver sofrendo dano nem atacando
     if (boss.state !== 'hurt' && boss.state !== 'attacking') {
         boss.facing = (player.x < boss.x) ? 'left' : 'right';
 
-        if (dist > (boss.attackRange || 80)) {
+        if (dist < 500 && (boss.attackCooldown || 0) <= 0) {
+            // Inicia o ataque
+            boss.state = 'attacking';
+            boss.currentFrame = 0;
+            boss.canShoot = true; // Prepara o gatilho da flecha
+        } else if (dist < 200) {
+            // Foge se estiver muito perto
+            boss.state = 'walking';
+            let moveDir = (player.x < boss.x) ? boss.speed : -boss.speed;
+            if (boss.x + moveDir > 4000 && boss.x + moveDir < mapWidth - 100) boss.x += moveDir;
+        } else if (dist > 500) {
+            // Persegue
             boss.state = 'walking';
             boss.x += (player.x < boss.x) ? -boss.speed : boss.speed;
         } else {
-            if ((boss.attackCooldown || 0) <= 0) {
-                boss.state = 'attacking';
-                boss.currentFrame = 0;
-            } else {
-                boss.state = 'idle';
-            }
+            boss.state = 'idle';
         }
     }
 
+    // Atualiza timers
+    if (boss.falaTimer > 0) boss.falaTimer--;
     if (boss.attackCooldown > 0) boss.attackCooldown--;
+
+    // --- 4. ANIMAÇÃO E LOGICA DE TIRO ---
+    boss.frameTimer++;
+    if (boss.frameTimer >= boss.frameInterval) {
+        boss.frameTimer = 0;
+
+        // Lógica do Tiro (No frame 9 da animação)
+if (boss.state === 'attacking' && boss.currentFrame === 9 && boss.canShoot) {
+    if (window.arrows) {
+        // Define a direção: 1 para direita, -1 para esquerda
+        let dir = boss.facing === 'left' ? -1 : 1;
+        
+        window.arrows.push({
+            // Ajuste fino do X: Sai um pouco mais do centro (boss.width / 2)
+            x: boss.x + (boss.width / 2) + (dir * 40), 
+            
+            // Ajuste fino do Y: Altura do peito/arco (aprox. 45px do topo)
+            y: boss.y + 60, 
+            
+            // Velocidade da flecha
+            velX: dir * 1.5, 
+            
+            // Tamanho da hitbox da flecha
+            width: 30,  // Aumentei um pouco para ficar mais visível
+            height: 10
+        });
+        
+        boss.canShoot = false; // Impede disparos múltiplos no mesmo frame
+    }
+}
+
+        boss.currentFrame++;
+
+        // --- DEFINIR TOTAL DE FRAMES POR ESTADO ---
+        let maxFrames = 6; // Padrão (Idle)
+        if (boss.state === 'attacking') maxFrames = 14; 
+        else if (boss.state === 'walking') maxFrames = 8;
+        else if (boss.state === 'hurt') maxFrames = boss.hurtFrames; // Geralmente 3
+
+        // --- FIM DA ANIMAÇÃO (LOOP OU TRANSIÇÃO) ---
+        if (boss.currentFrame >= maxFrames) {
+            boss.currentFrame = 0;
+
+            // Se terminou o ataque, volta para Idle
+            if (boss.state === 'attacking') {
+                boss.state = 'idle';
+                boss.attackCooldown = 150;
+            }
+            // CORREÇÃO AQUI: Se terminou de tomar dano, volta para Idle
+            else if (boss.state === 'hurt') {
+                boss.state = 'idle';
+                boss.attackCooldown = 20; // Pequeno tempo antes de ele poder atacar de novo
+            }
+        }
+    }
 }
 
 // --- LOOP PRINCIPAL ---
