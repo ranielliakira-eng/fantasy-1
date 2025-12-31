@@ -129,7 +129,7 @@ boss = {
     attackRange: 500,
     state: 'idle', facing: 'left',
 
-    viuPlayer: false, fala: "", falaTimer: 0,
+    viuPlayer: false, dialogue: "", dialogueTimer: 0,
 
     
 
@@ -605,7 +605,7 @@ enemies.forEach(en => {
             if (boss.hp <= 0) {
                 boss.state = 'dead';
                 boss.currentFrame = 0;
-                boss.dialogue = "O poder...";
+                boss.dialogue = "Não foi isso que planejei...";
                 boss.dialogueTimer = 180;
 
                 // Salva progresso
@@ -1149,8 +1149,8 @@ if (en.currentFrame >= en.attackFrames) {
 }
 function bossDiz(texto) {
     if(boss) {
-        boss.fala = texto;
-        boss.falaTimer = 180;
+        boss.dialogue = bostexto;
+        boss.dialogueTimer = 180;
     }
 }
 // === Desenho ===
@@ -1509,12 +1509,12 @@ function updateBossLogic() {
 
     // Ativar o Boss quando o player chegar perto
     if (!boss.viuPlayer) {
-        if (dist < 600) {
+        if (dist < 250) {
             boss.viuPlayer = true;
-            boss.fala = "O REI ESTÁ MORTO! VOCÊ É O PRÓXIMO!";
-            boss.falaTimer = 150;
+boss.dialogue = "EU MATEI O REI E CULPEI O CLÃ TORN!";
+boss.dialogueTime = 150;
         } else {
-            boss.state = 'idle';
+            boss.state = 'idle'
             return; 
         }
     }
@@ -1652,5 +1652,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnNext) {
         btnNext.onclick = () => window.irParaMenu();
     }
+
 
 });
