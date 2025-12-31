@@ -1512,8 +1512,8 @@ function updateBossLogic() {
         // Se estiver perto horizontalmente E verticalmente
         if (distX < 300 && distY < 100) {
             boss.viuPlayer = true;
-            boss.dialogue = "EU MATEI O REI E CULPEI O CLÃ AMARELO!";
-            boss.dialogueTimer = 180; // CORRIGIDO (era dialogueTime)
+            boss.dialogue = "EU DERROTEI O REI E CULPEI O CLÃ AMARELO!", "VOCÊ SERÁ O PRÓXIMO!", "MUAHAHAHA" ;
+			boss.dialogueTimer = 180; // CORRIGIDO (era dialogueTime)
         } else {
             boss.state = 'idle';
             return; 
@@ -1642,5 +1642,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 });
+
 
 
