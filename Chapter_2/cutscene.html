@@ -100,6 +100,9 @@ function updateSprite(sprite) {
 }
 
 function drawSprite(sprite, x, y, w, h, facing = "right") {
+    // Só desenha se a imagem estiver carregada e sem erros
+    if (!sprite.img.complete || sprite.img.naturalWidth === 0) return;
+
     const fw = sprite.img.width / sprite.frameCount;
     const fh = sprite.img.height;
     ctx.save();
@@ -112,15 +115,29 @@ function drawSprite(sprite, x, y, w, h, facing = "right") {
     }
     ctx.restore();
 }
+// ==================================================
+// CONFIGURAÇÕES DE HERÓI (Mova para antes do Player)
+// ==================================================
+const escolhaMenu = localStorage.getItem('heroi_da_jornada') || 'loiro'; 
+const heroiPadrao = (escolhaMenu === 'castanha') ? 'Knight' : 'Swordsman';
+
+// Defina os frames explicitamente aqui
+const framesIdle = (heroiPadrao === 'Knight') ? 6 : 8;
 
 // ==================================================
-// PLAYER
+// PLAYER (Agora definido com segurança)
 // ==================================================
 const player = {
-    x: 400, y: 0, w: 100, h: 100, vy: 0, speed: 3, facing: "left", onGround: false,
-    sprite: createSprite("assets/Swordsman/Idle.png", 8, 12)
+    x: 400, 
+    y: 0, 
+    w: 100, 
+    h: 100, 
+    vy: 0, 
+    speed: 3, 
+    facing: "left", 
+    onGround: false,
+    sprite: createSprite(`assets/${heroiPadrao}/Idle.png`, framesIdle, 12)
 };
-
 // ==================================================
 // NPCs
 // ==================================================
