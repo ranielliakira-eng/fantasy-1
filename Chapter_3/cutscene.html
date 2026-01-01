@@ -1,0 +1,298 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Cutscene Corrigida</title>
+<style>
+  body { 
+    margin: 0; 
+    background: #000; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh; 
+    overflow: hidden; 
+  }
+  canvas { 
+    max-width: 100%; 
+    max-height: 100%; 
+    object-fit: contain;
+    background: #2c5; 
+  }
+</style>
+</head>
+<body>
+
+<canvas id="gameCanvas" width="800" height="450"></canvas>
+
+<script>
+// ==================================================
+// CANVAS E CONFIGURAÇÕES ESPECÍFICAS
+// ==================================================
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+const escolhaMenu = localStorage.getItem('heroi_da_jornada') || 'loiro'; 
+const heroiPadrao = (escolhaMenu === 'castanha') ? 'Knight' : 'Swordsman';
+
+// ==================================================
+// IMAGENS E RECURSOS
+// ==================================================
+const letterImg = new Image();
+letterImg.src = "assets/Letter.png"; 
+
+const bgImage = new Image();
+bgImage.src = "assets/Battleground/fundo.png";
+
+const groundImage = new Image();
+groundImage.src = "assets/Battleground/Ground1.png";
+
+const BattlegroundImages = {
+    DeadWarrior_2: new Image()
+};
+BattlegroundImages.DeadWarrior_2.src = "assets/Battleground/DeadWarrior_2.png";
+
+const Battleground = [
+    { x: 100, y: 200, w: 100, h: 100, img: BattlegroundImages.DeadWarrior_2 },
+    { x: 50, y: 200, w: 100, h: 100, img: BattlegroundImages.DeadWarrior_2 },
+];
+
+const houses = []; 
+
+// ==================================================
+// ESTADO GLOBAL
+// ==================================================
+let gameState = "dialogue"; 
+let letterTimer = 0;
+let letterFloat = 0;
+let fadeAlpha = 0;
+const fadeSpeed = 0.02;
+const gravity = 0.8;
+
+// ==================================================
+// SISTEMA DE SPRITES (CORRIGIDO)
+// ==================================================
+function createSprite(src, frameCount, frameSpeed, loop = true) {
+    const img = new Image();
+    img.src = src;
+    return { img, frameCount, frameSpeed, frameIndex: 0, timer: 0, loop: loop };
+}
+
+function updateSprite(sprite) {
+    sprite.timer++;
+    if (sprite.timer >= sprite.frameSpeed) {
+        // Se loop for falso e chegamos no último frame, não incrementamos mais
+        if (!sprite.loop && sprite.frameIndex === sprite.frameCount - 1) {
+            return; 
+        }
+        sprite.timer = 0;
+        sprite.frameIndex = (sprite.frameIndex + 1) % sprite.frameCount;
+    }
+}
+
+function drawSprite(sprite, x, y, w, h, facing = "right") {
+    if (!sprite.img.complete) return;
+    const fw = sprite.img.width / sprite.frameCount;
+    const fh = sprite.img.height;
+    ctx.save();
+    if (facing === "left") {
+        ctx.translate(x + w, y);
+        ctx.scale(-1, 1);
+        ctx.drawImage(sprite.img, fw * sprite.frameIndex, 0, fw, fh, 0, 0, w, h);
+    } else {
+        ctx.drawImage(sprite.img, fw * sprite.frameIndex, 0, fw, fh, x, y, w, h);
+    }
+    ctx.restore();
+}
+
+// ==================================================
+// ENTIDADES (PLAYER E NPCs) - CORRIGIDO
+// ==================================================
+const configFrames = { idle: (heroiPadrao === 'Knight') ? 6 : 8 };
+
+const player = {
+    x: 500, y: 0, w: 100, h: 100, vy: 0, speed: 3, facing: "left", onGround: false, state: "idle",
+    sprite: createSprite(`assets/${heroiPadrao}/Idle.png`, configFrames.idle, 12)
+};
+
+const archerNPC = {
+    folderName: "Archer", x: 450, y: 0, w: 100, h: 100, vy: 0, onGround: false, facing: "right",
+    state: "dead", idleFrames: 3,
+    sprite: createSprite("assets/Archer/Dead.png", 3, 14, false) 
+};
+
+const semcamisaNPC = {
+    folderName: "Warrior_1", x: -100, targetX: 150, y: 0, w: 100, h: 100, vy: 0, onGround: false, facing: "right", 
+    state: "running", idleFrames: 6, 
+    sprite: createSprite("assets/Warrior_1/Run.png", 6, 10)
+};
+
+const vermelhoNPC = {
+    folderName: "Warrior_2", x: -150, targetX: 200, y: 0, w: 100, h: 100, vy: 0, onGround: false, facing: "right", 
+    state: "running", idleFrames: 5, 
+    sprite: createSprite("assets/Warrior_2/Run.png", 6, 10)
+};
+
+const amareloNPC = {
+    folderName: "Warrior_3", x: -100, targetX: 250, y: 0, w: 100, h: 100, vy: 0, onGround: false, facing: "right", 
+    state: "running", idleFrames: 5, 
+    sprite: createSprite("assets/Warrior_3/Run.png", 6, 10)
+};
+
+const entities = [player, archerNPC, semcamisaNPC, vermelhoNPC, amareloNPC];
+
+const platforms = [{ x: 0, y: 300, w: canvas.width, h: 150 }];
+
+// ==================================================
+// DIÁLOGO
+// ==================================================
+const chapter3Dialogue = [
+    { speaker: "Arqueiro", text: "Eles nunca saberiam se não fosse você..." },
+    { speaker: "Líder do Clã Amarelo", text: "Então foi um invasor escondido nas cavernas." },
+    { speaker: "Líder do Clã Vermelho", text: "Ele nos fez acreditar que foi o Clã Amarelo." },
+    { speaker: "Líder do Clã Sem Camisa", text: "Isso prova que não foi um anão que derrubou o Rei." },
+    { speaker: "Líder do Clã Amarelo", text: "Aventureiro, você provou a inocência do meu clã." },
+    { speaker: "Líder do Clã Amarelo", text: "Eu queria te recompensar, mas a guerra entre clãs acabou com nossos suprimentos." },
+    { speaker: "Líder do Clã Vermelho", text: "Os orcs também aproveitaram a guerra para chegar mais perto das montanhas." },
+    { speaker: "Líder do Clã Sem Camisa", text: "Temos alguns soldados escondidos perto do acampamento orc." },
+    { speaker: "Líder do Clã Sem Camisa", text: "Use esta carta para que eles compartilhem os suprimentos com você." },
+];
+let dialogueIndex = 0;
+
+// ==================================================
+// LÓGICA DE JOGO
+// ==================================================
+function nextDialogue() {
+    dialogueIndex++;
+    if (dialogueIndex >= chapter3Dialogue.length) {
+        gameState = "letter";
+        letterTimer = 0;
+    }
+}
+
+function applyPhysics(e) {
+    e.vy += gravity;
+    e.y += e.vy;
+    e.onGround = false;
+    platforms.forEach(p => {
+        if (e.x < p.x + p.w && e.x + e.w > p.x && e.y + e.h > p.y && e.y + e.h < p.y + p.h && e.vy >= 0) {
+            e.y = p.y - e.h;
+            e.vy = 0;
+            e.onGround = true;
+        }
+    });
+}
+
+function update() {
+    entities.forEach(e => { 
+        updateSprite(e.sprite); 
+        applyPhysics(e); 
+
+        if (e.state === "running") {
+            const speed = 2.5;
+            if (e.x < e.targetX) {
+                e.x += speed;
+                if (e.x >= e.targetX) {
+                    e.x = e.targetX;
+                    e.state = "idle";
+                    e.sprite = createSprite(`assets/${e.folderName}/Idle.png`, e.idleFrames, 14);
+                }
+            }
+        }
+    });
+
+    if (gameState === "letter") {
+        letterTimer++;
+        letterFloat = Math.sin(letterTimer * 0.1) * 5;
+        if (letterTimer > 180) gameState = "fadeOut"; 
+    }
+
+    if (gameState === "fadeOut") {
+        fadeAlpha += fadeSpeed;
+        if (fadeAlpha >= 1) window.location.href = "../index.html";
+    }
+}
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+if (bgImage.complete) {
+    // Parâmetros para mostrar apenas uma parte:
+    const sx = 6000;    // Posição X inicial do recorte na imagem original
+    const sy = 1750;     // Posição Y inicial do recorte na imagem original
+    const sWidth = 400;  // Largura do recorte (quanto da imagem será pego)
+    const sHeight = 300; // Altura do recorte
+    
+    // Desenha o recorte esticado para preencher o canvas todo
+    ctx.drawImage(bgImage, sx, sy, sWidth, sHeight, 0, 0, canvas.width, canvas.height);
+}
+    Battleground.forEach(item => {
+        if (item.img.complete) ctx.drawImage(item.img, item.x, item.y, item.w, item.h);
+    });
+
+    houses.forEach(h => { if (h.img.complete) ctx.drawImage(h.img, h.x, h.y, h.w, h.h); });
+
+    platforms.forEach(p => { 
+        if (groundImage.complete) {
+            for (let x = p.x; x < p.x + p.w; x += 64) {
+                ctx.drawImage(groundImage, x, p.y, 64, 64);
+            }
+        }
+    });
+
+    entities.forEach(e => {
+        drawSprite(e.sprite, e.x, e.y, e.w, e.h, e.facing);
+    });
+
+    if (gameState === "dialogue") {
+        const d = chapter3Dialogue[dialogueIndex];
+        ctx.fillStyle = "rgba(0,0,0,0.8)";
+        ctx.fillRect(40, canvas.height - 120, canvas.width - 80, 90);
+        ctx.fillStyle = "#fff";
+        ctx.font = "bold 18px Arial";
+        ctx.textAlign = "left";
+        ctx.fillText(d.speaker + ":", 60, canvas.height - 90);
+        ctx.font = "16px Arial";
+        ctx.fillText(d.text, 60, canvas.height - 65);
+    }
+
+    if (gameState === "letter") {
+        const size = 120;
+        ctx.fillStyle = "rgba(0,0,0,0.7)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        if (letterImg.complete) {
+            ctx.drawImage(letterImg, canvas.width/2 - size/2, canvas.height/2 - size/2 + letterFloat, size, size);
+        }
+        ctx.fillStyle = "#fff";
+        ctx.font = "20px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("O Líder do Clã Sem Camisa lhe entrega uma carta", canvas.width/2, canvas.height/2 + 80);
+    }
+
+    if (gameState === "fadeOut") {
+        ctx.fillStyle = `rgba(0,0,0,${fadeAlpha})`;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+}
+
+window.addEventListener("keydown", e => {
+    if (gameState === "dialogue" && e.key === "Enter") nextDialogue();
+});
+
+canvas.addEventListener("touchstart", e => {
+    if (gameState === "dialogue") nextDialogue();
+});
+
+window.onload = function() {
+    function loop() {
+        update();
+        draw();
+        requestAnimationFrame(loop);
+    }
+    loop();
+};
+</script>
+
+</body>
+</html>
