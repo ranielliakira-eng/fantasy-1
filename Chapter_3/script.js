@@ -288,6 +288,17 @@ DeadWarrior_2Img.src = 'assets/Battleground/DeadWarrior_2.png';
 const DeadWarrior_3Img = new Image();
 DeadWarrior_3Img.src = 'assets/Battleground/DeadWarrior_3.png';
 
+const crystal_orange1Img = new Image();
+crystal_orange1Img.src = 'assets/Battleground/Crystals/crystals_orange/crystal_orange1.png';
+const crystal_orange2Img = new Image();
+crystal_orange2Img.src = 'assets/Battleground/Crystals/crystals_orange/crystal_orange2.png';
+const crystal_orange3Img = new Image();
+crystal_orange3Img.src = 'assets/Battleground/Crystals/crystals_orange/crystal_orange3.png';
+const crystal_orange4Img = new Image();
+crystal_orange4Img.src = 'assets/Battleground/Crystals/crystals_orange/crystal_orange4.png';
+const crystal_orange5Img = new Image();
+crystal_orange5Img.src = 'assets/Battleground/Crystals/crystals_orange/crystal_orange5.png';
+
 let platformPattern = null;
 
 platformImg.onload = () => {
@@ -336,8 +347,8 @@ const backgroundObjects = [
     { x: 3800, y: 1450, width: 100, height: 100, img: DeadWarrior_3Img },
     { x: 3900, y: 1450, width: 100, height: 100, img: DeadWarrior_3Img },
     { x: 4000, y: 1450, width: 100, height: 100, img: DeadWarrior_3Img },
-    { x: 4100, y: 1450, width: 100, height: 100, img: DeadWarrior_3Img },
-    { x: 4150, y: 1450, width: 100, height: 100, img: DeadWarrior_3Img },
+    { x: 4100, y: 1452, width: 100, height: 100, img: DeadWarrior_3Img },
+    { x: 4150, y: 1452, width: 100, height: 100, img: DeadWarrior_3Img },
 
     { x: 3750, y: 1450, width: 100, height: 100, img: DeadWarrior_2Img },
     { x: 3950, y: 1450, width: 100, height: 100, img: DeadWarrior_2Img },
@@ -346,9 +357,9 @@ const backgroundObjects = [
 
     { x: 3050, y: 400, width: 50, height: 50, img: Shield3Img },
 
-    { x: 3090, y: 425, width: 100, height: 100, img: DeadWarrior_3Img },
+    { x: 3090, y: 430, width: 100, height: 100, img: DeadWarrior_3Img },
     { x: 3100, y: 525, width: 75, height: 25, img: mesaImg },
-    { x: 3190, y: 425, width: 100, height: 100, img: DeadWarrior_3Img },
+    { x: 3190, y: 430, width: 100, height: 100, img: DeadWarrior_3Img },
     { x: 3200, y: 525, width: 75, height: 25, img: mesaImg },
 
     { x: 3300, y: 500, width: 50, height: 50, img: Wooden_BarrelImg },
@@ -356,9 +367,9 @@ const backgroundObjects = [
 
     { x: 1900, y: 1800, width: 50, height: 50, img: Shield3Img },
 
-    { x: 490, y: 1825, width: 100, height: 100, img: DeadWarrior_2Img },
+    { x: 490, y: 1830, width: 100, height: 100, img: DeadWarrior_2Img },
     { x: 500, y: 1925, width: 75, height: 25, img: mesaImg },
-    { x: 690, y: 1825, width: 100, height: 100, img: DeadWarrior_2Img },
+    { x: 690, y: 1830, width: 100, height: 100, img: DeadWarrior_2Img },
     { x: 700, y: 1925, width: 75, height: 25, img: mesaImg },
 
     { x: 850, y: 1900, width: 50, height: 50, img: Wooden_BarrelImg },
@@ -366,6 +377,9 @@ const backgroundObjects = [
 
     { x: 3000, y: 1850, width: 100, height: 100, img: Tool_BoardImg },
 
+    { x: 3000, y: 1450, width: 100, height: 100, img: crystal_orange1Img },
+    { x: 3500, y: 1450, width: 100, height: 100, img: crystal_orange2Img },
+    { x: 3600, y: 1450, width: 100, height: 100, img: crystal_orange3Img },
 ];
 
 const foregroundObjects = [
@@ -391,6 +405,9 @@ const foregroundObjects = [
     { x: 590, y: 1825, width: 100, height: 100, img: DeadWarrior_2Img },
     { x: 600, y: 1925, width: 75, height: 25, img: mesaImg },
 
+    { x: 3500, y: 1500, width: 50, height: 50, img: crystal_orange4Img },
+    { x: 3100, y: 1525, width: 25, height: 25, img: crystal_orange5Img },
+    { x: 3120, y: 1525, width: 25, height: 25, img: crystal_orange5Img },
 ];
 
 // NPCs
