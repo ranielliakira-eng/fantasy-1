@@ -192,15 +192,18 @@ const backgroundObjects = [
     
     { x: 3500, y: 75, width: 200, height: 250, img: casa2Img },
     
-    { x: 0, y: 50, width: 500, height: 300, img: casa1Img },
-    { x: 300, y: 75, width: 350, height: 250, img: casa3Img },
-    { x: 600, y: 75, width: 500, height: 250, img: casa4Img },
+    { x: 4250, y: 50, width: 500, height: 300, img: casa1Img },
+    { x: 5500, y: 75, width: 350, height: 250, img: casa3Img },
+    { x: 7000, y: 75, width: 500, height: 250, img: casa4Img },
 
+    { x: 7900, y: 100, width: 200, height: 200, img: birch_1Img },
+    { x: 8025, y: 100, width: 200, height: 200, img: birch_1Img },
 ];
 
 const foregroundObjects = [
     { x: 250, y: 100, width: 200, height: 200, img: birch_1Img },
     { x: 3550, y: 75, width: 200, height: 250, img: casa2Img },
+    { x: 7975, y: 100, width: 200, height: 200, img: birch_1Img },
 
 ];
 
@@ -958,6 +961,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnNext) btnNext.onclick = () => window.irParaMenu();
 
 });
+
 
 
 
