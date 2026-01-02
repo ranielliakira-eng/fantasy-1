@@ -188,12 +188,12 @@ let keys = { left: false, right: false };
 
 const backgroundObjects = [
     { x: 0, y: 0, width: 7000, height: 2000, img: fundoImg },
-    { x: 3500, y: 100, width: 200, height: 250, img: casa2Img },
+    { x: 3500, y: 75, width: 200, height: 250, img: casa2Img },
 ];
 
 const foregroundObjects = [
     { x: 250, y: 100, width: 200, height: 200, img: birch_1Img },
-    { x: 3550, y: 100, width: 200, height: 250, img: casa2Img },
+    { x: 3550, y: 75, width: 200, height: 250, img: casa2Img },
 
 ];
 
@@ -951,5 +951,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnNext) btnNext.onclick = () => window.irParaMenu();
 
 });
+
 
 
