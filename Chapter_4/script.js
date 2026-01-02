@@ -11,8 +11,8 @@ bgMusic.preload = "auto";
 
 const gravity = 0.8;
 const zoom = 1.6;
-const mapWidth = 7000;
-const mapHeight = 2000;
+const mapWidth = 10000;
+const mapHeight = 450;
 let cameraX = 0;
 let cameraY = 0;
 let gameState = 'loading';
@@ -76,7 +76,7 @@ const potionImg = new Image();
 potionImg.src = 'assets/Potion/LifePotionSmall.png';
 
 let potions = [
-    { x: 930, y: 1870, width: 32, height: 32, active: true },
+    { x: 8075, y: 250, width: 32, height: 32, active: true },
 ];
 
 // --- INIMIGOS E BOSS ---
@@ -85,13 +85,35 @@ let enemies = [];
 function initEnemies() {
     // Reset Enemies
     enemies = [
-        { type: 'Orc_Warrior', x: 400, y: 200, hp: 6, maxHP: 6, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 70, damage: 2, frameInterval: 8, idleFrames: 5, walkFrames: 7, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4, state: 'patrol' },
+        { type: 'Orc_Warrior', x: 2000, y: 200, hp: 6, maxHP: 6, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 70, damage: 2, frameInterval: 8, idleFrames: 5, walkFrames: 7, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4, state: 'patrol' },
+
+        { type: 'Orc_Warrior', x: 2500, y: 200, hp: 6, maxHP: 6, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 70, damage: 2, frameInterval: 8, idleFrames: 5, walkFrames: 7, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4, state: 'patrol' },
+        { type: 'Orc_Warrior', x: 2525, y: 200, hp: 6, maxHP: 6, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 70, damage: 2, frameInterval: 8, idleFrames: 5, walkFrames: 7, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4, state: 'patrol' },
+
+        { type: 'Orc_Warrior', x: 3000, y: 200, hp: 6, maxHP: 6, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 70, damage: 2, frameInterval: 8, idleFrames: 5, walkFrames: 7, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4, state: 'patrol' },
+        { type: 'Orc_Warrior', x: 3025, y: 200, hp: 6, maxHP: 6, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 70, damage: 2, frameInterval: 8, idleFrames: 5, walkFrames: 7, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4, state: 'patrol' },
+        { type: 'Orc_Berserk', x: 3050, y: 200, hp: 6, maxHP: 6, width: 100, height: 100, speed: 1.8, faction: 'enemy', attackRange: 70, damage: 2, frameInterval: 8, idleFrames: 5, walkFrames: 7, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4, state: 'patrol' },
+
+        { type: 'Orc_Warrior', x: 4000, y: 200, hp: 6, maxHP: 6, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 70, damage: 2, frameInterval: 8, idleFrames: 5, walkFrames: 7, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4, state: 'patrol' },
+        { type: 'Orc_Warrior', x: 4025, y: 200, hp: 6, maxHP: 6, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 70, damage: 2, frameInterval: 8, idleFrames: 5, walkFrames: 7, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4, state: 'patrol' },
+
+
+        { type: 'Orc_Berserk', x: 4500, y: 200, hp: 6, maxHP: 6, width: 100, height: 100, speed: 1.8, faction: 'enemy', attackRange: 70, damage: 2, frameInterval: 8, idleFrames: 5, walkFrames: 7, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4, state: 'patrol' },
+        { type: 'Orc_Berserk', x: 4550, y: 200, hp: 6, maxHP: 6, width: 100, height: 100, speed: 1.8, faction: 'enemy', attackRange: 70, damage: 2, frameInterval: 8, idleFrames: 5, walkFrames: 7, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4, state: 'patrol' },
+
+        { type: 'Orc_Warrior', x: 5000, y: 200, hp: 6, maxHP: 6, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 70, damage: 2, frameInterval: 8, idleFrames: 5, walkFrames: 7, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4, state: 'patrol' },
+        { type: 'Orc_Warrior', x: 5025, y: 200, hp: 6, maxHP: 6, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 70, damage: 2, frameInterval: 8, idleFrames: 5, walkFrames: 7, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4, state: 'patrol' },
+
+        { type: 'Orc_Warrior', x: 6000, y: 200, hp: 6, maxHP: 6, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 70, damage: 2, frameInterval: 8, idleFrames: 5, walkFrames: 7, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4, state: 'patrol' },
+        { type: 'Orc_Warrior', x: 6025, y: 200, hp: 6, maxHP: 6, width: 100, height: 100, speed: 1.5, faction: 'enemy', attackRange: 70, damage: 2, frameInterval: 8, idleFrames: 5, walkFrames: 7, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4, state: 'patrol' },
+        { type: 'Orc_Berserk', x: 6050, y: 200, hp: 6, maxHP: 6, width: 100, height: 100, speed: 1.8, faction: 'enemy', attackRange: 70, damage: 2, frameInterval: 8, idleFrames: 5, walkFrames: 7, runFrames: 6, attackFrames: 4, hurtFrames: 2, deadFrames: 4, state: 'patrol' },
+
     ];
 
     // Reset Boss
     boss = {
         type: 'Orc_Shaman',
-        x: 6500, y: 200, velY: 0, width: 120, height: 120,
+        x: 9000, y: 200, velY: 0, width: 120, height: 120,
         hp: 5, maxHp: 5, speed: 3, damage: 1,
         healCooldown: 0, isHealActive: false, attackCooldown: 0,
         state: 'idle', facing: 'left', viuPlayer: false,
@@ -109,7 +131,7 @@ function initEnemies() {
     boss.imgWalk.src = `assets/Orc_Shaman/Walk.png`;
     boss.imgRun.src = `assets/Orc_Shaman/Run.png`; // Corrigido: Estava sobrescrevendo Walk
     boss.imgAttack1.src = `assets/Orc_Shaman/Attack_1.png`;
-    boss.imgAttack2.src = `assets/Orc_Shaman/Attack_1.png`;
+    boss.imgAttack2.src = `assets/Orc_Shaman/Attack_2.png`;
     boss.imgMagic.src = `assets/Orc_Shaman/Magic_2.png`;
     boss.imgHurt.src = `assets/Orc_Shaman/Hurt.png`;
     boss.imgDead.src = `assets/Orc_Shaman/Dead.png`;
@@ -134,7 +156,7 @@ function initEnemies() {
 
 // --- PLATAFORMAS E CENÁRIO ---
 const platforms = [
-    { x: 0, y: 300, w: 7000, h: 150, type: 'pattern' },
+    { x: 0, y: 300, w: 10000, h: 150, type: 'pattern' },
 ];
 
 const fundoImg = new Image();
@@ -159,20 +181,49 @@ const backgroundObjects = [
 ];
 
 const foregroundObjects = [
-    { x: -25, y: 800, width: 150, height: 200, img: birch_1Img },
+    { x: 250, y: 100, width: 200, height: 200, img: birch_1Img },
 ];
 
 // --- NPCs ---
+
 const Warrior_3Npc = {
-    x: 1900, y: 900, width: 100, height: 100, imgIdle: new Image(),
+    x: 50, y: 200, width: 100, height: 100, imgIdle: new Image(),
     idleFrames: 5, currentFrame: 0, frameTimer: 0, frameInterval: 16,
-    range: 200, velY: 0, onGround: false, facing: 'left',
-    phrases: ["Alto lá!", "Está ocorrendo uma guerra"],
+    range: 200, velY: 0, onGround: false, facing: 'right',
+    phrases: [ "A Viangança do Rei" ],
     dialogueIndex: 0, dialogueTimer: 0, lastDialogueIndex: -1,
 };
 Warrior_3Npc.imgIdle.src = 'assets/Warrior_3/Idle.png';
 
-const npcs = [Warrior_3Npc];
+
+const Warrior_3_1Npc = {
+    x: 25, y: 200, width: 100, height: 100, imgIdle: new Image(),
+    idleFrames: 5, currentFrame: 0, frameTimer: 0, frameInterval: 16,
+    range: 200, velY: 0, onGround: false, facing: 'right',
+    phrases: [ ],
+    dialogueIndex: 0, dialogueTimer: 0, lastDialogueIndex: 0,
+};
+Warrior_3_1Npc.imgIdle.src = 'assets/Warrior_3/Idle.png';
+
+const Warrior_2Npc = {
+    x: 350, y: 200, width: 100, height: 100, imgIdle: new Image(),
+    idleFrames: 5, currentFrame: 0, frameTimer: 0, frameInterval: 16,
+    range: 200, velY: 0, onGround: false, facing: 'left',
+    phrases: [ "Vinança do Rei", "Daqui pra frente o campo está cheio de Orcs, boa sorte."],
+    dialogueIndex: 0, dialogueTimer: 0, lastDialogueIndex: -1,
+};
+Warrior_2Npc.imgIdle.src = 'assets/Warrior_2/Idle.png';
+
+const Warrior_1Npc = {
+    x: 8000, y: 200, width: 100, height: 100, imgIdle: new Image(),
+    idleFrames: 6, currentFrame: 0, frameTimer: 0, frameInterval: 8,
+    range: 200, velY: 0, onGround: false, facing: 'left',
+    phrases: [ "Você carrega a carta do Líder", "Por favor, aceite essa poção" ],
+    dialogueIndex: 0, dialogueTimer: 0, lastDialogueIndex: -1,
+};
+Warrior_1Npc.imgIdle.src = 'assets/Warrior_1/Idle.png';
+
+const npcs = [Warrior_3Npc, Warrior_3_1Npc, Warrior_2Npc, Warrior_1Npc];
 
 function updateNPCs() {
     npcs.forEach(n => {
@@ -288,7 +339,7 @@ window.resetGame = function() {
 
 window.concluirCapituloEVoutar = function() {
     localStorage.setItem('capitulo_4_vencido', 'true');
-    window.location.href = "cutscene.html";
+    window.location.href = "../index.html";
 };
 
 window.mover = function(dir, estado) {
@@ -731,7 +782,7 @@ function draw() {
                 screen.style.display = 'flex';
                 screen.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
                 if (title) title.innerHTML = "Você derrubou <br> Orc Shaman";
-                if (subtitle) subtitle.innerHTML = "A magia Orc estava afetando seus amigos";
+                if (subtitle) subtitle.innerHTML = "Os Orcs começaram a recuar para mais longe das montanhas";
                 if (btnReset) btnReset.style.display = 'none';
                 if (btnNext) btnNext.style.display = 'block';
             }
@@ -855,7 +906,7 @@ gameLoop();
 
 window.irParaMenu = function() {
     localStorage.setItem('capitulo_4_vencido', 'true');
-    window.location.href = "cutscene.html";
+    window.location.href = "../index.html";
 };
 
 window.addEventListener('keydown', (e) => {
