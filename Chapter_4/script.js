@@ -805,7 +805,7 @@ function draw() {
                 screen.style.display = 'flex';
                 screen.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
                 if (title) title.innerHTML = "Você derrubou <br> Orc Shaman";
-                if (subtitle) subtitle.innerHTML = "Os Orcs começaram a recuar para mais longe das montanhas";
+                if (subtitle) subtitle.innerHTML = "Os orcs começaram a se afastar das montanhas. <br> Mas... Por que eles vieram para cá?";
                 if (btnReset) btnReset.style.display = 'none';
                 if (btnNext) btnNext.style.display = 'block';
             }
@@ -961,6 +961,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnNext) btnNext.onclick = () => window.irParaMenu();
 
 });
+
 
 
 
