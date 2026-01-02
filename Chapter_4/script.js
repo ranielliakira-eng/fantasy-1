@@ -168,6 +168,16 @@ platformImg.src = 'assets/Battleground/Ground1.png';
 const birch_1Img = new Image();
 birch_1Img.src = 'assets/Battleground/trees/birch_1.png';
 
+const casa1Img = new Image();
+casa1Img.src = 'assets/Battleground/casa/casa1.png';
+const casa2Img = new Image();
+casa2Img.src = 'assets/Battleground/casa/casa2.png';
+const casa3Img = new Image();
+casa3Img.src = 'assets/Battleground/casa/casa3.png';
+const casa4Img = new Image();
+casa4Img.src = 'assets/Battleground/casa/casa4.png';
+
+
 let platformPattern = null;
 
 platformImg.onload = () => {
@@ -178,10 +188,13 @@ let keys = { left: false, right: false };
 
 const backgroundObjects = [
     { x: 0, y: 0, width: 7000, height: 2000, img: fundoImg },
+    { x: 3500, y: 100, width: 200, height: 200, img: casa2Img },
 ];
 
 const foregroundObjects = [
     { x: 250, y: 100, width: 200, height: 200, img: birch_1Img },
+    { x: 3550, y: 100, width: 200, height: 200, img: casa2Img },
+
 ];
 
 // --- NPCs ---
@@ -938,3 +951,4 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnNext) btnNext.onclick = () => window.irParaMenu();
 
 });
+
