@@ -122,7 +122,7 @@ function initEnemies() {
         imgIdle: new Image(), imgWalk: new Image(), imgRun: new Image(),
         imgAttack1: new Image(), imgAttack2: new Image(), imgHeal: new Image(), imgMagic: new Image(),
         imgHurt: new Image(), imgDead: new Image(),
-        phrases: ["Aventureiro...", "Essas terras pertencem aos Orcs!", "Pelos ancestrais, eu me curo!"],
+        phrases: [ "Essas terras pertencem aos Orcs!" ],
         dialogueIndex: 0, dialogueTimer: 0
     };
 
@@ -190,7 +190,7 @@ const Warrior_3Npc = {
     x: 50, y: 200, width: 100, height: 100, imgIdle: new Image(),
     idleFrames: 5, currentFrame: 0, frameTimer: 0, frameInterval: 16,
     range: 200, velY: 0, onGround: false, facing: 'right',
-    phrases: [ "A Viangança do Rei" ],
+    phrases: [ "A Vingança do Rei" ],
     dialogueIndex: 0, dialogueTimer: 0, lastDialogueIndex: -1,
 };
 Warrior_3Npc.imgIdle.src = 'assets/Warrior_3/Idle.png';
@@ -209,7 +209,7 @@ const Warrior_2Npc = {
     x: 350, y: 200, width: 100, height: 100, imgIdle: new Image(),
     idleFrames: 5, currentFrame: 0, frameTimer: 0, frameInterval: 16,
     range: 200, velY: 0, onGround: false, facing: 'left',
-    phrases: [ "Vinança do Rei", "Daqui pra frente o campo está cheio de Orcs, boa sorte."],
+    phrases: [ "Vingança do Rei", "Daqui para frente, o campo está cheio de orcs. Boa sorte."],
     dialogueIndex: 0, dialogueTimer: 0, lastDialogueIndex: -1,
 };
 Warrior_2Npc.imgIdle.src = 'assets/Warrior_2/Idle.png';
@@ -936,4 +936,5 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnNext = document.getElementById('btn-next-chapter');
     if (btnReset) btnReset.onclick = () => window.resetGame();
     if (btnNext) btnNext.onclick = () => window.irParaMenu();
+
 });
