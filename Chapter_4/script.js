@@ -192,9 +192,9 @@ const backgroundObjects = [
     
     { x: 3500, y: 75, width: 200, height: 250, img: casa2Img },
     
-    { x: 100, y: 25, width: 500, height: 300, img: casa1Img },
+    { x: 100, y: 50, width: 500, height: 300, img: casa1Img },
     { x: 300, y: 75, width: 350, height: 250, img: casa3Img },
-    { x: 400, y: 75, width: 500, height: 250, img: casa2Img },
+    { x: 400, y: 75, width: 500, height: 250, img: casa4Img },
 
 ];
 
@@ -958,6 +958,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnNext) btnNext.onclick = () => window.irParaMenu();
 
 });
+
 
 
 
