@@ -187,12 +187,15 @@ platformImg.onload = () => {
 let keys = { left: false, right: false };
 
 const backgroundObjects = [
-    { x: 0, y: 0, width: 7000, height: 2000, img: fundoImg },
+    { x: 0, y: 0, width: 10000, height: 450, img: fundoImg },
+
+    
     { x: 3500, y: 75, width: 200, height: 250, img: casa2Img },
     
     { x: 100, y: 25, width: 500, height: 300, img: casa1Img },
     { x: 300, y: 75, width: 350, height: 250, img: casa3Img },
     { x: 400, y: 75, width: 500, height: 250, img: casa2Img },
+
 ];
 
 const foregroundObjects = [
@@ -955,6 +958,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnNext) btnNext.onclick = () => window.irParaMenu();
 
 });
+
 
 
 
