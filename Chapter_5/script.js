@@ -658,7 +658,7 @@ function draw() {
                 screen.style.display = 'flex';
                 screen.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
                 if (title) title.innerHTML = "Você derrotou o Dragão!";
-                if (subtitle) subtitle.innerHTML = "A paz retornou às terras altas.";
+                if (subtitle) subtitle.innerHTML = "Você sente que a energia caótica se dissipa no ar.";
                 if (btnReset) btnReset.style.display = 'none';
                 if (btnNext) btnNext.style.display = 'block';
             }
@@ -854,4 +854,5 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnNext = document.getElementById('btn-next-chapter');
     if (btnReset) btnReset.onclick = () => window.resetGame();
     if (btnNext) btnNext.onclick = () => window.irParaMenu();
+
 });
