@@ -230,7 +230,7 @@ window.resetGame = function() {
 
 window.concluirCapituloEVoutar = function() {
     localStorage.setItem('capitulo_5_vencido', 'true');
-    window.location.href = "../index.html";
+    window.location.href = "cutscene.html";
 };
 
 window.mover = function(dir, estado) {
@@ -824,7 +824,7 @@ gameLoop();
 
 window.irParaMenu = function() {
     localStorage.setItem('capitulo_5_vencido', 'true');
-    window.location.href = "../index.html";
+    window.location.href = "cutscene.html";
 };
 
 window.addEventListener('keydown', (e) => {
@@ -856,3 +856,4 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnNext) btnNext.onclick = () => window.irParaMenu();
 
 });
+
