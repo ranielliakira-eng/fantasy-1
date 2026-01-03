@@ -1,0 +1,266 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Encontro no Castelo</title>
+<style>
+  body { margin: 0; background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+  canvas { max-width: 100%; max-height: 100%; object-fit: contain; background: #1a1a1a; }
+</style>
+</head>
+<body>
+
+<canvas id="gameCanvas" width="800" height="450"></canvas>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const bgMusic = new Audio("assets/sounds/song.wav");
+
+bgMusic.loop = true;
+
+bgMusic.volume = 0.5;
+
+const escolhaMenu = localStorage.getItem('heroi_da_jornada') || 'loiro'; 
+// Se for 'castanha' é Knight, se for 'loiro' é Swordsman
+const heroiPadrao = (escolhaMenu === 'castanha') ? 'Knight' : 'Swordsman';
+
+// RECURSOS
+const bgImage = new Image();
+bgImage.src = "assets/Battleground/fundo.png";
+const bg1Image = new Image();
+
+bg1Image.src = "assets/Battleground/fundo1.png";
+
+const groundImage = new Image();
+groundImage.src = "assets/Battleground/Ground1.png";
+
+
+
+// ESTADO GLOBAL
+let gameState = "dialogue"; 
+let fadeAlpha = 0;
+const fadeSpeed = 0.015;
+const gravity = 0.8;
+
+// CONFIGURAÇÃO DE FRAMES (AJUSTE FINO)
+// Knight geralmente tem 6 frames de Run, Swordsman tem 8.
+const configFrames = {
+    idle: (heroiPadrao === 'Knight') ? 6 : 8,
+    run: (heroiPadrao === 'Knight') ? 7 : 8, 
+    // Ajuste o número acima (6) caso seu Knight tenha 8 frames de corrida também.
+    musketeerRun: 8 // Quantidade de frames do Run.png do Mosqueteiro
+};
+
+// SISTEMA DE SPRITES
+function createSprite(src, frameCount, frameSpeed, loop = true) {
+    const img = new Image();
+    img.src = src;
+    return { img, frameCount, frameSpeed, frameIndex: 0, timer: 0, loop: loop };
+}
+
+function updateSprite(sprite) {
+    sprite.timer++;
+    if (sprite.timer >= sprite.frameSpeed) {
+        if (!sprite.loop && sprite.frameIndex === sprite.frameCount - 1) return; 
+        sprite.timer = 0;
+        sprite.frameIndex = (sprite.frameIndex + 1) % sprite.frameCount;
+    }
+}
+
+function drawSprite(sprite, x, y, w, h, facing = "right") {
+    if (!sprite.img.complete) return;
+    const fw = sprite.img.width / sprite.frameCount;
+    const fh = sprite.img.height;
+    ctx.save();
+    if (facing === "left") {
+        ctx.translate(x + w, y);
+        ctx.scale(-1, 1);
+        ctx.drawImage(sprite.img, fw * sprite.frameIndex, 0, fw, fh, 0, 0, w, h);
+    } else {
+        ctx.drawImage(sprite.img, fw * sprite.frameIndex, 0, fw, fh, x, y, w, h);
+    }
+    ctx.restore();
+}
+
+// ENTIDADES
+const player = {
+    x: 200, y: 0, w: 100, h: 100, vy: 0, facing: "right", state: "idle",
+    sprite: createSprite(`assets/${heroiPadrao}/Idle.png`, configFrames.idle, 12)
+};
+
+const mosqueteiro = {
+    x: 500, y: 0, w: 100, h: 100, vy: 0, facing: "left", state: "idle",
+    sprite: createSprite("assets/Musketeer/Idle.png", 5, 14)
+};
+
+// Inverti a ordem para o Mosqueteiro ser desenhado "atrás" do Player se eles se cruzarem
+const entities = [mosqueteiro, player];
+const platforms = [{ x: 0, y: 200, w: canvas.width, h: 150 }];
+
+// ROTEIRO
+const castleDialogue = [
+    { speaker: "Mosqueteiro", text: "Você chegou em um momento crítico. Há um dragão vindo para cá..." },
+    { speaker: "Mosqueteiro", text: "Um dragão despertou. Ele expulsou os orcs, queimou vilarejos e agora avança para cá." },
+    { speaker: "Mosqueteiro", text: "O castelo será o próximo alvo. Precisamos de toda ajuda possível." },
+    { speaker: "Personagem (Pensamento)", text: "Um dragão... isso explica a ferocidade de Enchantress e do Wizard.", style: "italic" },
+    { speaker: "Personagem (Pensamento)", text: "A aparição dos orcs... a magia está sendo corrompida por ele.", style: "italic" },
+    { speaker: "Personagem", text: "Agora eu entendo. O dragão está por trás de tudo. A magia está sendo distorcida." },
+    { speaker: "Mosqueteiro", text: "Então você também sentiu… Se esse monstro não for derrotado, nada estará a salvo." },
+    { speaker: "Personagem", text: "Se é ele quem causa esse caos, então precisa ser derrotado. Pelos meus amigos!" }
+];
+
+let dialogueIndex = 0;
+
+function nextDialogue() {
+
+    if (dialogueIndex === 0) {
+
+        bgMusic.play().catch(e => console.log("Erro ao tocar áudio:", e));
+
+    }
+
+    dialogueIndex++;
+    
+    // Na última fala, configura a corrida
+    if (dialogueIndex === castleDialogue.length - 1) {
+        
+        // --- CONFIGURAÇÃO DO PLAYER ---
+        player.state = "running_out";
+        player.facing = "left";
+        // Agora usa a variável configFrames.run correta
+        player.sprite = createSprite(`assets/${heroiPadrao}/Run.png`, configFrames.run, 8);
+
+        // --- CONFIGURAÇÃO DO MOSQUETEIRO ---
+        mosqueteiro.state = "running_out";
+        mosqueteiro.facing = "left";
+        // Usa configFrames.musketeerRun (definido como 8 lá em cima)
+        mosqueteiro.sprite = createSprite("assets/Musketeer/Run.png", configFrames.musketeerRun, 8); 
+    }
+
+    if (dialogueIndex >= castleDialogue.length) {
+        gameState = "fadeOut";
+    }
+}
+
+function update() {
+    entities.forEach(e => { 
+        updateSprite(e.sprite); 
+        
+        // Gravidade
+        e.vy += gravity;
+        e.y += e.vy;
+        
+        // Colisão com chão
+        platforms.forEach(p => {
+            if (e.y + e.h > p.y) {
+                e.y = p.y - e.h;
+                e.vy = 0;
+            }
+        });
+
+        // --- MOVIMENTO NO EIXO X (AQUI ESTÁ A CORREÇÃO DE MOVIMENTO) ---
+        if (e.state === "running_out") {
+            const speed = 5; // Velocidade base
+            
+            // Move para a esquerda
+            e.x -= speed;
+
+            // Truque visual: Se for o Mosqueteiro, ele mantém uma distância se estiver muito perto
+            // Isso evita que eles fiquem sobrepostos perfeitamente parecendo um só
+            if (e === mosqueteiro && Math.abs(e.x - player.x) < 60) {
+                 e.x += 1; // Freia um pouco o mosqueteiro se estiver colado no player
+            }
+        }
+    });
+
+    // Lógica do Fade Out
+    if (gameState === "fadeOut") {
+        fadeAlpha += fadeSpeed;
+        if (fadeAlpha >= 1) {
+            console.log("Fim da cena");
+            window.location.href = "game.html"; 
+        }
+    }
+}
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Fundo
+    if (bgImage.complete) ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+    if (bg1Image.complete) ctx.drawImage(bg1Image, 0, 0, canvas.width, canvas.height);
+
+
+    // Chão
+    platforms.forEach(p => { 
+        if (groundImage.complete) {
+            for (let x = p.x; x < p.x + p.w; x += 64) {
+                ctx.drawImage(groundImage, x, p.y, 64, 64);
+            }
+        }
+    });
+
+    // Personagens
+    entities.forEach(e => {
+        drawSprite(e.sprite, e.x, e.y, e.w, e.h, e.facing);
+    });
+
+    // Interface de Diálogo
+    if (gameState === "dialogue") {
+        const d = castleDialogue[dialogueIndex];
+        
+        if (d) { // Verificação de segurança
+            // Caixa
+            ctx.fillStyle = "rgba(0,0,0,0.85)";
+            ctx.strokeStyle = "#daa520"; 
+            ctx.lineWidth = 2;
+            ctx.fillRect(50, canvas.height - 130, canvas.width - 100, 100);
+            ctx.strokeRect(50, canvas.height - 130, canvas.width - 100, 100);
+
+            // Nome
+            ctx.fillStyle = (d.speaker.includes("Pensamento")) ? "#aaa" : "#daa520";
+            ctx.font = "bold 20px Georgia";
+            ctx.textAlign = "left";
+            ctx.fillText(d.speaker, 70, canvas.height - 105);
+
+            // Texto
+            ctx.fillStyle = "#fff";
+            ctx.font = (d.style === "italic") ? "italic 18px Georgia" : "18px Georgia";
+            ctx.fillText(d.text, 70, canvas.height - 70, canvas.width - 140);
+            
+            // Aviso
+            ctx.font = "12px Arial";
+            ctx.fillStyle = "#888";
+            ctx.fillText("Pressione ENTER ou Toque para continuar", canvas.width - 280, canvas.height - 45);
+        }
+    }
+
+    // Fade
+    if (gameState === "fadeOut") {
+        ctx.fillStyle = `rgba(0,0,0,${fadeAlpha})`;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+}
+
+// INPUTS
+window.addEventListener("keydown", e => {
+    if (gameState === "dialogue" && e.key === "Enter") nextDialogue();
+});
+
+canvas.addEventListener("touchstart", e => {
+    if (gameState === "dialogue") nextDialogue();
+});
+
+// LOOP
+function loop() {
+    update();
+    draw();
+    requestAnimationFrame(loop);
+}
+window.onload = loop;
+</script>
+
+</body>
+</html>
