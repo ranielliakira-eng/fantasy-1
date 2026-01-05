@@ -402,7 +402,7 @@ const foregroundObjects = [
     { x: 4200, y: 1450, width: 100, height: 100, img: DeadWarrior_2Img },
     { x: 4250, y: 1450, width: 100, height: 100, img: DeadWarrior_3Img },
 
-    { x: 590, y: 1825, width: 100, height: 100, img: DeadWarrior_2Img },
+    { x: 590, y: 1830, width: 100, height: 100, img: DeadWarrior_2Img },
     { x: 600, y: 1925, width: 75, height: 25, img: mesaImg },
 
     { x: 3500, y: 1500, width: 50, height: 50, img: crystal_orange4Img },
@@ -1724,6 +1724,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 });
+
 
 
 
