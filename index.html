@@ -55,12 +55,14 @@
 <body>
     <div id="game-area">
         <h1 id="main-title">PIXEL QUEST</h1>
+        
         <div id="step-players" class="container">
             <button class="btn" onclick="escolherJogadores(1)">1 JOGADOR</button>
-            <button class="btn locked">2 JOGADORES (??)</button>
+            <button id="btn-2players" class="btn locked" onclick="escolherJogadores(2)">2 JOGADORES (??)</button>
         </div>
+
         <div id="step-heroes" class="container">
-            <h2 style="color:#ffd700; font-size: 16px; margin-top: 0;">QUEM VAI JOGAR?</h2>
+            <h2 id="hero-title" style="color:#ffd700; font-size: 16px; margin-top: 0;">QUEM VAI JOGAR?</h2>
             <div class="hero-grid">
                 <div class="hero-card" onclick="finalizarSelecao('loiro')">
                     <div class="sprite-container"><img src="Idle.png" alt="Swordsman"></div>
@@ -73,46 +75,68 @@
             </div>
             <button onclick="location.reload()" style="margin-top:15px; background:none; border:none; color:gray; cursor:pointer; font-size: 12px;">[ VOLTAR ]</button>
         </div>
+
         <div id="step-chapters" class="container">
-            <h2 style="color:white; font-size: 14px; margin-bottom: 8px;">SELECIONE O CAP√çTULO</h2>
-            <button class="btn" onclick="iniciarJogo(1)">CAP√çTULO 1</button>
-            <button id="btn-cap2" class="btn locked" onclick="verificarCap(2)">CAP√çTULO 2 (??)</button>
-            <button id="btn-cap3" class="btn locked" onclick="verificarCap(3)">CAP√çTULO 3 (??)</button>
-            <button id="btn-cap4" class="btn locked" onclick="verificarCap(4)">CAP√çTULO 4 (??)</button>
-            <button id="btn-cap5" class="btn locked" onclick="verificarCap(5)">CAP√çTULO 5 (??)</button>
+            <h2 style="color:white; font-size: 14px; margin-bottom: 8px;">SELECIONE O CAPÕTULO</h2>
+            <button class="btn" onclick="iniciarJogo(1)">CAPÕTULO 1</button>
+            <button id="btn-cap2" class="btn locked" onclick="verificarCap(2)">CAPÕTULO 2 (??)</button>
+            <button id="btn-cap3" class="btn locked" onclick="verificarCap(3)">CAPÕTULO 3 (??)</button>
+            <button id="btn-cap4" class="btn locked" onclick="verificarCap(4)">CAPÕTULO 4 (??)</button>
+            <button id="btn-cap5" class="btn locked" onclick="verificarCap(5)">CAPÕTULO 5 (??)</button>
             <button class="btn" style="color:red; border-color:red; margin-top:10px; padding: 5px;" onclick="location.reload()">SAIR</button>
         </div>
     </div>
-	<audio id="bgMusic" loop>
-        <source src="Chapter_1/assets/sounds/song.wav" type="audio/wav">
-    </audio>
-    <script>
-	const bgMusic = document.getElementById("bgMusic");
-    bgMusic.volume = 0.5;
 
-    function iniciarAudio() {
-        bgMusic.play().catch(() => {});
-        document.removeEventListener("click", iniciarAudio);
-        document.removeEventListener("keydown", iniciarAudio);
-    }
-    // Primeira intera√ß√£o libera o √°udio
-    document.addEventListener("click", iniciarAudio);
-    document.addEventListener("keydown", iniciarAudio);
-		
+    <script>
         const title = document.getElementById('main-title');
+        
+        // --- NOVA FUN«√O: DETECTOR DE DISPOSITIVO ---
+        function verificarDispositivo() {
+            const btn2 = document.getElementById('btn-2players');
+            // Regex que identifica navegadores mobile
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (!isMobile) {
+                // Se N√O for mobile (ou seja, È PC), desbloqueia
+                btn2.classList.remove('locked');
+                btn2.innerText = "2 JOGADORES";
+            } else {
+                // Se for mobile, avisa que È sÛ para PC
+                btn2.innerText = "2 JOGADORES (SÛ PC)";
+            }
+        }
+
+        // Executa a verificaÁ„o imediatamente
+        verificarDispositivo();
+
         setTimeout(() => {
             title.classList.add('pos-top');
             document.getElementById('step-players').style.display = 'flex';
         }, 1500);
 
         function escolherJogadores(num) {
+            // SeguranÁa: Se for 2 jogadores e o bot„o ainda estiver 'locked', n„o faz nada
+            if (num === 2) {
+                const btn = document.getElementById('btn-2players');
+                if (btn.classList.contains('locked')) return;
+                
+                // Opcional: Atualiza o tÌtulo da prÛxima tela para saber que È 2 players
+                document.getElementById('hero-title').innerText = "JOGADOR 1: ESCOLHA SEU HER”I";
+            } else {
+                document.getElementById('hero-title').innerText = "QUEM VAI JOGAR?";
+            }
+
             localStorage.setItem('jogadores_total', num);
             document.getElementById('step-players').style.display = 'none';
             document.getElementById('step-heroes').style.display = 'flex';
         }
 
         function finalizarSelecao(heroi) {
+            // OBS: Por enquanto, essa lÛgica salva apenas um herÛi.
+            // Para 2 jogadores funcionarem plenamente, vocÍ precisar· alterar aqui depois
+            // para selecionar o Jogador 2 antes de ir para os capÌtulos.
             localStorage.setItem('heroi_da_jornada', heroi);
+            
             document.getElementById('step-heroes').style.display = 'none';
             mostrarCapitulos();
         }
@@ -121,19 +145,10 @@
             const menu = document.getElementById('step-chapters');
             menu.style.display = 'flex';
             
-            // CORRE√á√ÉO: Verifica individualmente cada progresso salvo
-            if (localStorage.getItem('capitulo_1_vencido') === 'true') {
-                liberarBotao('btn-cap2', "CAP√çTULO 2");
-            }
-            if (localStorage.getItem('capitulo_2_vencido') === 'true') {
-                liberarBotao('btn-cap3', "CAP√çTULO 3");
-            }
-	    if (localStorage.getItem('capitulo_3_vencido') === 'true') {
-                liberarBotao('btn-cap4', "CAP√çTULO 4");
-            }
-	    if (localStorage.getItem('capitulo_4_vencido') === 'true') {
-                liberarBotao('btn-cap5', "CAP√çTULO 5");
-            }
+            if (localStorage.getItem('capitulo_1_vencido') === 'true') liberarBotao('btn-cap2', "CAPÕTULO 2");
+            if (localStorage.getItem('capitulo_2_vencido') === 'true') liberarBotao('btn-cap3', "CAPÕTULO 3");
+            if (localStorage.getItem('capitulo_3_vencido') === 'true') liberarBotao('btn-cap4', "CAPÕTULO 4");
+            if (localStorage.getItem('capitulo_4_vencido') === 'true') liberarBotao('btn-cap5', "CAPÕTULO 5");
         }
 
         function liberarBotao(id, texto) {
@@ -145,20 +160,18 @@
         }
 
         function iniciarJogo(cap) {
+            // Redireciona para a pasta do capÌtulo
             window.location.href = `Chapter_${cap}/index.html`;
         }
 
         function verificarCap(cap) {
-            // Verifica se o cap√≠tulo anterior est√° marcado como vencido no localStorage
             const venceuAnterior = localStorage.getItem(`capitulo_${cap-1}_vencido`) === 'true';
             if (venceuAnterior) {
                 iniciarJogo(cap);
             } else {
-                alert(`Bloqueado! Ven√ßa o Cap√≠tulo ${cap-1} primeiro.`);
+                alert(`Bloqueado! VenÁa o CapÌtulo ${cap-1} primeiro.`);
             }
         }
     </script>
 </body>
-
 </html>
-
