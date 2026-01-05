@@ -22,7 +22,7 @@ let boss = null;
 // --- JOGADOR (ESTRUTURA BASE) ---
 const player = {
     x: 120, y: 200, width: 100, height: 100,
-    velX: 0, velY: 0, speed: 3, jumpForce: -15, attackFrameInterval: 6, attackCooldownMax: 0, attackCooldown: 0,
+    velX: 0, velY: 0, speed: 3, jumpForce: -15, attackFrameInterval: 5, attackCooldownMax: 0, attackCooldown: 0,
     facing: 'right', onGround: false, state: 'idle',
     hp: 3, maxHp: 3, canAirAttack: true,
     imgWalk: new Image(), imgDead: new Image(), imgJump: new Image(), imgHurt: new Image(),
@@ -746,7 +746,7 @@ if (player.x > 6400 && !boss) {
         x: 6700, // Ele aparece um pouco à frente
         y: 200, 
         width: 100, height: 100, // Boss é maior!
-        hp: 10, maxHp: 10,
+        hp: 5, maxHp: 5,
         speed: 2,
         state: 'idle',
         facing: 'left',
@@ -1205,6 +1205,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+
 
 
 
