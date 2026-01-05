@@ -21,8 +21,8 @@ let boss = null;
 
 // --- JOGADOR (ESTRUTURA BASE) ---
 const player = {
-    x: 140, y: 200, width: 100, height: 100,
-    velX: 0, velY: 0, speed: 3, jumpForce: -15,
+    x: 120, y: 200, width: 100, height: 100,
+    velX: 0, velY: 0, speed: 2, jumpForce: -15, attackFrameInterval: 6, attackCooldownMax: 0, attackCooldown: 0,
     facing: 'right', onGround: false, state: 'idle',
     hp: 3, maxHp: 3, canAirAttack: true,
     imgWalk: new Image(), imgDead: new Image(), imgJump: new Image(), imgHurt: new Image(),
@@ -31,93 +31,126 @@ const player = {
     currentFrame: 0, frameTimer: 0, frameInterval: 6, dialogue: "", dialogueTimer: 0,
 };
 
+// ... abaixo do const player atual ...
+
+const player2 = {
+    ...player, // Copia as propriedades base (x, y, hp, etc)
+    x: 160,    // Começa um pouco à frente do P1
+    active: false,
+    imgWalk: new Image(), imgDead: new Image(), imgJump: new Image(), 
+    imgHurt: new Image(), imgAttack: new Image(), imgIdle: new Image(),
+};
+
+let keysP2 = { left: false, right: false };
+
 // --- INICIALIZAÇÃO AUTOMÁTICA (PADRÃO SWORDSMAN / KNIGHT) ---
 window.onload = function() {
-    // 1. Esconde o menu de seleção antigo do Chapter_1
-    const selectionMenu = document.getElementById('selection-menu');
-    if (selectionMenu) selectionMenu.style.display = 'none';
+    const numJogadores = parseInt(localStorage.getItem('jogadores_total')) || 1;
+    const escolhaP1 = localStorage.getItem('heroi_da_jornada') || 'loiro';
+    const escolhaP2 = (escolhaP1 === 'loiro') ? 'castanha' : 'loiro';
 
-    // 2. Lê a escolha do herói do Menu Principal
-    // 'loiro' -> Swordsman | 'castanha' -> Knight
-    const escolhaMenu = localStorage.getItem('heroi_da_jornada') || 'loiro'; 
-    const heroiPadrao = (escolhaMenu === 'castanha') ? 'Knight' : 'Swordsman';
+    // 1. Configura o Player 1 (Sempre ativo)
+    configurarPlayer(player, escolhaP1);
     
-    // 3. Configura Frames Específicos
-    // Knight (Baronesa) tem 6 frames de Idle/Jump, Swordsman tem 8
-    player.idleFrames = (heroiPadrao === 'Knight') ? 6 : 8;
-    player.walkFrames = 8;
-    player.jumpFrames = (heroiPadrao === 'Knight') ? 6 : 8;
-    player.hurtFrames = 3;
-    player.deadFrames = (heroiPadrao === 'Knight') ? 4 : 3;
-    player.attackFrames = (heroiPadrao === 'Knight') ? 5 : 6;
+    // 2. Configura o Player 2 (Apenas se selecionado no menu)
+if (numJogadores === 2) {
+    player2.active = true;
+    configurarPlayer(player2, escolhaP2);
 
-    // 4. Carrega os Assets da pasta correta
-    player.imgIdle.src = `assets/${heroiPadrao}/Idle.png`;
-    player.imgWalk.src = `assets/${heroiPadrao}/Walk.png`;
-    player.imgJump.src = `assets/${heroiPadrao}/Jump.png`;
-    player.imgHurt.src = `assets/${heroiPadrao}/Hurt.png`;
-    player.imgDead.src = `assets/${heroiPadrao}/Dead.png`;
-    player.imgAttack.src = `assets/${heroiPadrao}/Attack_1.png`;
+    // 🔧 RESET VISUAL DO PLAYER 2
+    player2.state = 'idle';
+    player2.facing = 'right';
+    player2.currentFrame = 0;
+    player2.frameTimer = 0;
+    player2.velX = 0;
+    player2.velY = 0;
+    player2.onGround = false;
+}
 
-    // 5. Inicia o jogo após carregar as imagens
+    // 3. O GATILHO: Quando a imagem do P1 carregar, o jogo começa
     player.imgIdle.onload = () => {
         gameState = 'playing'; 
         initEnemies(); 
         if (!isMuted) bgMusic.play().catch(() => {}); 
     };
-    
+
+    // 4. Mostra controles se for mobile
     const controls = document.getElementById('mobile-controls');
     if(controls) controls.style.display = 'flex';
 };
 
-// --- ATUALIZAÇÃO DO STATUS DE VITÓRIA (Gatilho para o Menu Principal) ---
-function checkMeleeHit() {
-    let alcance = player.width * -0.2;
-    let hitboxX = player.facing === 'right' ? player.x + player.width : player.x - alcance;
+// Mantenha a função auxiliar que criamos no passo anterior
+function configurarPlayer(p, escolha) {
 
-    // Colisão Inimigos Comuns
-    enemies.forEach(en => {
-        if (en.state === 'dead') return;
-        if (hitboxX < en.x + en.width && hitboxX + alcance > en.x &&
-            player.y < en.y + en.height && player.y + player.height > en.y) {
-            en.hp--;
-            en.state = 'hurt';
-            en.currentFrame = 0;
-            if (en.hp <= 0) en.state = 'dead';
-        }
-    });
+    // Mapeia escolha do menu → herói real
+    const tipo = (escolha === 'castanha') ? 'Knight' : 'Swordsman';
 
-    // Colisão Boss e Progresso
-    if (boss && boss.state !== 'dead') {
-        if (hitboxX < boss.x + boss.width && hitboxX + alcance > boss.x &&
-            player.y < boss.y + boss.height && player.y + player.height > boss.y) {
-            
-            boss.hp--;
-            boss.state = 'hurt';
-            boss.currentFrame = 0;
+    if (tipo === 'Knight') {
+        p.idleFrames   = 6;
+        p.walkFrames   = 8;
+        p.jumpFrames   = 6;
+        p.attackFrames = 5;
+        p.hurtFrames = 3;
+        p.deadFrames = 4;
 
-            if (boss.hp <= 0) {
-                boss.state = 'dead';
-                boss.currentFrame = 0;
-                boss.dialogue = "Impossível...";
-                boss.dialogueTimer = 180;
-
-                // LIBERA O CAPÍTULO 2 NO MENU PRINCIPAL
-                localStorage.setItem('capitulo_1_vencido', 'true');
-
-setTimeout(() => {
-        mostrarTelaVitoria();
-    }, 2000);
-            }
-        }
+        p.imgIdle.src   = 'assets/Knight/Idle.png';
+        p.imgWalk.src   = 'assets/Knight/Walk.png';
+        p.imgJump.src   = 'assets/Knight/Jump.png';
+        p.imgAttack.src = 'assets/Knight/Attack_1.png';
+        p.imgHurt.src   = 'assets/Knight/Hurt.png';
+        p.imgDead.src   = 'assets/Knight/Dead.png';
     }
+
+    if (tipo === 'Swordsman') {
+        p.idleFrames   = 8;
+        p.walkFrames   = 8;
+        p.jumpFrames   = 8;
+        p.attackFrames = 6;
+        p.hurtFrames = 3;
+        p.deadFrames = 3;
+
+        p.imgIdle.src   = 'assets/Swordsman/Idle.png';
+        p.imgWalk.src   = 'assets/Swordsman/Walk.png';
+        p.imgJump.src   = 'assets/Swordsman/Jump.png';
+        p.imgAttack.src = 'assets/Swordsman/Attack_1.png';
+        p.imgHurt.src   = 'assets/Swordsman/Hurt.png';
+        p.imgDead.src   = 'assets/Swordsman/Dead.png';
+    }
+
+    // Reset seguro
+    p.currentFrame = 0;
+    p.frameTimer = 0;
+}
+
+
+// Versão genérica: adicione o parâmetro 'p' e 'k' (keys)
+function processarMovimento(p, k, dir, estado) {
+    if(gameState !== 'playing' || p.state === 'dead' || isPaused) return;
+    if(dir === 'left') k.left = estado;
+    if(dir === 'right') k.right = estado;
+    if(estado) p.facing = dir;
+}
+
+function processarPulo(p) {
+    if(gameState === 'playing' && p.onGround && !isPaused) {
+        p.velY = p.jumpForce;
+        p.onGround = false;
+    }
+}
+
+function processarAtaque(p) {
+    if(p.state === 'dead') return;
+    if(gameState !== 'playing' || isPaused || p.state === 'attacking') return;
+    p.state = 'attacking';
+    p.currentFrame = 0;
+    checkMeleeHit(p); // Passamos o player que atacou para a função de hit
 }
 
 const playerDialogTriggers = [
     { x: 600, text: "Esses Slimes não deveriam estar aqui.", used: false },
     { x: 1800, text: "A floresta está ficando mais densa.", used: false },
     { x: 6200, text: "Floresta está cheia de Slimes...", used: false },
-	{ x: 6400, text: "Enchantress, você está bem?", used: false },
+    { x: 6400, text: "Enchantress, você está bem?", used: false },
 ];
 
 // --- INIMIGOS ---
@@ -137,9 +170,7 @@ function initEnemies() {
         { type: 'Blue_Slime', x: 3000, y: 200, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
         { type: 'Blue_Slime', x: 3025, y: 200, hp: 1, speed: 1.6, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
         { type: 'Blue_Slime', x: 3100, y: 200, hp: 1, speed: 1.6, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 3125, y: 200, hp: 1, speed: 1.7, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 3150, y: 200, hp: 1, speed: 1.8, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        
+
         { type: 'Red_Slime', x: 4000, y: 200, hp: 1, speed: 2.5, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         { type: 'Red_Slime', x: 4050, y: 200, hp: 1, speed: 2.4, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
         { type: 'Red_Slime', x: 4100, y: 200, hp: 1, speed: 2.2, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
@@ -312,7 +343,7 @@ const foregroundObjects = [
 
 // --- NPCs ---
 const oxNpc = {
-    x: 10, y: 210, width: 100, height: 100, imgIdle: new Image(),
+    x: 10, y: 210, width: 110, height: 110, imgIdle: new Image(),
     idleFrames: 4, currentFrame: 0, frameTimer: 0, frameInterval: 20,
     phrases: ["Muuu!"], dialogueIndex: 0, dialogueTimer: 0
 };
@@ -340,27 +371,41 @@ window.playerSay = function(text, duration = 120) {
     player.dialogueTimer = duration;
 };
 
+function resetPlayer(p, xInicial) {
+    p.hp = p.maxHp;
+    p.x = xInicial;
+    p.y = 100;
+    p.velX = 0;
+    p.velY = 0;
+    p.state = 'idle';
+    p.currentFrame = 0;
+    p.frameTimer = 0;
+    p.onGround = false;
+    p.canAirAttack = true;
+}
+
+
 // --- FUNÇÕES DO SISTEMA ---
 window.togglePause = function() { if (gameState !== 'playing') return; isPaused = !isPaused; if (isPaused) bgMusic.pause(); else if (!isMuted) bgMusic.play().catch(() => {}); };
 window.toggleSom = function() { isMuted = !isMuted; bgMusic.muted = isMuted; const btn = document.getElementById('btn-audio'); if(btn) btn.innerText = isMuted ? "Mudo" : "Som"; };
-window.resetGame = function() {
-    const screen = document.getElementById('game-over-screen'); 
-    if(screen) screen.style.display='none';
-    
-    player.hp = player.maxHp; 
-    player.x = 140; 
-    player.y = 100; 
-    player.velX = 0; 
-    player.velY = 0; 
-    player.state = 'idle';
-    
-    cameraX = 0; 
-    isPaused = false; 
+window.resetGame = function () {
+    const screen = document.getElementById('game-over-screen');
+    if (screen) screen.style.display = 'none';
+
+    resetPlayer(player, 120);
+
+    if (player2 && player2.active) {
+        resetPlayer(player2, 160);
+    }
+
+    cameraX = 0;
+    isPaused = false;
     gameState = 'playing';
-    
-    boss = null; // <--- ADICIONE ISSO: Remove o boss atual para ele dar spawn de novo no gatilho
+
+    boss = null;
     initEnemies();
 };
+
 // Função para salvar o progresso e voltar ao menu raiz
 
 window.concluirCapituloEVoutar = function() {
@@ -371,9 +416,38 @@ window.location.href = "../index.html"; // Volta para a pasta anterior (raiz)
 };
 
 // Movimentação
-window.mover = function(dir, estado) { if(gameState!=='playing'||player.state==='dead'||isPaused) return; if(dir==='left') keys.left=estado; if(dir==='right') keys.right=estado; if(estado) player.facing=dir; };
-window.pular = function() { if(gameState==='playing' && player.onGround && !isPaused){player.velY=player.jumpForce; player.onGround=false;} };
-window.atacar = function() { if(player.state==='dead'){window.resetGame(); return;} if(gameState!=='playing'||isPaused)return; if(player.state==='attacking')return; if(!player.onGround && !player.canAirAttack)return; player.state='attacking'; player.currentFrame=0; if(!player.onGround) player.canAirAttack=false; checkMeleeHit(); };
+window.mover = function(p, kObj, dir, estado) {
+    if (gameState !== 'playing' || p.state === 'dead' || isPaused) return;
+    if (dir === 'left') kObj.left = estado;
+    if (dir === 'right') kObj.right = estado;
+    if (estado) p.facing = dir;
+};
+
+// Pulo
+window.pular = function(p) {
+    if (gameState === 'playing' && p.onGround && !isPaused && p.state !== 'dead') {
+        p.velY = p.jumpForce;
+        p.onGround = false;
+        p.state = 'jump';
+    }
+};
+
+// Ataque (usando a função checkMeleeHit que já ajustamos)
+window.atacar = function(p) {
+    if (
+        p.state === 'dead' ||
+        p.state === 'attacking' ||
+        p.attackCooldown > 0 ||
+        isPaused
+    ) return;
+
+    p.state = 'attacking';
+    p.currentFrame = 0;
+    p.frameTimer = 0;
+    p.attackCooldown = p.attackCooldownMax;
+
+    checkMeleeHit(p);
+};
 
 // NPCs
 function npcSay(npc, index=0, duration=120){ npc.dialogueIndex=index; npc.dialogueTimer=duration; }
@@ -401,18 +475,19 @@ function updateNPCs() {
     });
 }
 // HIT MELEE
-function checkMeleeHit() {
-    let alcance = player.width * -0.2;
-    let hitboxX = player.facing === 'right' ? player.x + player.width : player.x - alcance;
+function checkMeleeHit(p) {
+    // Usamos 'p' para calcular o alcance e a posição da batida
+    let alcance = p.width * 0.4; 
+    let hitboxX = p.facing === 'right' ? p.x + p.width * 0.7 : p.x - alcance + p.width * 0.3;
 
-    // 1. Dano nos inimigos comuns
+    // 1. Dano nos inimigos comuns (Trocamos 'player' por 'p')
     enemies.forEach(en => {
         if (en.state === 'dead') return;
         let hitY = en.y + (en.height * 0.3);
         let hitHeight = en.height * 0.7;
 
         if (hitboxX < en.x + en.width && hitboxX + alcance > en.x &&
-            player.y < hitY + hitHeight && player.y + player.height > hitY) {
+            p.y < hitY + hitHeight && p.y + p.height > hitY) {
             en.hp--;
             en.state = 'hurt';
             en.currentFrame = 0;
@@ -420,11 +495,10 @@ function checkMeleeHit() {
         }
     });
 
-    // 2. NOVA: Dano no Boss
+    // 2. Dano no Boss (Trocamos 'player' por 'p')
     if (boss && boss.state !== 'dead') {
-        // Como o Boss é maior (200px), a detecção precisa ser generosa
         if (hitboxX < boss.x + boss.width && hitboxX + alcance > boss.x &&
-            player.y < boss.y + boss.height && player.y + player.height > boss.y) {
+            p.y < boss.y + boss.height && p.y + p.height > boss.y) {
             
             boss.hp--;
             boss.state = 'hurt';
@@ -434,7 +508,6 @@ function checkMeleeHit() {
             if (boss.hp <= 0) {
                 boss.state = 'dead';
                 boss.currentFrame = 0;
-                // Opcional: O Boss diz algo ao morrer
                 boss.dialogue = "O equilíbrio...";
                 boss.dialogueTimer = 180;
             }
@@ -442,11 +515,91 @@ function checkMeleeHit() {
     }
 }
 
+function atualizarAnimacaoPlayer(p) {
+
+    // ⚔️ ATAQUE (controle próprio)
+    if (p.state === 'attacking') {
+        p.frameTimer++;
+
+        if (p.frameTimer >= p.attackFrameInterval) {
+            p.frameTimer = 0;
+            p.currentFrame++;
+
+            // Fim do ataque
+            if (p.currentFrame >= p.attackFrames) {
+                p.currentFrame = 0;
+                p.state = p.onGround ? 'idle' : 'jumping';
+            }
+        }
+        return; // ⛔ impede outras animações
+    }
+
+    // ⛔ Se morreu, só anima Dead
+    if (p.state === 'dead') {
+        p.frameTimer++;
+
+        if (p.frameTimer >= p.frameInterval) {
+            p.frameTimer = 0;
+
+            if (p.currentFrame < p.deadFrames - 1) {
+                p.currentFrame++;
+            }
+            // ❗ não volta para 0, não cicla
+        }
+        return; // ⛔ impede outras animações
+    }
+
+    // ===== ANIMAÇÕES NORMAIS =====
+    p.frameTimer++;
+
+    if (p.frameTimer >= p.frameInterval) {
+        p.frameTimer = 0;
+
+        if (!p.onGround) {
+            p.state = 'jumping';
+            p.currentFrame = (p.currentFrame + 1) % p.jumpFrames;
+        }
+        else if (Math.abs(p.velX) > 0.5) {
+            p.state = 'walking';
+            p.currentFrame = (p.currentFrame + 1) % p.walkFrames;
+        }
+        else {
+            p.state = 'idle';
+            p.currentFrame = (p.currentFrame + 1) % p.idleFrames;
+        }
+    }
+}
+
+
 // --- UPDATE ---
 function update(){
-    if(player.hp<=0){player.state='dead'; return;}
-    if(gameState!=='playing'||isPaused) return;
+    if(gameState !== 'playing' || isPaused) return;
+
+    // Marca Player 1 como morto (sem parar o jogo)
+    if (player.hp <= 0 && player.state !== 'dead') {
+        player.state = 'dead';
+    }
+
+    // Marca Player 2 como morto (se ativo)
+    if (player2.active && player2.hp <= 0 && player2.state !== 'dead') {
+        player2.state = 'dead';
+    }
+
     updateNPCs();
+
+
+aplicarFisicaCompleta(player, keys);
+
+if (player2.active) {
+    aplicarFisicaCompleta(player2, keysP2);
+}
+
+atualizarAnimacaoPlayer(player);
+if (player2.active) atualizarAnimacaoPlayer(player2);
+
+if (todosPlayersMortos()) {
+    resetGame();
+}
 
     if(Math.abs(player.x-oxNpc.x)<150 && oxNpc.dialogueTimer<=0){ npcSay(oxNpc,0,120); }
     if(player.y>=450){ player.hp=0; player.state='dead'; return;}
@@ -455,52 +608,6 @@ function update(){
 
     if(player.dialogueTimer>0){ player.dialogueTimer--; if(player.dialogueTimer<=0) player.dialogue=""; }
 
-// ===== FÍSICA VERTICAL =====
-// assume que está no ar
-player.onGround = false;
-
-// aplica gravidade
-player.velY += gravity;
-if (player.velY > 20) player.velY = 20;
-
-// move verticalmente
-player.y += player.velY;
-
-// --- colisão com plataformas retas ---
-platforms.forEach(p => {
-    if(p.type === 'sloped') return; // ignora slopes aqui
-
-    const playerBottom = player.y + player.height;
-    const playerPrevBottom = playerBottom - player.velY;
-
-    const overlapX =
-        player.x + player.width > p.x &&
-        player.x < p.x + p.w;
-
-    if (overlapX && playerPrevBottom <= p.y && playerBottom >= p.y) {
-        player.y = p.y - player.height;
-        player.velY = 0;
-        player.onGround = true;
-    }
-});
-
-// --- colisão com slopes ---
-platforms.forEach(p => {
-    if(p.type !== 'sloped') return;
-
-    let relativeX = player.x + player.width/2 - p.x;
-    let slopeY = p.y - relativeX * p.slope;
-
-    if(player.x + player.width > p.x && player.x < p.x + p.w) {
-        if(player.y + player.height > slopeY && player.y + player.height - player.velY <= slopeY) {
-            player.y = slopeY - player.height;
-            player.velY = 0;
-            player.onGround = true;
-        }
-    }
-});
-// ===== MOVIMENTO HORIZONTAL =====
-player.x += player.velX;
 
 // limites do mapa
 if (player.x < 0) player.x = 0;
@@ -509,42 +616,46 @@ if (player.x + player.width > mapWidth)
 
     if(player.onGround) player.canAirAttack=true;
 
-    // ANIMAÇÃO PLAYER
-    player.frameTimer++;
-    if(player.frameTimer>=player.frameInterval){
-        player.frameTimer=0;
-        if(player.state==='attacking'){
-            player.currentFrame++; 
-            if(player.currentFrame>=player.attackFrames){
-                if(!player.onGround) player.state='jumping'; 
-                else if(Math.abs(player.velX)>0.5) player.state='walking'; 
-                else player.state='idle';
-                player.currentFrame=0;
-            }
-        } else if(!player.onGround){ player.state='jumping'; player.currentFrame=(player.currentFrame+1)%player.jumpFrames; }
-        else if(Math.abs(player.velX)>0.5){ player.state='walking'; player.currentFrame=(player.currentFrame+1)%player.walkFrames; }
-        else{ player.state='idle'; player.currentFrame=(player.currentFrame+1)%player.idleFrames;}
-    }
+// 1. Determina o alvo da câmera (Média entre P1 e P2)
+let alvoX, alvoY;
 
-// --- CÂMERA DINÂMICA ---
-let targetX = (player.x + player.width / 2) - (canvas.width / (2 * zoom));
-let targetY = (player.y + player.height / 2) - (canvas.height / (2 * zoom));
+if (player2.active && player.state !== 'dead' && player2.state !== 'dead') {
+    // Se ambos estão vivos, tira a média
+    alvoX = (player.x + player2.x) / 2;
+    alvoY = (player.y + player2.y) / 2;
+} else if (player.state !== 'dead') {
+    // Se só o P1 está vivo
+    alvoX = player.x;
+    alvoY = player.y;
+} else {
+    // Se o P1 morreu, foca no P2
+    alvoX = player2.x;
+    alvoY = player2.y;
+}
 
-// Suavização
+// 2. Calcula onde a câmera deveria estar (Target)
+let targetX = (alvoX + player.width / 2) - (canvas.width / (2 * zoom));
+let targetY = (alvoY + player.height / 2) - (canvas.height / (2 * zoom));
+
+// 3. Suavização (Interpolação)
 cameraX += (targetX - cameraX) * 0.1;
 cameraY += (targetY - cameraY) * 0.1;
 
-// Limites da câmera
+// 4. Limites da câmera para não sair do mapa
 cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width / zoom));
 cameraY = Math.max(0, Math.min(cameraY, mapHeight - canvas.height / zoom));
 
-
 // INIMIGOS
     enemies.forEach(en=>{
+
+    const alvo = obterAlvoMaisProximo(en);
+    if (!alvo) return;
+
+    const dist = Math.abs(alvo.x - en.x);
+
         if(en.patrolMinX===undefined){ en.patrolMinX=en.x-120; en.patrolMaxX=en.x+120;}
         if(en.facing===undefined) en.facing='left';
-        let dist=Math.abs(player.x-en.x);
-
+ 
         en.velY+=gravity; en.y+=en.velY; en.onGround=false;
 
         platforms.forEach(p=>{
@@ -577,7 +688,7 @@ cameraY = Math.max(0, Math.min(cameraY, mapHeight - canvas.height / zoom));
         else if(en.state === 'chase') { 
             const minDist = 30; 
             if(dist > minDist) { 
-                if(player.x < en.x) { en.x -= en.speed * 1.2; en.facing = 'left'; } 
+                if(alvo.x < en.x) { en.x -= en.speed * 1.2; en.facing = 'left'; } 
                 else { en.x += en.speed * 1.2; en.facing = 'right'; }
             }
             if(dist <= en.attackRange && en.attackCooldown <= 0) { 
@@ -596,7 +707,9 @@ cameraY = Math.max(0, Math.min(cameraY, mapHeight - canvas.height / zoom));
                 
                 // Aplica o dano no frame correto
                 if(en.currentFrame === attackFrame && dist <= en.attackRange) {
-                    player.hp -= 1;
+                    alvo.hp -= 1;
+	    alvo.state = 'hurt';
+	    alvo.currentFrame = 0;
                     en.attackCooldown = 80;
                 }
                 
@@ -667,9 +780,175 @@ if (boss) {
 }
 }
 
+function aplicarFisicaCompleta(p, k) {
+    if (p.state === 'dead') return;
+
+    // MOVIMENTO HORIZONTAL
+    if (p.state !== 'attacking') {
+        if (k.left) p.velX = -p.speed;
+        else if (k.right) p.velX = p.speed;
+        else p.velX *= 0.7;
+    } else {
+        p.velX = 0;
+    }
+
+    p.x += p.velX;
+
+    // LIMITES DO MAPA
+    if (p.x < 0) p.x = 0;
+    if (p.x + p.width > mapWidth) p.x = mapWidth - p.width;
+
+    // ===== FÍSICA VERTICAL =====
+    p.onGround = false;
+    p.velY += gravity;
+    if (p.velY > 20) p.velY = 20;
+    p.y += p.velY;
+
+    // COLISÃO COM PLATAFORMAS
+    platforms.forEach(pl => {
+        if (pl.type === 'sloped') return;
+
+        const bottom = p.y + p.height;
+        const prevBottom = bottom - p.velY;
+
+        const overlapX =
+            p.x + p.width > pl.x &&
+            p.x < pl.x + pl.w;
+
+        if (overlapX && prevBottom <= pl.y && bottom >= pl.y) {
+            p.y = pl.y - p.height;
+            p.velY = 0;
+            p.onGround = true;
+        }
+    });
+}
+
+function obterAlvoMaisProximo(en) {
+    let alvos = [];
+
+    if (player.hp > 0 && player.state !== 'dead') {
+        alvos.push(player);
+    }
+
+    if (player2.active && player2.hp > 0 && player2.state !== 'dead') {
+        alvos.push(player2);
+    }
+
+    if (alvos.length === 0) return null;
+
+    return alvos.reduce((a, b) => {
+        return Math.abs(a.x - en.x) < Math.abs(b.x - en.x) ? a : b;
+    });
+}
+
+
 function bossDiz(texto, tempo = 120) {
 boss.dialogue = texto; // Use 'dialogue' em vez de 'fala'
     boss.dialogueTimer = tempo;
+}
+
+// --- OUTRAS FUNÇÕES ---
+function enemySay(en, type) {
+    const list = en.phrases[type];
+    en.dialogue = list[Math.floor(Math.random() * list.length)];
+    en.dialogueTimer = 120;
+}
+
+// --- LÓGICA DO BOSS (ENCHANTRESS) ---
+function updateBossLogic() {
+    if (!boss) return;
+
+    const alvo = obterAlvoMaisProximo(boss);
+    if (!alvo) return;
+
+    const dist = Math.abs(alvo.x - boss.x);
+
+
+    // 1. ESTADO DE MORTE
+    if (boss.state === 'dead') {
+        boss.frameTimer++;
+        if (boss.frameTimer >= boss.frameInterval) {
+            boss.frameTimer = 0;
+            if (boss.currentFrame < boss.deadFrames - 1) {
+                boss.currentFrame++;
+            }
+        }
+        return; 
+    }
+
+    // 2. GRAVIDADE E CHÃO
+    boss.velY = (boss.velY || 0) + gravity;
+    boss.y += boss.velY;
+
+    // Colisão simples com o chão para o Boss
+    if (boss.y + boss.height > 300) {
+        boss.y = 300 - boss.height;
+        boss.velY = 0;
+    }
+
+    // 3. ANIMAÇÃO E TIMERS
+    if (boss.falaTimer > 0) boss.falaTimer--;
+    
+    boss.frameTimer++;
+    if (boss.frameTimer >= boss.frameInterval) {
+        boss.frameTimer = 0;
+        
+        let maxFrames = 1;
+        if (boss.state === 'idle') maxFrames = boss.idleFrames;
+        else if (boss.state === 'walking') maxFrames = boss.walkFrames;
+        else if (boss.state === 'attacking') maxFrames = boss.attackFrames;
+        else if (boss.state === 'hurt') maxFrames = boss.hurtFrames;
+
+        boss.currentFrame++;
+
+        // VERIFICAÇÃO DE DANO (No frame 3 do ataque)
+if (boss.state === 'attacking' && boss.currentFrame === 3) {
+    if (dist < boss.attackRange) {
+        alvo.hp -= boss.damage || 1;
+        alvo.state = 'hurt';
+        alvo.currentFrame = 0;
+
+        // Knockback
+        alvo.x += (alvo.x < boss.x) ? -40 : 40;
+    }
+}
+
+
+        // RESET DE ESTADOS
+        if (boss.currentFrame >= maxFrames) {
+            boss.currentFrame = 0;
+            if (boss.state === 'hurt' || boss.state === 'attacking') {
+                boss.state = 'idle';
+                if (boss.state === 'attacking') boss.attackCooldown = 100;
+            }
+        }
+    }
+
+    // 4. GATILHOS DE FALA
+    if (dist < 400 && !boss.viuPlayer) {
+        bossDiz("Não venha! O desequilíbrio...");
+        boss.viuPlayer = true;
+    }
+
+    // 5. IA DE MOVIMENTO
+    if (boss.state !== 'hurt' && boss.state !== 'attacking') {
+        boss.facing = (player.x < boss.x) ? 'left' : 'right';
+
+        if (dist > (boss.attackRange || 80)) {
+            boss.state = 'walking';
+            boss.x += (player.x < boss.x) ? -boss.speed : boss.speed;
+        } else {
+            if ((boss.attackCooldown || 0) <= 0) {
+                boss.state = 'attacking';
+                boss.currentFrame = 0;
+                if (Math.random() < 0.3) bossDiz("Eu não consigo me controlar!");
+            } else {
+                boss.state = 'idle';
+            }
+        }
+    }
+
+    if (boss.attackCooldown > 0) boss.attackCooldown--;
 }
 
 function draw() {
@@ -715,20 +994,22 @@ function draw() {
         ctx.restore();
     });
 
-    // Entidades (Inimigos, Player e Boss)
+    // --- ENTIDADES (Inimigos, Players e Boss) ---
+    // Inserimos o Player 2 no array de desenho se ele estiver ativo
     const allEntities = [...enemies, player];
+    if (player2 && player2.active) allEntities.push(player2); 
     if (boss) allEntities.push(boss);
 
     allEntities.forEach(obj => {
         let img = obj.imgIdle;
         let totalF = obj.idleFrames || 8;
-        if (obj.state === 'walking') { img = obj.imgWalk; totalF = obj.walkFrames; }
+        if (obj.state === 'walking' || obj.state === 'walk') { img = obj.imgWalk; totalF = obj.walkFrames; }
         else if (obj.state === 'attacking') { img = obj.imgAttack; totalF = obj.attackFrames; }
-        else if (obj.state === 'jumping') { img = obj.imgJump; totalF = obj.jumpFrames || 8; }
+        else if (obj.state === 'jumping' || obj.state === 'jump') { img = obj.imgJump; totalF = obj.jumpFrames || 8; }
         else if (obj.state === 'hurt') { img = obj.imgHurt; totalF = obj.hurtFrames; }
         else if (obj.state === 'dead') { img = obj.imgDead; totalF = obj.deadFrames; }
 
-        if (img.complete && img.width > 0) {
+        if (img && img.complete && img.width > 0) {
             const fw = img.width / totalF;
             const fh = img.height;
             ctx.save();
@@ -775,9 +1056,17 @@ function draw() {
 
     // 3. UI (Fixo na tela)
     if (gameState === 'playing') {
-        // Vida Player
+        // Vida Player 1
         ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(20, 20, 150, 15);
         ctx.fillStyle = "red"; ctx.fillRect(20, 20, (player.hp / player.maxHp) * 150, 15);
+        ctx.strokeStyle = "white"; ctx.strokeRect(20, 20, 150, 15);
+
+        // VIDA PLAYER 2 (Lado direito)
+        if (player2 && player2.active) {
+            ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(canvas.width - 170, 20, 150, 15);
+            ctx.fillStyle = "blue"; ctx.fillRect(canvas.width - 170, 20, (player2.hp / player2.maxHp) * 150, 15);
+            ctx.strokeStyle = "white"; ctx.strokeRect(canvas.width - 170, 20, 150, 15);
+        }
 
         // Vida Boss
         if (boss && boss.hp > 0) {
@@ -789,160 +1078,66 @@ function draw() {
         }
     }
 
-// --- 4. TELAS FINAIS ---
-const screen = document.getElementById('game-over-screen');
-const title = screen ? screen.querySelector('h1') : null;
-const subtitle = screen ? screen.querySelector('p') : null;
-// Captura os dois botões individualmente
-const btnReset = document.getElementById('btn-reset');
-const btnNext = document.getElementById('btn-next-chapter');
+    // --- 4. TELAS FINAIS ---
+    const screen = document.getElementById('game-over-screen');
+    const title = screen ? screen.querySelector('h1') : null;
+    const subtitle = screen ? screen.querySelector('p') : null;
+    const btnReset = document.getElementById('btn-reset');
+    const btnNext = document.getElementById('btn-next-chapter');
 
-if (screen) {
-    // CASO A: DERROTA (Player morreu)
-    if (player.hp <= 0 || player.state === 'dead') {
-        screen.style.display = 'flex';
-        screen.style.backgroundColor = "rgba(139, 0, 0, 0.8)"; 
-        
-        if (title) title.innerText = "VOCÊ CAIU...";
-        if (subtitle) subtitle.innerText = "Tente novamente para prosseguir";
-        
-        // MOSTRA o reset e ESCONDE o próximo capítulo
-        if (btnReset) btnReset.style.display = 'block';
-        if (btnNext) btnNext.style.display = 'none';
-    } 
-    
-    // CASO B: VITÓRIA (Boss morreu)
-    else if (boss && boss.state === 'dead' && boss.hp <= 0) {
-        if (screen.style.display !== 'flex') {
+    if (screen) {
+        // Lógica de Derrota: Só morre se ambos estiverem mortos (ou se o P1 morrer sozinho no modo 1P)
+        const p1Morto = (player.hp <= 0 || player.state === 'dead');
+        const p2Morto = (!player2.active || player2.hp <= 0 || player2.state === 'dead');
+
+        if (p1Morto && p2Morto) {
             screen.style.display = 'flex';
-            screen.style.backgroundColor = "rgba(0, 0, 0, 0.8)"; 
-            
-            if (title) title.innerHTML = "Você derrubou <br> Enchantress";
-            if (subtitle) subtitle.innerHTML = "Mas o desequilíbrio permanece... <br>Algo pior espreita nas sombras.";
-
-            // ESCONDE o reset e MOSTRA o botão de voltar ao menu (Próxima Fase)
-            if (btnReset) btnReset.style.display = 'none';
-            if (btnNext) btnNext.style.display = 'block';
+            screen.style.backgroundColor = "rgba(139, 0, 0, 0.8)"; 
+            if (title) title.innerText = "VOCÊS CAÍRAM...";
+            if (subtitle) subtitle.innerText = "Tente novamente para prosseguir";
+            if (btnReset) btnReset.style.display = 'block';
+            if (btnNext) btnNext.style.display = 'none';
+        } 
+        // CASO B: VITÓRIA (Boss morreu)
+        else if (boss && boss.state === 'dead' && boss.hp <= 0) {
+            if (screen.style.display !== 'flex') {
+                screen.style.display = 'flex';
+                screen.style.backgroundColor = "rgba(0, 0, 0, 0.8)"; 
+                if (title) title.innerHTML = "Você derrubou <br> Enchantress";
+                if (subtitle) subtitle.innerHTML = "Mas o desequilíbrio permanece... <br>Algo pior espreita nas sombras.";
+                if (btnReset) btnReset.style.display = 'none';
+                if (btnNext) btnNext.style.display = 'block';
+            }
         }
+    }
+
+    // Balão de fala do Boss (mantendo sua lógica original)
+    if (boss && boss.falaTimer > 0) {
+        ctx.save();
+        ctx.font = "italic bold 16px 'Segoe UI', Arial";
+        let textWidth = ctx.measureText(boss.fala).width;
+        let bx = boss.x - cameraX + (boss.width / 2) - (textWidth / 2);
+        let by = boss.y - 30;
+        ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+        ctx.fillRect(bx - 10, by - 20, textWidth + 20, 30);
+        ctx.fillStyle = "#dfa9ff"; 
+        ctx.fillText(boss.fala, bx, by);
+        ctx.restore();
     }
 }
 
-if (boss && boss.falaTimer > 0) {
-    ctx.save();
-    ctx.font = "italic bold 16px 'Segoe UI', Arial";
-    
-    // Mede a largura do texto para centralizar o balão
-    let textWidth = ctx.measureText(boss.fala).width;
-    let bx = boss.x - cameraX + (boss.width / 2) - (textWidth / 2);
-    let by = boss.y - 30; // Posição acima da cabeça
+function todosPlayersMortos() {
+    let mortos = 0;
+    let ativos = 1; // Player 1 sempre existe
 
-    // Fundo do balão (Sombra/Preto)
-    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-    ctx.fillRect(bx - 10, by - 20, textWidth + 20, 30);
-    
-    // Texto da fala
-    ctx.fillStyle = "#dfa9ff"; // Roxo claro/mágico
-    ctx.fillText(boss.fala, bx, by);
-    ctx.restore();
-}
-} // FIM DA FUNÇÃO DRAW
+    if (player.hp <= 0 || player.state === 'dead') mortos++;
 
-// --- OUTRAS FUNÇÕES ---
-function enemySay(en, type) {
-    const list = en.phrases[type];
-    en.dialogue = list[Math.floor(Math.random() * list.length)];
-    en.dialogueTimer = 120;
-}
-
-// --- LÓGICA DO BOSS (ENCHANTRESS) ---
-function updateBossLogic() {
-    if (!boss) return;
-
-    let dist = Math.abs((player.x + player.width / 2) - (boss.x + boss.width / 2));
-
-    // 1. ESTADO DE MORTE
-    if (boss.state === 'dead') {
-        boss.frameTimer++;
-        if (boss.frameTimer >= boss.frameInterval) {
-            boss.frameTimer = 0;
-            if (boss.currentFrame < boss.deadFrames - 1) {
-                boss.currentFrame++;
-            }
-        }
-        return; 
+    if (player2.active) {
+        ativos++;
+        if (player2.hp <= 0 || player2.state === 'dead') mortos++;
     }
 
-    // 2. GRAVIDADE E CHÃO
-    boss.velY = (boss.velY || 0) + gravity;
-    boss.y += boss.velY;
-
-    // Colisão simples com o chão para o Boss
-    if (boss.y + boss.height > 300) {
-        boss.y = 300 - boss.height;
-        boss.velY = 0;
-    }
-
-    // 3. ANIMAÇÃO E TIMERS
-    if (boss.falaTimer > 0) boss.falaTimer--;
-    
-    boss.frameTimer++;
-    if (boss.frameTimer >= boss.frameInterval) {
-        boss.frameTimer = 0;
-        
-        let maxFrames = 1;
-        if (boss.state === 'idle') maxFrames = boss.idleFrames;
-        else if (boss.state === 'walking') maxFrames = boss.walkFrames;
-        else if (boss.state === 'attacking') maxFrames = boss.attackFrames;
-        else if (boss.state === 'hurt') maxFrames = boss.hurtFrames;
-
-        boss.currentFrame++;
-
-        // VERIFICAÇÃO DE DANO (No frame 3 do ataque)
-        if (boss.state === 'attacking' && boss.currentFrame === 3) {
-            if (dist < (boss.attackRange || 100) && player.hp > 0) {
-                player.hp -= (boss.damage || 1);
-                player.state = 'hurt';
-                player.currentFrame = 0;
-                // Knockback
-                player.x += (player.x < boss.x) ? -40 : 40;
-            }
-        }
-
-        // RESET DE ESTADOS
-        if (boss.currentFrame >= maxFrames) {
-            boss.currentFrame = 0;
-            if (boss.state === 'hurt' || boss.state === 'attacking') {
-                boss.state = 'idle';
-                if (boss.state === 'attacking') boss.attackCooldown = 100;
-            }
-        }
-    }
-
-    // 4. GATILHOS DE FALA
-    if (dist < 400 && !boss.viuPlayer) {
-        bossDiz("Não venha! O desequilíbrio...");
-        boss.viuPlayer = true;
-    }
-
-    // 5. IA DE MOVIMENTO
-    if (boss.state !== 'hurt' && boss.state !== 'attacking') {
-        boss.facing = (player.x < boss.x) ? 'left' : 'right';
-
-        if (dist > (boss.attackRange || 80)) {
-            boss.state = 'walking';
-            boss.x += (player.x < boss.x) ? -boss.speed : boss.speed;
-        } else {
-            if ((boss.attackCooldown || 0) <= 0) {
-                boss.state = 'attacking';
-                boss.currentFrame = 0;
-                if (Math.random() < 0.3) bossDiz("Eu não consigo me controlar!");
-            } else {
-                boss.state = 'idle';
-            }
-        }
-    }
-
-    if (boss.attackCooldown > 0) boss.attackCooldown--;
+    return mortos === ativos;
 }
 
 // --- LOOP PRINCIPAL ---
@@ -961,26 +1156,39 @@ window.irParaMenu = function() {
 
 // --- INPUTS DO TECLADO ---
 window.addEventListener('keydown', (e) => {
-    const k = e.key.toLowerCase();
-    if (k === 'a') window.mover('left', true);
-    if (k === 'd') window.mover('right', true);
-    if (k === 'w' || k === ' ') window.pular();
-    if (k === 'k') window.atacar();
+    const k = e.key; // Usamos e.key para detectar setas corretamente
+
+    // --- CONTROLES PLAYER 1 (WASD + K) ---
+    if (k.toLowerCase() === 'a') window.mover(player, keys, 'left', true);
+    if (k.toLowerCase() === 'd') window.mover(player, keys, 'right', true);
+    if (k.toLowerCase() === 'w') window.pular(player);
+    if (k.toLowerCase() === ' ') window.atacar(player);
     
-    // Tecla R inteligente: Reinicia se morreu, ou vai para o menu se ganhou
-    if (k === 'r') { 
-        if (boss && boss.state === 'dead' && boss.hp <= 0) {
-            window.irParaMenu();
-        } else if (player.hp <= 0 || player.state === 'dead') {
-            window.resetGame();
-        }
+    // --- CONTROLES PLAYER 2 (SETAS + L) ---
+    if (player2.active) {
+        if (k === 'ArrowLeft')  window.mover(player2, keysP2, 'left', true);
+        if (k === 'ArrowRight') window.mover(player2, keysP2, 'right', true);
+        if (k === 'ArrowUp')    window.pular(player2);
+        if (k === 'l' || k === 'L') window.atacar(player2);
+    }
+
+    // Tecla R (Reiniciar)
+    if (k.toLowerCase() === 'r') {
+        const p1Morto = player.hp <= 0;
+        const p2Morto = !player2.active || player2.hp <= 0;
+        if (boss && boss.state === 'dead') window.irParaMenu();
+        else if (p1Morto && p2Morto) window.resetGame();
     }
 });
 
 window.addEventListener('keyup', (e) => {
-    const k = e.key.toLowerCase();
-    if (k === 'a') window.mover('left', false);
-    if (k === 'd') window.mover('right', false);
+    const k = e.key;
+    // P1
+    if (k.toLowerCase() === 'a') window.mover(player, keys, 'left', false);
+    if (k.toLowerCase() === 'd') window.mover(player, keys, 'right', false);
+    // P2
+    if (k === 'ArrowLeft')  window.mover(player2, keysP2, 'left', false);
+    if (k === 'ArrowRight') window.mover(player2, keysP2, 'right', false);
 });
 
 // --- LÓGICA DOS BOTÕES DA TELA FINAL ---
