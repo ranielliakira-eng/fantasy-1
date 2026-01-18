@@ -37,26 +37,26 @@ const ctx = canvas.getContext("2d");
 // IMAGEM DA POÇÃO
 // ==================================================
 const potionImg = new Image();
-potionImg.src = "assets/Potions/LifePotionSmall.png"; 
+potionImg.src = "../Assets/Battleground/Potions/LifePotionSmall.png"; 
 let potionFloat = 0;
 
 // ==================================================
 // IMAGENS DO CENÁRIO
 // ==================================================
 const bgImage = new Image();
-bgImage.src = "assets/Battleground/fundo.png";
+bgImage.src = "../Assets/Battleground/fundo2.png";
 
 const groundImage = new Image();
-groundImage.src = "assets/Battleground/Ground.png";
+groundImage.src = "../Assets/Battleground/Platformer/Ground_02.png";
 
 const houseImages = {
     casa3: new Image(),
     casa4: new Image(),
     casa5: new Image()
 };
-houseImages.casa3.src = "assets/Battleground/casa/casa3.png";
-houseImages.casa4.src = "assets/Battleground/casa/casa4.png";
-houseImages.casa5.src = "assets/Battleground/casa/casa5.png";
+houseImages.casa3.src = "../Assets/Battleground/House/casa3.png";
+houseImages.casa4.src = "../Assets/Battleground/House/casa4.png";
+houseImages.casa5.src = "../Assets/Battleground/House/casa5.png";
 
 const houses = [
     { x: 500, y: 100, w: 200, h: 200, img: houseImages.casa3 },
@@ -73,7 +73,7 @@ const gravity = 0.8;
 // ==================================================
 // GAME STATE
 // ==================================================
-let gameState = "dialogue"; // dialogue | potion | fadeOut | playing
+let gameState = "dialogue";
 let potionTimer = 0;
 
 // ==================================================
@@ -136,39 +136,39 @@ const player = {
     speed: 3, 
     facing: "left", 
     onGround: false,
-    sprite: createSprite(`assets/${heroiPadrao}/Idle.png`, framesIdle, 12)
+    sprite: createSprite(`../Assets/${heroiPadrao}/Idle.png`, framesIdle, 12)
 };
 // ==================================================
 // NPCs
 // ==================================================
 const wizardNPC = {
     x: 200, y: 0, w: 100, h: 100, vy: 0, onGround: false, facing: "right",
-    sprite: createSprite("assets/Wizard/Idle.png", 6, 14)
+    sprite: createSprite("../Assets/Wizard/Idle.png", 6, 14)
 };
 
 const farmerNPC = {
     x: 300, y: 0, w: 75, h: 100, vy: 0, onGround: false, facing: "right",
-    sprite: createSprite("assets/Farmer/Idle.png", 4, 56)
+    sprite: createSprite("../Assets/Farmer/IdleF.png", 4, 56)
 };
 
 const womanNPC = {
     x: 550, y: 0, w: 80, h: 95, vy: 0, onGround: false, facing: "right",
-    sprite: createSprite("assets/Farmer/woman.png", 5, 56)
+    sprite: createSprite("../Assets/Farmer/woman.png", 5, 56)
 };
 
 const meninaNPC = {
     x: 620, y: 0, w: 50, h: 60, vy: 0, onGround: false, facing: "right",
-    sprite: createSprite("assets/Farmer/menina.png", 4, 56)
+    sprite: createSprite("../Assets/Farmer/menina.png", 4, 56)
 };
 
 const menNPC = {
     x: 675, y: 0, w: 80, h: 100, vy: 0, onGround: false, facing: "right",
-    sprite: createSprite("assets/Farmer/men.png", 6, 56)
+    sprite: createSprite("../Assets/Farmer/men.png", 6, 56)
 };
 
 const men2NPC = {
     x: 25, y: 0, w: 70, h: 75, vy: 0, onGround: false, facing: "right",
-    sprite: createSprite("assets/Farmer/men2.png", 5, 56)
+    sprite: createSprite("../Assets/Farmer/men2.png", 5, 56)
 };
 
 const entities = [player, wizardNPC, farmerNPC, womanNPC, menNPC, meninaNPC, men2NPC ];
