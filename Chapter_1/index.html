@@ -15,7 +15,6 @@
 
         #game-container {
             position: relative;
-            /* Responsividade: ocupa a largura da tela mas mantém o aspecto 16:9 */
             width: 95vw; 
             height: 53.43vw; 
             max-width: 800px;
@@ -28,14 +27,13 @@
 
         #game-subtitle {
 	font-size: 18px;
-	color: #ccc; /* Cinza claro */
-	margin-top: -10px; /* Aproxima do título */
+	color: #ccc;
+	margin-top: -10px;
 	margin-bottom: 20px;
 	font-style: italic;
 }
         canvas { display: block; width: 100%; height: 100%; }
 
-        /* Menu de Seleção Responsivo */
         .selection-menu {
             position: absolute; top: 0; left: 0;
             width: 100%; height: 100%;
@@ -56,7 +54,7 @@
         .controls {
             position: absolute; bottom: 15px; left: 15px; right: 15px;
             display: flex; justify-content: space-between; align-items: flex-end;
-            pointer-events: none; /* Deixa cliques passarem para o fundo se necessário */
+            pointer-events: none;
             z-index: 50;
         }
 
@@ -65,7 +63,7 @@
         /* Sistema (Pause/Som) no topo direito */
         .btn-group-system {
             position: absolute; 
-            top: -340%; /* Ajuste dinâmico para o topo do container */
+            top: -340%;
             right: 0;
             display: flex; gap: 10px; pointer-events: auto;
         }
@@ -142,7 +140,7 @@
             ontouchstart="window.atacar(player)"
             onmousedown="window.atacar(player)"
             style="cursor: pointer; display: inline-block;">
-            <img src="assets/espada.png" alt="Ataque" style="width: 70px; height: auto;">
+            <img src="../assets/espada.png" alt="Ataque" style="width: 70px; height: auto;">
         </div>
     </div>
 </div>
