@@ -343,7 +343,37 @@ const farmerNpc = {
 
 farmerNpc.imgIdle.src = '../Assets/Farmer/IdleF.png';
 
-const npcs = [farmerNpc];
+const roosterNpc = {
+    x: 4180,
+    y: 50,
+    width: 60,
+    height: 60,
+    facing: "left",
+
+    imgIdle: new Image(),
+    idleFrames: 6,
+    currentFrame: 0,
+    frameTimer: 0,
+    frameInterval: 20,
+
+    
+
+    phrases: [
+        "HAAAAAAA!",
+    ],
+
+    dialogue: "",
+    dialogueIndex: -1,
+    dialogueTimer: 0,
+
+    // DISTÂNCIAS (em pixels)
+    talkDistance: 220,
+    stepDistance: 120
+};
+
+roosterNpc.imgIdle.src = '../Assets/Animals/Rooster_animation_without_shadow.png';
+
+const npcs = [farmerNpc, roosterNpc];
 
 
 // --- FUNÇÃO GLOBAL PARA FALA DO PLAYER ---
@@ -1381,8 +1411,8 @@ gameLoop(); // Inicia o loop
 
 // --- FUNÇÃO PARA SALVAR E VOLTAR AO MENU ---
 window.irParaMenu = function() {
-    localStorage.setItem('capitulo_2_vencido', 'true');
-    window.location.href = "cutscene.html"; // Sai da pasta Chapter_1 para a raiz
+    localStorage.setItem('capitulo_1_vencido', 'true');
+    window.location.href = "../index.html"; // Sai da pasta Chapter_1 para a raiz
 };
 
 // --- INPUTS DO TECLADO ---
@@ -1435,7 +1465,4 @@ document.addEventListener('DOMContentLoaded', () => {
         btnNext.onclick = () => window.irParaMenu();
     }
 
-
 });
-
-
