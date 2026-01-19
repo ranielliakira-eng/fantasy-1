@@ -1069,7 +1069,7 @@ boss.state = 'summoning';
 boss.animState = 'attacking';
 boss.currentFrame = 0;
 boss.frameTimer = 0;
-boss.summonCooldown = 180;
+boss.summonCooldown = 60;
         } else {
             boss.state = 'idle';
         }
@@ -1437,3 +1437,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 });
+
