@@ -838,7 +838,7 @@ if ((player.x > 6200 || player2.x > 6200) && !boss) {
         height: 100,
         hp: 4, maxHp: 4,
         speed: 3,
-        summonCooldown: 60,
+        summonCooldown: 30,
         state: 'idle',
         facing: 'left',
         damage: 1,
@@ -1069,7 +1069,7 @@ boss.state = 'summoning';
 boss.animState = 'attacking';
 boss.currentFrame = 0;
 boss.frameTimer = 0;
-boss.summonCooldown = 60;
+boss.summonCooldown = 30;
         } else {
             boss.state = 'idle';
         }
@@ -1437,4 +1437,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 });
+
 
