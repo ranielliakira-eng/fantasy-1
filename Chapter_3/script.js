@@ -4,7 +4,7 @@ canvas.width = 800;
 canvas.height = 450;
 
 // --- CONFIGURAÇÕES GLOBAIS ---
-const bgMusic = new Audio('../Assets/Sounds/song.wav');
+const bgMusic = new Audio('../Assets/Sounds/363467__deleted_user_6109353__roman-marching-music-loop-with-happy-harp.wav');
 bgMusic.loop = true;
 bgMusic.volume = 0.5;
 bgMusic.preload = "auto";
@@ -1265,4 +1265,5 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnNext = document.getElementById('btn-next-chapter');
     if (btnReset) btnReset.onclick = () => window.resetGame();
     if (btnNext) btnNext.onclick = () => window.concluirCapituloEVoutar();
+
 });
