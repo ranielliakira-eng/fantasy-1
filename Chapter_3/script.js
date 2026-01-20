@@ -364,7 +364,7 @@ function initEnemies() {
         
         en.currentFrame = 0; en.frameTimer = 0;
         if (en.frameInterval === undefined) en.frameInterval = 8;
-        en.state = 'patrol'; en.facing = 'left'; en.attackCooldown = 1;
+        en.state = 'patrol'; en.facing = 'left'; en.attackCooldown = 180;
         en.velY = 0; en.onGround = false;
     });
 }
@@ -790,7 +790,7 @@ if (Math.random() < (en.blockChance || 0)) {
     en.state = 'hurt';
     en.currentFrame = 0;
     // Knockback
-    en.x += (p.x < en.x) ? 25 : -25;
+    en.x += (p.x < en.x) ? 30 : -30;
     en.velY = -10;
 
     if (en.hp <= 0) en.state = 'dead';
@@ -941,10 +941,19 @@ function update() {
 
     // 1. Verifica Morte
     if (todosPlayersMortos()) {
-        resetGame(); // Ou mostrar tela de Game Over
+        resetGame();
         return;
     }
     if (player.y > 2000) { player.hp = 0; player.state = 'dead'; }
+    // Marca Player 1 como morto (sem parar o jogo)
+    if (player.hp <= 0 && player.state !== 'dead') {
+        player.state = 'dead';
+    }
+
+    // Marca Player 2 como morto (se ativo)
+    if (player2.active && player2.hp <= 0 && player2.state !== 'dead') {
+        player2.state = 'dead';
+    }
 
 updateNPCs();
 
@@ -963,18 +972,34 @@ if (player2.active) {
     if (player2.attackCooldown > 0) player2.attackCooldown--;
     if (player2.dialogueTimer > 0) player2.dialogueTimer--;
 }
-    // 3. Câmera
-    let alvoCam = (player.state !== 'dead') ? player : player2;
-    if (player2.active && player.state !== 'dead') {
-        alvoCam = { x: (player.x + player2.x)/2, y: (player.y + player2.y)/2 };
-    }
-    let targetX = (alvoCam.x + 50) - (canvas.width / (2 * zoom));
-    let targetY = (alvoCam.y) - (canvas.height / (2 * zoom));
-    
-    cameraX += (targetX - cameraX) * 0.1;
-    cameraY += (targetY - cameraY) * 0.1;
-    cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width / zoom));
-    cameraY = Math.max(0, Math.min(cameraY, mapHeight - canvas.height / zoom));
+// 1. Determina o alvo da câmera (Média entre P1 e P2)
+let alvoX, alvoY;
+
+if (player2.active && player.state !== 'dead' && player2.state !== 'dead') {
+    // Se ambos estão vivos, tira a média
+    alvoX = (player.x + player2.x) / 2;
+    alvoY = (player.y + player2.y) / 2;
+} else if (player.state !== 'dead') {
+    // Se só o P1 está vivo
+    alvoX = player.x;
+    alvoY = player.y;
+} else {
+    // Se o P1 morreu, foca no P2
+    alvoX = player2.x;
+    alvoY = player2.y;
+}
+
+// 2. Calcula onde a câmera deveria estar (Target)
+let targetX = (alvoX + player.width / 2) - (canvas.width / (2 * zoom));
+let targetY = (alvoY + player.height / 2) - (canvas.height / (2 * zoom));
+
+// 3. Suavização (Interpolação)
+cameraX += (targetX - cameraX) * 0.1;
+cameraY += (targetY - cameraY) * 0.1;
+
+// 4. Limites da câmera para não sair do mapa
+cameraX = Math.max(0, Math.min(cameraX, mapWidth - canvas.width / zoom));
+cameraY = Math.max(0, Math.min(cameraY, mapHeight - canvas.height / zoom));
 
     // 4. Atualiza Flechas (Iterar ao contrário para splice seguro)
     if (window.arrows) {
@@ -1077,7 +1102,7 @@ if (distH < 300 && distV < 200 && en.state !== 'attacking') {
                 en.currentFrame = 0;
                 if (en.state === 'attacking') {
                     en.state = 'chase';
-                    en.attackCooldown = 60;
+                    en.attackCooldown = 180;
                 }
             }
         }
@@ -1184,9 +1209,17 @@ function draw() {
     // UI
     if (gameState === 'playing') {
         // Vida Player 1
-        ctx.fillStyle = "black"; ctx.fillRect(20, 20, 150, 15);
+        ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(20, 20, 150, 15);
         ctx.fillStyle = "red"; ctx.fillRect(20, 20, (player.hp / player.maxHp) * 150, 15);
-        
+        ctx.strokeStyle = "white"; ctx.strokeRect(20, 20, 150, 15);
+
+        // VIDA PLAYER 2 (Lado direito)
+        if (player2 && player2.active) {
+            ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(canvas.width - 170, 20, 150, 15);
+            ctx.fillStyle = "blue"; ctx.fillRect(canvas.width - 170, 20, (player2.hp / player2.maxHp) * 150, 15);
+            ctx.strokeStyle = "white"; ctx.strokeRect(canvas.width - 170, 20, 150, 15);
+        }
+
         // Vida Boss
         if (boss && boss.hp > 0 && boss.viuPlayer) {
             ctx.fillStyle = "black"; ctx.fillRect(canvas.width/2 - 200, 40, 400, 20);
@@ -1198,17 +1231,23 @@ function draw() {
     
     // Telas de Fim
     const screen = document.getElementById('game-over-screen');
-    if (screen) {
-        const title = screen.querySelector('h1');
-        const btnReset = document.getElementById('btn-reset');
-        const btnNext = document.getElementById('btn-next-chapter');
+    const title = screen.querySelector('h1');
+    const subtitle = screen ? screen.querySelector('p') : null;
+    const btnReset = document.getElementById('btn-reset');
+    const btnNext = document.getElementById('btn-next-chapter');
 
-        if (player.hp <= 0) {
+    if (screen) {
+        const p1Morto = (player.hp <= 0 || player.state === 'dead');
+        const p2Morto = (!player2.active || player2.hp <= 0 || player2.state === 'dead');
+
+        if (p1Morto && p2Morto) {
             screen.style.display = 'flex';
-            if(title) title.innerText = "VOCÊ CAIU...";
-            if(btnReset) btnReset.style.display = 'block';
-            if(btnNext) btnNext.style.display = 'none';
-        } else if (boss && boss.state === 'dead' && boss.hp <= 0) {
+            screen.style.backgroundColor = "rgba(139, 0, 0, 0.8)"; 
+            if (title) title.innerText = "VOCÊS CAÍRAM...";
+            if (subtitle) subtitle.innerText = "Tente novamente para prosseguir";
+            if (btnReset) btnReset.style.display = 'block';
+            if (btnNext) btnNext.style.display = 'none';
+        }  else if (boss && boss.state === 'dead' && boss.hp <= 0) {
             screen.style.display = 'flex';
             screen.style.backgroundColor = "rgba(0,0,0,0.8)";
             if(title) title.innerHTML = "Você derrubou <br> Archer";
