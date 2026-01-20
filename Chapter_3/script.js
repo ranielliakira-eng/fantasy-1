@@ -1265,5 +1265,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnNext = document.getElementById('btn-next-chapter');
     if (btnReset) btnReset.onclick = () => window.resetGame();
     if (btnNext) btnNext.onclick = () => window.concluirCapituloEVoutar();
-
 });
+
+// ================================
+// CONTROLES MOBILE – PLAYER 1
+// ================================
+window.moverLeft = function (estado) {
+    window.mover(player, keys, 'left', estado);
+};
+
+window.moverRight = function (estado) {
+    window.mover(player, keys, 'right', estado);
+};
+
+window.pularPlayer = function () {
+    window.pular(player);
+};
+
+window.atacarPlayer = function () {
+    window.atacar(player);
+};
