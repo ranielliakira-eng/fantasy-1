@@ -40,18 +40,18 @@ const heroiPadrao = (escolhaMenu === 'castanha') ? 'Knight' : 'Swordsman';
 // IMAGENS E RECURSOS
 // ==================================================
 const letterImg = new Image();
-letterImg.src = "assets/Letter.png"; 
+letterImg.src = "../Assets/Letter.png"; 
 
 const bgImage = new Image();
-bgImage.src = "assets/Battleground/fundo.png";
+bgImage.src = "../Assets/Battleground/fundo3.png";
 
 const groundImage = new Image();
-groundImage.src = "assets/Battleground/Ground1.png";
+groundImage.src = "../Assets/Battleground/Platformer/Ground_1.png";
 
 const BattlegroundImages = {
     DeadWarrior_2: new Image()
 };
-BattlegroundImages.DeadWarrior_2.src = "assets/Battleground/DeadWarrior_2.png";
+BattlegroundImages.DeadWarrior_2.src = "../Assets/Battleground/Environment/DeadWarrior_2.png";
 
 const Battleground = [
     { x: 100, y: 200, w: 100, h: 100, img: BattlegroundImages.DeadWarrior_2 },
@@ -113,31 +113,31 @@ const configFrames = { idle: (heroiPadrao === 'Knight') ? 6 : 8 };
 
 const player = {
     x: 500, y: 0, w: 100, h: 100, vy: 0, speed: 3, facing: "left", onGround: false, state: "idle",
-    sprite: createSprite(`assets/${heroiPadrao}/Idle.png`, configFrames.idle, 12)
+    sprite: createSprite(`../Assets/${heroiPadrao}/Idle.png`, configFrames.idle, 12)
 };
 
 const archerNPC = {
     folderName: "Archer", x: 450, y: 0, w: 100, h: 100, vy: 0, onGround: false, facing: "right",
     state: "dead", idleFrames: 3,
-    sprite: createSprite("assets/Archer/Dead.png", 3, 14, false) 
+    sprite: createSprite("../Assets/Archer/Dead.png", 3, 14, false) 
 };
 
 const semcamisaNPC = {
     folderName: "Warrior_1", x: -100, targetX: 150, y: 0, w: 100, h: 100, vy: 0, onGround: false, facing: "right", 
     state: "running", idleFrames: 6, 
-    sprite: createSprite("assets/Warrior_1/Run.png", 6, 10)
+    sprite: createSprite("../Assets/Warrior_1/Run.png", 6, 10)
 };
 
 const vermelhoNPC = {
     folderName: "Warrior_2", x: -150, targetX: 200, y: 0, w: 100, h: 100, vy: 0, onGround: false, facing: "right", 
     state: "running", idleFrames: 5, 
-    sprite: createSprite("assets/Warrior_2/Run.png", 6, 10)
+    sprite: createSprite("../Assets/Warrior_2/Run.png", 6, 10)
 };
 
 const amareloNPC = {
     folderName: "Warrior_3", x: -100, targetX: 250, y: 0, w: 100, h: 100, vy: 0, onGround: false, facing: "right", 
     state: "running", idleFrames: 5, 
-    sprite: createSprite("assets/Warrior_3/Run.png", 6, 10)
+    sprite: createSprite("../Assets/Warrior_3/Run.png", 6, 10)
 };
 
 const entities = [player, archerNPC, semcamisaNPC, vermelhoNPC, amareloNPC];
@@ -196,7 +196,7 @@ function update() {
                 if (e.x >= e.targetX) {
                     e.x = e.targetX;
                     e.state = "idle";
-                    e.sprite = createSprite(`assets/${e.folderName}/Idle.png`, e.idleFrames, 14);
+                    e.sprite = createSprite(`../Assets/${e.folderName}/Idle.png`, e.idleFrames, 14);
                 }
             }
         }
