@@ -16,7 +16,7 @@
 <script>
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
-const bgMusic = new Audio("assets/sounds/song.wav");
+const bgMusic = new Audio("../Assets/Sounds/686217__humanoide9000__cinematic-orchestral-heroic-army-music.wav");
 
 bgMusic.loop = true;
 
@@ -28,13 +28,13 @@ const heroiPadrao = (escolhaMenu === 'castanha') ? 'Knight' : 'Swordsman';
 
 // RECURSOS
 const bgImage = new Image();
-bgImage.src = "assets/Battleground/fundo.png";
+bgImage.src = "../Assets/Battleground/fundo5.png";
 const bg1Image = new Image();
 
-bg1Image.src = "assets/Battleground/fundo1.png";
+bg1Image.src = "../Assets/Battleground/fundo5_1.png";
 
 const groundImage = new Image();
-groundImage.src = "assets/Battleground/Ground1.png";
+groundImage.src = "../Assets/Battleground/Platformer/Ground_2.png";
 
 
 
@@ -87,12 +87,12 @@ function drawSprite(sprite, x, y, w, h, facing = "right") {
 // ENTIDADES
 const player = {
     x: 200, y: 0, w: 100, h: 100, vy: 0, facing: "right", state: "idle",
-    sprite: createSprite(`assets/${heroiPadrao}/Idle.png`, configFrames.idle, 12)
+    sprite: createSprite(`../Assets/${heroiPadrao}/Idle.png`, configFrames.idle, 12)
 };
 
 const mosqueteiro = {
     x: 500, y: 0, w: 100, h: 100, vy: 0, facing: "left", state: "idle",
-    sprite: createSprite("assets/Musketeer/Idle.png", 5, 14)
+    sprite: createSprite("../Assets/Musketeer/Idle.png", 5, 14)
 };
 
 // Inverti a ordem para o Mosqueteiro ser desenhado "atrás" do Player se eles se cruzarem
@@ -130,13 +130,13 @@ function nextDialogue() {
         player.state = "running_out";
         player.facing = "left";
         // Agora usa a variável configFrames.run correta
-        player.sprite = createSprite(`assets/${heroiPadrao}/Run.png`, configFrames.run, 8);
+        player.sprite = createSprite(`../Assets/${heroiPadrao}/Run.png`, configFrames.run, 8);
 
         // --- CONFIGURAÇÃO DO MOSQUETEIRO ---
         mosqueteiro.state = "running_out";
         mosqueteiro.facing = "left";
         // Usa configFrames.musketeerRun (definido como 8 lá em cima)
-        mosqueteiro.sprite = createSprite("assets/Musketeer/Run.png", configFrames.musketeerRun, 8); 
+        mosqueteiro.sprite = createSprite("../Assets/Musketeer/Run.png", configFrames.musketeerRun, 8); 
     }
 
     if (dialogueIndex >= castleDialogue.length) {
