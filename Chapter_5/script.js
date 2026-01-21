@@ -1212,8 +1212,8 @@ gameLoop(); // Inicia o loop
 
 // --- FUNÇÃO PARA SALVAR E VOLTAR AO MENU ---
 window.irParaMenu = function() {
-    localStorage.setItem('capitulo_4_vencido', 'true');
-    window.location.href = "../index.html";
+    localStorage.setItem('capitulo_5_vencido', 'true');
+    window.location.href = "Fim.html";
 };
 
 // --- INPUTS DO TECLADO ---
@@ -1265,5 +1265,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnNext) {
         btnNext.onclick = () => window.irParaMenu();
     }
+
 
 });
