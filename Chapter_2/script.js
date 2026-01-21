@@ -1335,7 +1335,7 @@ if (n.dialogue && n.dialogueTimer > 0) {
             ctx.fillStyle = "purple"; ctx.fillRect(canvas.width/2 - 200, 40, (boss.hp / boss.maxHp) * 400, 20);
             ctx.strokeStyle = "white"; ctx.strokeRect(canvas.width/2 - 200, 40, 400, 20);
             ctx.fillStyle = "white"; ctx.font = "bold 14px Arial"; ctx.textAlign = "center";
-            ctx.fillText("ENCHANTRESS", canvas.width/2, 35);
+            ctx.fillText("WIZARD", canvas.width/2, 35);
         }
     }
 
@@ -1364,8 +1364,8 @@ if (n.dialogue && n.dialogueTimer > 0) {
             if (screen.style.display !== 'flex') {
                 screen.style.display = 'flex';
                 screen.style.backgroundColor = "rgba(0, 0, 0, 0.8)"; 
-                if (title) title.innerHTML = "Você derrubou <br> Enchantress";
-                if (subtitle) subtitle.innerHTML = "Mas o desequilíbrio permanece... <br>Algo pior espreita nas sombras.";
+                if (title) title.innerHTML = "Você derrubou <br> Wizard PossuÍdo";
+                if (subtitle) subtitle.innerHTML = "Os esqueletos pararam de sair das covas.";
                 if (btnReset) btnReset.style.display = 'none';
                 if (btnNext) btnNext.style.display = 'block';
             }
@@ -1464,5 +1464,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnNext) {
         btnNext.onclick = () => window.irParaMenu();
     }
+
 
 });
