@@ -22,23 +22,36 @@ let boss = null;
 // --- JOGADOR (ESTRUTURA BASE) ---
 const player = {
     x: 120, y: 200, width: 100, height: 100,
-    velX: 0, velY: 0, speed: 3, jumpForce: -15, attackFrameInterval: 5, attackCooldownMax: 0, attackCooldown: 0,
+    velX: 0, velY: 0, speed: 3, jumpForce: -15,
     facing: 'right', onGround: false, state: 'idle',
-    hp: 3, maxHp: 3, canAirAttack: true,
-    imgWalk: new Image(), imgDead: new Image(), imgJump: new Image(), imgHurt: new Image(),
-    imgAttack: new Image(), imgIdle: new Image(),
-    attackFrames: 6, walkFrames: 8, idleFrames: 8, jumpFrames: 8, deadFrames: 4,
-    currentFrame: 0, frameTimer: 0, frameInterval: 6, dialogue: "", dialogueTimer: 0,
+    hp: 7, maxHp: 7, 
+    comboStep: 1, lastAttackTime: 0,
+    canAirAttack: true,  attackFrameInterval: 7,
+    attackCooldownMax: 0, attackCooldown: 0,
+    runTimer: 0, isRunning: false, runThreshold: 60,
+    dialogue: "", dialogueTimer: 0,
+
+    imgIdle: new Image(), imgWalk: new Image(), imgRun: new Image(),
+    imgJump: new Image(), imgHurt: new Image(), imgDead: new Image(), 
+    imgAttack1: new Image(), imgAttack2: new Image(), imgAttack3: new Image(), 
+
+    idleFrames: 8, walkFrames: 8, runFrames: 8,
+    jumpFrames: 8, hurtFrames: 3, deadFrames: 3,
+    attack1Frames: 6, attack2Frames: 3, attack3Frames: 4, 
+    currentFrame: 0, frameTimer: 0, frameInterval: 8,
+
 };
 
-// ... abaixo do const player atual ...
+
+let keys = { left: false, right: false };
 
 const player2 = {
-    ...player, // Copia as propriedades base (x, y, hp, etc)
-    x: 160,    // Começa um pouco à frente do P1
+    ...player,
+    x: 160,
     active: false,
-    imgWalk: new Image(), imgDead: new Image(), imgJump: new Image(), 
-    imgHurt: new Image(), imgAttack: new Image(), imgIdle: new Image(),
+    imgIdle: new Image(), imgWalk: new Image(), imgRun: new Image(),
+    imgJump: new Image(), imgHurt: new Image(), imgDead: new Image(), 
+    imgAttack1: new Image(), imgAttack2: new Image(), imgAttack3: new Image(), 
 };
 
 let keysP2 = { left: false, right: false };
@@ -53,11 +66,10 @@ window.onload = function() {
     configurarPlayer(player, escolhaP1);
     
     // 2. Configura o Player 2 (Apenas se selecionado no menu)
-if (numJogadores === 2) {
+    if (numJogadores === 2) {
     player2.active = true;
     configurarPlayer(player2, escolhaP2);
 
-    // 🔧 RESET VISUAL DO PLAYER 2
     player2.state = 'idle';
     player2.facing = 'right';
     player2.currentFrame = 0;
@@ -66,58 +78,69 @@ if (numJogadores === 2) {
     player2.velY = 0;
     player2.onGround = false;
 }
-
-    // 3. O GATILHO: Quando a imagem do P1 carregar, o jogo começa
     player.imgIdle.onload = () => {
         gameState = 'playing'; 
         initEnemies(); 
         if (!isMuted) bgMusic.play().catch(() => {}); 
     };
-
-    // 4. Mostra controles se for mobile
     const controls = document.getElementById('mobile-controls');
     if(controls) controls.style.display = 'flex';
 };
 
-// Mantenha a função auxiliar que criamos no passo anterior
 function configurarPlayer(p, escolha) {
-
-    // Mapeia escolha do menu → herói real
     const tipo = (escolha === 'castanha') ? 'Knight' : 'Swordsman';
 
     if (tipo === 'Knight') {
         p.idleFrames   = 6;
         p.walkFrames   = 8;
+        p.runFrames   = 7;
         p.jumpFrames   = 6;
-        p.attackFrames = 5;
         p.hurtFrames = 3;
         p.deadFrames = 4;
 
+        p.attack1Frames = 5;
+        p.attack2Frames = 2;
+        p.attack3Frames = 5;
+
         p.imgIdle.src   = '../Assets/Knight/Idle.png';
         p.imgWalk.src   = '../Assets/Knight/Walk.png';
+        p.imgRun.src   = '../Assets/Knight/Run.png';
         p.imgJump.src   = '../Assets/Knight/Jump.png';
-        p.imgAttack.src = '../Assets/Knight/Attack_1.png';
         p.imgHurt.src   = '../Assets/Knight/Hurt.png';
         p.imgDead.src   = '../Assets/Knight/Dead.png';
+
+        p.imgAttack1.src = '../Assets/Knight/Attack_1.png';
+        p.imgAttack2.src = '../Assets/Knight/Attack_2.png';
+        p.imgAttack3.src = '../Assets/Knight/Attack_3.png';
+
+        p.imgAttack = p.imgAttack1;
     }
 
     if (tipo === 'Swordsman') {
         p.idleFrames   = 8;
         p.walkFrames   = 8;
+        p.runFrames   = 8;
         p.jumpFrames   = 8;
-        p.attackFrames = 6;
         p.hurtFrames = 3;
         p.deadFrames = 3;
 
+        p.attack1Frames = 6;
+        p.attack2Frames = 3;
+        p.attack3Frames = 4;
+
         p.imgIdle.src   = '../Assets/Swordsman/Idle.png';
         p.imgWalk.src   = '../Assets/Swordsman/Walk.png';
+        p.imgRun.src   = '../Assets/Swordsman/Run.png';
         p.imgJump.src   = '../Assets/Swordsman/Jump.png';
-        p.imgAttack.src = '../Assets/Swordsman/Attack_1.png';
         p.imgHurt.src   = '../Assets/Swordsman/Hurt.png';
         p.imgDead.src   = '../Assets/Swordsman/Dead.png';
-    }
 
-    // Reset seguro
+        p.imgAttack1.src = '../Assets/Swordsman/Attack_1.png';
+        p.imgAttack2.src = '../Assets/Swordsman/Attack_2.png';
+        p.imgAttack3.src = '../Assets/Swordsman/Attack_3.png';
+
+        p.imgAttack = p.imgAttack1;
+    }
     p.currentFrame = 0;
     p.frameTimer = 0;
 }
@@ -149,41 +172,41 @@ function processarAtaque(p) {
 const playerDialogTriggers = [
     { x: 600, text: "Esses Slimes não deveriam estar aqui.", used: false },
     { x: 1800, text: "A floresta está ficando mais densa.", used: false },
-    { x: 6200, text: "Floresta está cheia de Slimes...", used: false },
-    { x: 6400, text: "Enchantress, você está bem?", used: false },
+    { x: 6100, text: "Floresta está cheia de Slimes...", used: false },
+    { x: 6300, text: "Enchantress, você está bem?", used: false },
 ];
 
 // --- INIMIGOS ---
 let enemies = [];
 function initEnemies() {
     enemies = [
-        { type: 'Green_Slime', x: 800, y: 200, hp: 2, speed: 1.2, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 1000, y: 200, hp: 2, speed: 1.3, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 1200, y: 200, hp: 2, speed: 1.4, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 1300, y: 200, hp: 2, speed: 1.5, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 1400, y: 200, hp: 2, speed: 1.5, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 1500, y: 200, hp: 2, speed: 1.4, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 1250, y: 200, hp: 2, speed: 1.3, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 1450, y: 200, hp: 2, speed: 1.2, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 800, y: 200, hp: 5, speed: 1.2, damage: 1, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 1000, y: 200, hp: 5, speed: 1.3, damage: 1, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 1200, y: 200, hp: 5, speed: 1.4, damage: 1, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 1300, y: 200, hp: 5, speed: 1.5, damage: 1, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 1400, y: 200, hp: 5, speed: 1.5, damage: 1, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 1500, y: 200, hp: 5, speed: 1.4, damage: 1, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 1250, y: 200, hp: 5, speed: 1.3, damage: 1, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 1450, y: 200, hp: 5, speed: 1.2, damage: 1, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
        
-        { type: 'Blue_Slime', x: 2980, y: 200, hp: 2, speed: 1.8, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 3000, y: 200, hp: 2, speed: 1.7, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 3025, y: 200, hp: 2, speed: 1.6, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 3100, y: 200, hp: 2, speed: 1.6, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 2980, y: 200, hp: 5, speed: 1.8, damage: 1, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 3000, y: 200, hp: 5, speed: 1.7, damage: 1, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 3025, y: 200, hp: 5, speed: 1.6, damage: 1, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 3100, y: 200, hp: 5, speed: 1.6, damage: 1, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
 
-        { type: 'Red_Slime', x: 4000, y: 200, hp: 2, speed: 2.5, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Red_Slime', x: 4050, y: 200, hp: 2, speed: 2.4, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Red_Slime', x: 4100, y: 200, hp: 2, speed: 2.2, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Red_Slime', x: 4200, y: 200, hp: 2, speed: 2.5, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 4000, y: 200, hp: 5, speed: 2.5, damage: 1, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 4050, y: 200, hp: 5, speed: 2.4, damage: 1, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 4100, y: 200, hp: 5, speed: 2.2, damage: 1, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 4200, y: 200, hp: 5, speed: 2.5, damage: 1, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
 
-        { type: 'Green_Slime', x: 5000, y: 200, hp: 2, speed: 1.2, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Green_Slime', x: 5100, y: 200, hp: 2, speed: 1.2, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 5000, y: 200, hp: 5, speed: 1.2, damage: 1, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Green_Slime', x: 5100, y: 200, hp: 5, speed: 1.2, damage: 1, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
          	
-        { type: 'Blue_Slime', x: 5000, y: 200, hp: 2, speed: 1.8, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
-        { type: 'Blue_Slime', x: 5125, y: 207, hp: 2, speed: 1.7, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 5000, y: 200, hp: 5, speed: 1.8, damage: 1, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
+        { type: 'Blue_Slime', x: 5125, y: 207, hp: 5, speed: 1.7, damage: 1, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 }, 
 
-        { type: 'Red_Slime', x: 5000, y: 200, hp: 2, speed: 2.5, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
-        { type: 'Red_Slime', x: 5150, y: 200, hp: 2, speed: 2.5, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 5000, y: 200, hp: 5, speed: 2.5, damage: 1, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
+        { type: 'Red_Slime', x: 5150, y: 200, hp: 5, speed: 2.5, damage: 1, attackRange: 30, frameInterval: 8, walkFrames: 8, attackFrames: 4, hurtFrames: 6, deadFrames: 3 },
 ];
 
     enemies.forEach(en => {
@@ -218,7 +241,7 @@ const platforms = [
 // --- Árvore ---
     { x: 2020, y: 270, w: 150, h: 20, type: 'stretch', alpha: 0 },
 // --- Chão parte 2 ---
-    { x: 2150, y: 300, w: 4800, h: 150, type: 'pattern' }, 
+    { x: 2150, y: 300, w: 4850, h: 150, type: 'pattern' }, 
 ];
 
 // --- Cenário ---
@@ -274,8 +297,6 @@ let platformPattern = null;
 platformImg.onload = () => {
     platformPattern = ctx.createPattern(platformImg, 'repeat');
 };
-
-let keys = { left: false, right: false };
 
 const backgroundObjects = [
 	{ x: 0, y: 0, width: 7000, height: 1000, img: fundoImg },
@@ -430,21 +451,34 @@ window.pular = function(p) {
     }
 };
 
-// Ataque (usando a função checkMeleeHit que já ajustamos)
 window.atacar = function(p) {
-    if (
-        p.state === 'dead' ||
-        p.state === 'attacking' ||
-        p.attackCooldown > 0 ||
-        isPaused
-    ) return;
+    if (p.state === 'dead' || p.state === 'attacking' || isPaused) return;
+
+    const agora = Date.now();
+    if (agora - p.lastAttackTime > 800) {
+        p.comboStep = 1;
+    }
+
+    // Ajusta a imagem E a quantidade de frames para aquele golpe específico
+    if (p.comboStep === 1) {
+        p.imgAttack = p.imgAttack1;
+        p.attackFrames = p.attack1Frames; // Pega o valor configurado no configurarPlayer
+    } else if (p.comboStep === 2) {
+        p.imgAttack = p.imgAttack2;
+        p.attackFrames = p.attack2Frames;
+    } else if (p.comboStep === 3) {
+        p.imgAttack = p.imgAttack3;
+        p.attackFrames = p.attack3Frames;
+    }
 
     p.state = 'attacking';
     p.currentFrame = 0;
     p.frameTimer = 0;
-    p.attackCooldown = p.attackCooldownMax;
+    p.lastAttackTime = agora;
 
     checkMeleeHit(p);
+
+    p.comboStep = (p.comboStep % 3) + 1;
 };
 
 // NPCs
@@ -519,15 +553,46 @@ function checkMeleeHit(p) {
 }
 
 function atualizarAnimacaoPlayer(p) {
+    // 1. PRIORIDADE MÁXIMA: MORTE
+    if (p.state === 'dead') {
+        p.frameTimer++;
+        if (p.frameTimer >= p.frameInterval) {
+            p.frameTimer = 0;
+            if (p.currentFrame < p.deadFrames - 1) {
+                p.currentFrame++;
+            }
+        }
+        return;
+    }
 
+    // 2. PRIORIDADE: DANO (HURT)
+    // Se estiver no estado hurt, toca a animação uma vez e depois volta ao normal
+    if (p.state === 'hurt') {
+        p.frameTimer++;
+        if (p.frameTimer >= p.frameInterval) {
+            p.frameTimer = 0;
+            p.currentFrame++;
+            
+            // Quando a animação de dano termina (usando hurtFrames que você definiu)
+            if (p.currentFrame >= p.hurtFrames) {
+                p.currentFrame = 0;
+                p.state = 'idle'; // Volta para idle para o loop decidir o próximo estado
+            }
+        }
+        return; 
+    }
+
+    // 3. PRIORIDADE: ATAQUE
     if (p.state === 'attacking') {
         p.frameTimer++;
-
         if (p.frameTimer >= p.attackFrameInterval) {
             p.frameTimer = 0;
             p.currentFrame++;
 
-            // Fim do ataque
+            if (p.currentFrame === p.attackFrames - 1) {
+                checkMeleeHit(p);
+            }
+
             if (p.currentFrame >= p.attackFrames) {
                 p.currentFrame = 0;
                 p.state = p.onGround ? 'idle' : 'jumping';
@@ -536,23 +601,8 @@ function atualizarAnimacaoPlayer(p) {
         return;
     }
 
-    if (p.state === 'dead') {
-        p.frameTimer++;
-
-        if (p.frameTimer >= p.frameInterval) {
-            p.frameTimer = 0;
-
-            if (p.currentFrame < p.deadFrames - 1) {
-                p.currentFrame++;
-            }
-            // ❗ não volta para 0, não cicla
-        }
-        return;
-    }
-
-    // ===== ANIMAÇÕES NORMAIS =====
+    // 4. MOVIMENTAÇÃO NORMAL (IDLE, WALK, RUN, JUMP)
     p.frameTimer++;
-
     if (p.frameTimer >= p.frameInterval) {
         p.frameTimer = 0;
 
@@ -561,8 +611,13 @@ function atualizarAnimacaoPlayer(p) {
             p.currentFrame = (p.currentFrame + 1) % p.jumpFrames;
         }
         else if (Math.abs(p.velX) > 0.5) {
-            p.state = 'walking';
-            p.currentFrame = (p.currentFrame + 1) % p.walkFrames;
+            if (p.isRunning) {
+                p.state = 'running';
+                p.currentFrame = (p.currentFrame + 1) % p.runFrames;
+            } else {
+                p.state = 'walking';
+                p.currentFrame = (p.currentFrame + 1) % p.walkFrames;
+            }
         }
         else {
             p.state = 'idle';
@@ -570,7 +625,6 @@ function atualizarAnimacaoPlayer(p) {
         }
     }
 }
-
 
 // --- UPDATE ---
 function update(){
@@ -730,12 +784,17 @@ if (en.state === 'hurt') {
                 en.frameTimer = 0;
                 en.currentFrame++;
                 
-                if(en.currentFrame === attackFrame && dist <= en.attackRange) {
-                    alvo.hp -= 1;
-                    // Opcional: fazer o player sentir o golpe
-                    // alvo.state = 'hurt'; 
-                    en.attackCooldown = 80;
-                }
+if(en.currentFrame === attackFrame && dist <= en.attackRange) {
+    if (alvo.state !== 'dead') {
+        alvo.hp -= en.damage;
+        alvo.state = 'hurt';
+        alvo.currentFrame = 0;
+        alvo.frameTimer = 0;
+        
+        alvo.x += (alvo.x < en.x) ? -20 : 20;
+    }
+    en.attackCooldown = 80;
+}
                 
                 if(en.currentFrame >= en.attackFrames) {
                     en.currentFrame = 0;
@@ -768,7 +827,7 @@ if ((player.x > 6400 || player2.x > 6400) && !boss) {
         x: 6700,
         y: 200, 
         width: 100, height: 100,
-        hp: 5, maxHp: 5,
+        hp: 15, maxHp: 15,
         speed: 2,
         state: 'idle',
         facing: 'left',
@@ -806,10 +865,26 @@ function aplicarFisicaCompleta(p, k) {
     if (p.state === 'dead') return;
 
     // MOVIMENTO HORIZONTAL
-    if (p.state !== 'attacking') {
-        if (k.left) p.velX = -p.speed;
-        else if (k.right) p.velX = p.speed;
-        else p.velX *= 0.7;
+if (p.state !== 'attacking') {
+        if (k.left || k.right) {
+            p.runTimer++;
+
+            if (p.runTimer > p.runThreshold && p.onGround) {
+                p.isRunning = true;
+                p.speed = 5;
+            } else {
+                p.isRunning = false;
+                p.speed = 3;
+            }
+
+            p.velX = k.left ? -p.speed : p.speed;
+        } else {
+            // Reseta se soltar as teclas ou parar
+            p.runTimer = 0;
+            p.isRunning = false;
+            p.speed = 3;
+            p.velX *= 0.7;
+        }
     } else {
         p.velX = 0;
     }
@@ -1026,6 +1101,7 @@ function draw() {
         let img = obj.imgIdle;
         let totalF = obj.idleFrames || 8;
         if (obj.state === 'walking' || obj.state === 'walk') { img = obj.imgWalk; totalF = obj.walkFrames; }
+        else if (obj.state === 'running') { img = obj.imgRun; totalF = obj.runFrames; }
         else if (obj.state === 'attacking') { img = obj.imgAttack; totalF = obj.attackFrames; }
         else if (obj.state === 'jumping' || obj.state === 'jump') { img = obj.imgJump; totalF = obj.jumpFrames; }
         else if (obj.state === 'hurt') { img = obj.imgHurt; totalF = obj.hurtFrames; }
@@ -1173,7 +1249,7 @@ gameLoop(); // Inicia o loop
 // --- FUNÇÃO PARA SALVAR E VOLTAR AO MENU ---
 window.irParaMenu = function() {
     localStorage.setItem('capitulo_1_vencido', 'true');
-    window.location.href = "../index.html"; // Sai da pasta Chapter_1 para a raiz
+    window.location.href = "../index.html";
 };
 
 // --- INPUTS DO TECLADO ---
@@ -1217,13 +1293,10 @@ window.addEventListener('keyup', (e) => {
 document.addEventListener('DOMContentLoaded', () => {
     const btnReset = document.getElementById('btn-reset');
     const btnNext = document.getElementById('btn-next-chapter');
-
     if (btnReset) {
         btnReset.onclick = () => window.resetGame();
     }
-
     if (btnNext) {
         btnNext.onclick = () => window.irParaMenu();
     }
-
 });
