@@ -452,7 +452,7 @@ window.pular = function(p) {
 };
 
 window.atacar = function(p) {
-    if (p.state === 'dead' || p.state === 'attacking' || isPaused) return;
+    if (p.state === 'dead' || p.state === 'attacking' || isPaused || p.attackCooldown > 0) return;
 
     const agora = Date.now();
     if (agora - p.lastAttackTime > 800) {
@@ -462,13 +462,14 @@ window.atacar = function(p) {
     // Ajusta a imagem E a quantidade de frames para aquele golpe específico
     if (p.comboStep === 1) {
         p.imgAttack = p.imgAttack1;
-        p.attackFrames = p.attack1Frames; // Pega o valor configurado no configurarPlayer
+        p.attackFrames = p.attack1Frames;
     } else if (p.comboStep === 2) {
         p.imgAttack = p.imgAttack2;
         p.attackFrames = p.attack2Frames;
     } else if (p.comboStep === 3) {
         p.imgAttack = p.imgAttack3;
         p.attackFrames = p.attack3Frames;
+        p.attackCooldown = 80;
     }
 
     p.state = 'attacking';
@@ -641,16 +642,18 @@ function update(){
     }
 
     updateNPCs();
-
-
-aplicarFisicaCompleta(player, keys);
+    aplicarFisicaCompleta(player, keys);
 
 if (player2.active) {
     aplicarFisicaCompleta(player2, keysP2);
 }
 
 atualizarAnimacaoPlayer(player);
+
 if (player2.active) atualizarAnimacaoPlayer(player2);
+
+if (player.attackCooldown > 0) player.attackCooldown--;
+if (player2.active && player2.attackCooldown > 0) player2.attackCooldown--;
 
 if (todosPlayersMortos()) {
     resetGame();
