@@ -469,7 +469,7 @@ window.atacar = function(p) {
     } else if (p.comboStep === 3) {
         p.imgAttack = p.imgAttack3;
         p.attackFrames = p.attack3Frames;
-        p.attackCooldown = 80;
+        p.attackCooldown = 60;
     }
 
     p.state = 'attacking';
@@ -1302,4 +1302,5 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnNext) {
         btnNext.onclick = () => window.irParaMenu();
     }
+
 });
